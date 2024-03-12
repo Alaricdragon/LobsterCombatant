@@ -52,7 +52,7 @@
   </component>
   <component name="RunManager">
     <configuration name="Starsector" type="BatchConfigurationType" factoryName="Batch">
-      <module name="Lobster_Combatant" />
+      <module name="Lobster Combatant" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../.." />
       <option name="PARENT_ENVS" value="true" />
@@ -63,13 +63,13 @@
       </method>
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
-      <module name="Lobster_Combatant" />
+      <module name="Lobster Combatant" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="Lobster_Combatant" />
+      <module name="Lobster Combatant" />
       <option name="filePath" />
       <method v="2">
         <option name="Make" enabled="true" />
