@@ -50,6 +50,11 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\alari\OneDrive\Desktop\starsector modding resorces\starsector\mods\Lobster Combatant\.idea" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Starsector" type="BatchConfigurationType" factoryName="Batch">
       <module name="Lobster Combatant" />

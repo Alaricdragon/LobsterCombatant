@@ -1,0 +1,93 @@
+ok, so in this, i have a few objectives:
+first, I need to exsplain how to create a commodity. I will do this in this order:
+the sprite (max 100/100px, transparent background)
+then CSV file
+    -how to create it
+    -what each and every one of the parameters do, and examples.
+    -(show image of it in game with no description)
+then the description file:
+    -how to create it.
+    -what each and every one of the parameters do
+    -(show image of it in game with description)
+from there, how the commodity is created
+    -ways to create:
+        1) with a bit of code coped from market retrofits.
+        2) with code.
+        3) (learn how to do this first) how to add it to loot tables as a item.
+
+now i will move onto the advanced things, in the following order:
+how to add text with parameters to your item.
+    -show examples of basic text with highlights.
+    -show example the F1 extra text system, and how to use it.
+
+
+(this might be a different tutorial)
+now i will move onto 'special' items. i will attempt to cover:
+1) the CSV file.
+2) the class it overwrites, as well as what every single function does.
+3) how to handle special item memory
+
+
+next, i will cover crew replacer. i will start with a branch of this mod, so people can follow along. I will cover the folling in this tortoreal
+talk about the basics of what crew replacer does, and how it works.
+    -mention crew replacer basic functionality.
+    -mention that crew replacer's name is a relec from the past, that i keep because of nalstoga, that it should be called 'commodity_replacer', as it works for all commodity's.
+    -talk about what im going to teach today (very breath overview.)
+talk about the fact that you will need this mod as a libary to make it work.
+    -also mention how one can do crew replacer things, but only if it is enabled.
+the basics of crewReplacer_Main, and how to access a job.
+    -just the basics. like how load order does not matter, and how you should -always- get your job though crewReplacer_Main.
+talk about when its OK to add a crew to a job.
+    -talk about how you should do it in 'on application load'
+    -talk about how if you absolutely need to add a crew not in this stage, you need to run 'job.organize priority' or risk the game breaking.
+the most basic way to create a crew.
+    -talk about the crew stats (attack,defence,priority) and what they do.
+    -first with adding a crew to one job (raiding) (also mentiining how, if this is all you want to do, you are done), then multiple(raiding, steal a starship, maybe salvaging (as heavy machinery, to show that its not just 'crew', but commodity)).
+    -give one of the crew different stats from the rest of them(steal a starship)
+the most basic way to add a crew to a crew set
+    -showing how mush easier it is, then adding something to everything. (adding the crew to marines)
+    -talking about how this works for modded items. (use nexerlin invasions as a example)
+    -talking about the fact its going to override some things (steal a starship)
+    -mention, that if you add something to a crewReplacer_crewSet after application load, it will not be added.
+    -mention, how if you absolutely need to, how you can run this function yourself to load a crest.
+    -mention, that if you do this, you -need- to run 'job.organizePrirotiy'
+explain the 'priority system'
+    -talk about how i can avoid overwriting something with the priority system (showing it with forcing the 'stell a starship' crew to load over the crewset.)
+    -talk about what gets priority when.
+explain the 'blacklist system'
+    -talk about how i can make it so my 'crew' does not count as a certain job with this system (example: steel  starship)
+    -talk about how this will prevent crew from being added to this job / crewSet unless said crew has a higher priority
+    -say this is the end of the basic tutorial for adding 'crew', and that from now on, i will be talking about advanced topics, for people that want something... more.
+
+Custom crew replacer crew
+talk about what this means
+    -talk about how one can override certain functions in a 'crew' to achieve certain results' (examples: a crew that can change power, a ship or hull-mod counting as a crew, or even a type of crew that resits losses, so long as a another commodity is in storage.)
+    -talk about how crewReplacer has protections to prevent crashes caused by this method, and that crew replacer will always display logs if it fails to do something
+talk about the crew functions, and how they connect
+    -talk about each of the main 'stat' functions (getPower, getDefence, getAvailable, ext)
+    -talk about the 'apply losses' and 'crew used' function (is crew used a function in crew??)
+    -talk about the main 'display' functions (display losses, display available, get display name ext)
+    -talk about what the crew 'name' means in this situation
+show some examples of 'custom' crew:
+    1) show in detail, how to change power dynamically.
+    2) show in detail how to make a starship of hullmod count as crew
+        -show how to get power, and quantity of crew, and what one to use when.
+        -show how to display available, and how to display losses.
+        -show how to round what crew and get the desired number of ships used.
+        -show how to apply losses (with combat readiness losses.)
+    3) show in detail how to make a crew resist losses so long as another 'commodity' is in storge.
+        -explain how crewUsed and getCrewLost work together.
+        -show me changing what commodity are removed when i lose crew.
+        -show how to change the display to reflect what was actually lost
+
+mention that this is the end of talking about how crews work, and that now its about adding crew job support.
+    -talk about how i only showed a few examples, and that crews are built so you can do -anything- with them
+explain how there is 2 ways to add compatibility, by requiring crewReplacer, or only when crewReplacer is detected.
+    -talk about the fact that there is 2 ways to handle crew replacer. and mention each.
+    I will have to show an example. i think this should be latter in the tutorial.
+talk about identifying what you should replace with a crewReplacer_Job, and I need a break
+talk about setting up a crewReplacer_Job.
+    mention how load order does not matter for crewReplacer_Job's and how its just a collection of data.
+    talk about how what you want to do here, is add the first crew to your job.
+    mention how you should always add a crewSet named by the commodity of your mod.
+    mention, how it can be wize if yuo are doing a lot fo things with the same commodity, to have your own crewSets for you mod, and the advantages of that.
