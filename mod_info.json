@@ -1,0 +1,12 @@
+{
+	"id":"Lobster Combatant Tortoreal", # internal id
+	"name":"Lobster Combatant", # displayed to the player
+	"author":"Alricdragon",
+	"version":"0.0",
+	"description":"a tiny mod build to display and exsplain how to add commoditys to the game",
+	"gameVersion":"0.97a-RC10",
+	"dependencies": [
+	],
+	"jars":["jars/LobsterCombatant.jar"],
+	"modPlugin":"UnofficalCaptionsLogPrinter.data.scripts.LobsterCombatant_startup",
+}
