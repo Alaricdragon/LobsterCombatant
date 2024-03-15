@@ -1,5 +1,19 @@
+questions:
+hello once again everyone here. I have returned with less strange questions
+what do the following variables do from the commodities.csv:
+    1) price variability
+    2) utility
+    3) origin
+    4) stack size (does not seem to be the size of a stack)
+    5) economyTier
+    6) econUnitOrigUnused
+    7) econUnit
+I have seen a lot of tags in the commodities.csv, but the only ones i that i know the function of are the 'no_drop' and 'no_loss_from_combat'. what do the rest do?
+
+thanks again to everyone that answer all my questions last time and the thousand time before. its been really really helpful overall.
+
 ok, so in this, i have a few objectives:
-first, I need to exsplain how to create a commodity. I will do this in this order:
+first, I need to explain how to create a commodity. I will do this in this order:
 the sprite (max 100/100px, transparent background)
 then CSV file
     -how to create it

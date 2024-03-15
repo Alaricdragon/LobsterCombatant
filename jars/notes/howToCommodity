@@ -1,0 +1,144 @@
+so you want to add a item or commodity to the game, but don't know were to begin, or simply cant understand one small step of the process?
+well, don't worry! I am here to guid you though this task.
+in this tutorials, we will cover the following:
+1) how to add a item to the game
+    -what the requirements are for a items sprite
+    -how the CSV file works, and what every variable in it means, and how to set yours up.
+    -how to give your item a description
+2) multiple methods of how to make a item show up in game
+    -adding a item to the in game economy, and how that effects were the item is sold in markets
+    -how to add items to the players inventory with code
+3) how to change your items description and picture dynamically (based on how literally anything you could think of)
+    -changing a commodity picture.
+    -adding text to a items description
+    -adding 'F1 to show more' text to your items description
+4) and maybe latter, we can talk about 'special items' but not now sorry
+
+
+# requirements for a sprite:
+so, the requirements are as follows:
+1) *the image size should be 100 by 100 pixels or less.*
+although you can have images larger then this, it will be larger then the 'box' that you can put a given commodity in and will look weired.
+also, feel free to have images smaller then this. the game seems to handle even weird height/width ratios well enough in my experience
+2) *the image should have a transparent background.*
+although you can neglect this rule if you want, It will result in your item being very obviously different from the rest of the game. especially whenever you try to pick the image up.
+
+besides the 2 rules both, there are not 'requirements' for a sprite. although even the 2 rules I describe can be broken, if you really really want to.
+
+I am not a spiriting expert, so if you don't know how to resize a given image, or how to make a background transparent, i found 2 tutorials for gimp here:
+cropping(1:44) and resizing(4:00) a image: https://www.youtube.com/watch?v=dQSlqcMCKx0&t=253s&ab_channel=DoiT8
+adding a transparent background: https://www.youtube.com/watch?v=nl2uqKqbryo&ab_channel=EZTutorials
+
+# were to put your sprite
+now that you have a sprite, you need to put it somewhere the game can access.
+enter your mod folder, and create a folder named 'graphics'. inside that folder, create another folder named 'icons'. and inside that, create yet another folder named 'cargo'
+(please note: you can put your images anywhere in your mods folder, but this is the way most mods are structured, and the base game is structured. so it can help to organize yourself using others organization technics if you plan on your mod having a lot of things in it.)
+from there, put the sprite you intend to use in the newly created 'cargo' folder. your setup should look something like this:
+-->image 000 here<--
+please take note of the name given to my sprite. most mods structure there sprites and other not player visible names to have a name like 'myModsName_WhatThisImageRepresentsName'. (were 'myModName' is the name of your mod, and 'WhatThisImageRepresentsName' is the in game name of whatever this image is suppose to be)
+you can use always use a different naming structure of course. but if by chance another mod happens to add a image of the same name, at the same location, Weather your mod or theres might end up using the wrong image, and that can be... uncomfortable.
+now that you have a image set up in your mod, we can move onto the interesting parts:
+
+# the commodities.csv file
+so the first thing we need to do is set up the location were the commodities.csv file will go. unlike were your image goes, this is extremely important. if you put this file in the wrong location, starsector will not read it.
+enter your mod folder, and create a folder named 'data'. inside that folder, create another folder named 'campaign'.
+now, we are going to get a commodity.csv file. because building one ourself is frustrating, im just going to go into the starsector-core and copy theres.
+so in the 'starsector\starsector-core\data\campaign folder, and find the file called commodities.csv
+-->image 001 here<--
+now copy and past it into your own mods data\campaign folder
+-->image 002 here<--
+now we need to open it. i use a editor called 'Rons CSV Editor' to open such files, but you might have your own way of opening them.
+-->image 003 here<--
+wow. there is a lot of junk here. feel free to look around at everything, if you want, and try to guess what all the different stats do. I will of corse exsplain them all later.
+what i want to do right now, is delete every line below 'supply'. to clean it up a little.
+(in Rons CSV Editor, I don't know about others) you can do this by clicking on the numbers on the right, then dragging your mouse down to select multiple lines. then pressing the backspace button
+-->image 004 here<--
+mush more clean!
+now, we are going to edit the 'Supplies' name and add a # in front of it. this will make the code ignore that inter commodity, so we don't mess with the base games supply somehow by mistake.
+next, we are going to insert a new line both the supply (in Rons CSV Editor) this can be done by right clicking anywhere on the line were the supply's are, and pressing the 'insert row(s) above' option
+your CSV file should look like this:
+-->image 005 here<--
+so, now we can start to fill out all the boxes so we can have our commodity
+as we do, i am going to talk about what each and every box does, and what you mgiht want to put into it
+1) name: the name of your commodity is the name that it will be referred to in game.
+    -im going to write: 'Combat Lobster' because: that's what i want this to be called.
+
+2) id: the id is how the game will remember your commodity. -not- to be confused with the 'name' of your commodity
+    also note: if your save game has a item of this ID, and you change it (and no other mod or the base game has a commodity of this ID), your game will crash. so please remember that.
+    -im going to write: 'LobsterCombatant_CombatLobster' because: I want to follow this equation: modName_commodityName, to avoid other mods from having the same commodityID as me (wish would cause my lobster to override theres, or theres to override mine)
+
+3) demand class: is what the economy will see this commodity as. this should always be equal to a commodity 'id', unless you want the game to pretend its a different commodity (for the sake of economy simulation) (example: 'Volturnian Lobster' is in the 'luxury_goods' demand class, so it acts like a 'luxury_goods' for the sake of economy simulation)
+    -im going to write: 'LobsterCombatant_CombatLobster' because: I want my commodity to act as its own thing
+
+4) base price: this is how mush it generally costs to buy this item from markets (before tariffs)
+    -im going to write: 250 because: that's how many credits i want one to cost
+
+5) export value: this is how many credits a single unit of demand (on a colony) adds to the global market share for this commodity
+    -im going to write: 500 because: I want my lobsters to be somewhat valuable.
+
+6) price variability: this is how mush the price of this commodity in markets can vary depending on demand. so setting it to 3 means the commodity can be 3X the price, or 1/3 the price. at the most extreme.
+    note: im not 100% sure on my equation there, but i do know that this is what this does
+    -im going to write: 3 because: that's what every other commodity in the game has (that can be brought or sold), and i see no reason to have this cost a different amount
+
+7) utility: unknown
+    -im going to write: _ because: _
+
+8) origin: unknown
+    -im going to write: _ because: _
+
+9) tags: unknown
+    -im going to write: _ because: _
+
+10) stack size: unknown (one would think this would be like, the number of items in a stack, but i have seen evidence its not)
+    -im going to write: _ because: _
+
+11) cargo space: the amount of cargo space each item takes in your cargo bay.
+    -im going to write: 1 because: I think that's fine (you can set it to any number you like though. like 0.01. or 9001 or 0. whatever you think will be fun)
+
+12) icon: the path to the sprite that this commodity uses.
+    -im going to write: _ because: _
+
+13) sound id: the sound this commodity plays when you pick it up
+    -im going to write: _ because: _
+
+14) sound id drop: the sound this commodity plays when you put it down.
+    -im going to write: _ because: _
+
+15) order: the order this item will try to be sorted into when you sort your cargo bay. lower numbers means it will be more towards the top right, lower numbers mean it will be more towards the bottom left.
+    -im going to write: 3 because: I felt like that was a good number? you can mess with this and see were you want your item to end up in your lists
+
+16) economyTier: unknown
+    -im going to write: _ because: _
+
+17) econUnitOrigUnused: unknown
+    -im going to write: _ because: _
+
+18) econUnit: unknwon
+    -im going to write: _ because: _
+
+19) baseRaidDanger: how mush more dangerous this commodity is to raid compared to others. can be left blank for LOW danger, i think.
+    the accepted values of this are:
+       MEDIUM
+       HIGH
+       EXTREME
+    -im going to write: MEDIUM because: the lobsters might fight back. (for most things, you should leave this blank.)
+
+20) eU * base value:
+    -im going to write: _ because: _
+
+21) iconWidthMulti: how close together your icons are on the market screen. smaller values are good for icons that are more tall then wide. higher values can sometimes be useful for wider commodity.
+    -im going to write: 1 because: I copied the 'Volturnian Lobster' stats for this.
+
+22) plugin: this does nothing, as far as i can tell.
+    -im going to leave this blank because: this does nothing
+
+23) desc: this does nothing. a forgotten bit of data from a lost age. if you want to add descriptions to your items, i will show you soon.
+    -im going to leave this blank because: this does nothing
+
+
+FAQ:
+    Q: how do i make my commodity take crew space, or space in my fuel tanks
+    A: as far as i can tell, there is no way to do so. maybe someday we will find a way.
+
+    Q:
+    A:

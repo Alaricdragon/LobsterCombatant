@@ -1,8 +1,3 @@
 {
-	"UCLP_HPDescription":"Sector Hyperspace Coordinates %s,%s ",#display of hyperspace cords
-	"UCLP_ISDescription":"System Coordinates %s,%s ",#display of system cords
-	"UCLP_HPDescription2":"unknown",#what is displayed when there is an error getting hyperspace cords
-	"UCLP_ISDescription2":"unknown",#what is displayed when there is an error getting system cords
-	"UCLP_ender":"__________",#what is displayed to beak logs into parts
 }
 

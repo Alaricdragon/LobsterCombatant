@@ -8,5 +8,5 @@
 	"dependencies": [
 	],
 	"jars":["jars/LobsterCombatant.jar"],
-	"modPlugin":"UnofficalCaptionsLogPrinter.data.scripts.LobsterCombatant_startup",
+	"modPlugin":"Lobster_Combatant.data.scripts.LobsterCombatant_startup",
 }
