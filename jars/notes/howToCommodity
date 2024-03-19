@@ -71,63 +71,102 @@ as we do, i am going to talk about what each and every box does, and what you mg
     -im going to write: 'LobsterCombatant_CombatLobster' because: I want my commodity to act as its own thing
 
 4) base price: this is how mush it generally costs to buy this item from markets (before tariffs)
-    -im going to write: 250 because: that's how many credits i want one to cost
+    -im going to write: '250' because: that's how many credits i want one to cost
 
 5) export value: this is how many credits a single unit of demand (on a colony) adds to the global market share for this commodity
-    -im going to write: 500 because: I want my lobsters to be somewhat valuable.
+    -im going to write: '500' because: I want my lobsters to be somewhat valuable.
 
 6) price variability: this is how mush the price of this commodity in markets can vary depending on demand. so setting it to 3 means the commodity can be 3X the price, or 1/3 the price. at the most extreme.
     note: im not 100% sure on my equation there, but i do know that this is what this does
-    -im going to write: 3 because: that's what every other commodity in the game has (that can be brought or sold), and i see no reason to have this cost a different amount
+    -im going to write: '3' because: that's what every other commodity in the game has (that can be brought or sold), and i see no reason to have this cost a different amount
 
-7) utility: unknown
-    -im going to write: _ because: _
+7) utility: How much demand one unit of the commodity satisfies. it is recommended to keep this at 1 most of the time.
+    -im going to write: '1' because: I see no point in setting it to anything else
 
-8) origin: unknown
-    -im going to write: _ because: _
+8) origin: probably does nothing, but at some point there was an idea for having exotic commodities that cost more further away from their "origin", still, it might do nothing
+    -im going to leave this blank because I see no reason to use this
 
-9) tags: unknown
-    -im going to write: _ because: _
+9) tags: a 'tag' is something that can be attached to a commodity, and can be read by the game or mods. you can add as many tags to a given commodity as you like, but a tag can change a lot of things, so make sure you know what your doing first
+    -im going to write: 'military' because: a combat lobster should be 'military'.
+    tags that exsist, and there functions, but only as far as i can tell. I miss things sometimes:
+    1) military
+        the military tag does a few things:
+        1) it makes the commodity show up in the military market
+        2) it prevents you from trading it in the milatary sub market unless your relations are at least 'FAVORABLE'
+        3) makes it so selling this commodity on a market has a increased 'impact' (although, im unsure of what this means)
+    2) expensive
+        -some commodity based missions will prefer to give you missions based around commodity's with this tag
+    3) crew
+        -excludes this commodity from participating in procurement missions.
+        might be used latter for something else, but its not yet.
+    4) personnel
+        governs if a commodity uses personnel slots, but only in NPC trade fleets??? (so it effectively does nothing)
+    5) marines
+        -excludes this commodity from participating in procurement missions.
+        might be used latter for something else, but its not yet.
+    6) food
+        -probably unused for now. might be used latter
+    7) medical
+        -this is used in getting who you contact in a trade mission. (CITIZEN, or POST_MEDICAL_SUPPLIER. depending on i dont know.)
+    8) luxury
+        -this is used in getting who you contact in a trade mission. (civ or pirate, depending on if this commodity is legal or not)
+    9) exotic
+        -probably unused for now. might be used latter
+    10) meta
+        -prevents you from raiding this item from markets?
+    11) nonecon
+        -prevents you from raiding this item from markets?
+        -excludes this commodity from participating in procurement missions.
+        -prevents you from putting this item into your personal stockpile on your own markets.
+    12) ai_core
+        -lets you assing this item to the AI core sloot at a market
+    13) no_loss_from_combat
+        -prevents the player from losing this item
+    14)no_drop
+        -I think this prevents you from getting this item? I don't know though, because i could not find the code for it.
+    15)nosell
+        -this tag exists in the code, but i cant find were its used. It might be unused
 
-10) stack size: unknown (one would think this would be like, the number of items in a stack, but i have seen evidence its not)
-    -im going to write: _ because: _
+10) stack size: does nothing anymore. used to determine stack size
+    -im going to write: '0' because: it is no longer used
 
 11) cargo space: the amount of cargo space each item takes in your cargo bay.
-    -im going to write: 1 because: I think that's fine (you can set it to any number you like though. like 0.01. or 9001 or 0. whatever you think will be fun)
+    -im going to write: '1' because: I think that's fine (you can set it to any number you like though. like 0.01. or 9001 or 0. whatever you think will be fun)
 
 12) icon: the path to the sprite that this commodity uses.
-    -im going to write: _ because: _
+    -im going to write: 'graphics/icons/cargo/LobsterCombatant_LobsterFighter.png' because: that's the path to my file (and the name of my image)
+    -if you put your file somewhere else in your mods folder, you will need to write a path to it. and if your image has a different name then mine (and it should) you will need to write that name instead of my images name
 
 13) sound id: the sound this commodity plays when you pick it up
-    -im going to write: _ because: _
+    -im going to write: 'ui_cargo_volturn_lobster because': that's the lobster sound, and i want to use it (feel free to copy any sound from the commodities.csv file)
 
 14) sound id drop: the sound this commodity plays when you put it down.
-    -im going to write: _ because: _
+    -im going to write: 'ui_cargo_volturn_lobster_drop' because: that's the lobster sound, and i want to use it (feel free to copy any sound from the commodities.csv file)
 
 15) order: the order this item will try to be sorted into when you sort your cargo bay. lower numbers means it will be more towards the top right, lower numbers mean it will be more towards the bottom left.
-    -im going to write: 3 because: I felt like that was a good number? you can mess with this and see were you want your item to end up in your lists
+    -im going to write: '3' because: I felt like that was a good number? you can mess with this and see were you want your item to end up in your lists
 
-16) economyTier: unknown
-    -im going to write: _ because: _
+16) economyTier: The order in which the economy simulation runs. Stuff lower on the production ladder (e.g. ore) needs to have a lower tier than the stuff that's made from it (i.e. metals) to have the simulation stabilize more quickly.
+    -im going to write: '1' because: I plan to have this commodity require nothing to be produce
 
-17) econUnitOrigUnused: unknown
-    -im going to write: _ because: _
+17) econUnitOrigUnused: this does nothing right now
+    -im going to write: '0' because: this does nothing
 
-18) econUnit: unknwon
-    -im going to write: _ because: _
+18) econUnit: effects how many units of this commodity are available at a market (per output)
+    -im going to write: '150' because: I like the number
 
 19) baseRaidDanger: how mush more dangerous this commodity is to raid compared to others. can be left blank for LOW danger, i think.
     the accepted values of this are:
        MEDIUM
        HIGH
        EXTREME
-    -im going to write: MEDIUM because: the lobsters might fight back. (for most things, you should leave this blank.)
+    -im going to write: 'MEDIUM' because: the lobsters might fight back. (for most things, you should leave this blank.)
 
-20) eU * base value:
-    -im going to write: _ because: _
+20) eU * base value: this is quite literally, what you put in the 'econUnit' slot * by what you put in the 'base price' slot
+    -im going to write: '37500' because: 150 * 250 = 37500 (and 150 and 250 is what i put in the 'econUnit' and 'base price' slot, respectively)
 
 21) iconWidthMulti: how close together your icons are on the market screen. smaller values are good for icons that are more tall then wide. higher values can sometimes be useful for wider commodity.
-    -im going to write: 1 because: I copied the 'Volturnian Lobster' stats for this.
+    -im going to write: '1' because: I copied the 'Volturnian Lobster' stats for this.
 
 22) plugin: this does nothing, as far as i can tell.
     -im going to leave this blank because: this does nothing
@@ -135,10 +174,112 @@ as we do, i am going to talk about what each and every box does, and what you mg
 23) desc: this does nothing. a forgotten bit of data from a lost age. if you want to add descriptions to your items, i will show you soon.
     -im going to leave this blank because: this does nothing
 
+now after setting up all the varubles there (or just copying something from the base games commodity.csv file, and changing the id to something different) your commodities.CSV file should look something like this:
+-->image 006 here<--
 
 FAQ:
     Q: how do i make my commodity take crew space, or space in my fuel tanks
     A: as far as i can tell, there is no way to do so. maybe someday we will find a way.
 
-    Q:
-    A:
+    Q: I want to make my commodity make a custom sound when you pick it up / drop it
+    A: I dont know how sounds work, to my shame. however, what i do know is:
+        1) there is a sounds.json in the config folder of starsector-core that you could look at
+            -the sound ID that you input into the 'sound id' and 'sound id drop' are found here, and link to a file in the 'sounds' folder found in starsector core.
+        2) there is a sounds folder in the starsector-core that you could look at.
+            -the sounds themselfs are found here.
+        if you want to structure your mod like the main starsector (don't know if its important or not) create a sound folder in your mod folder, and create a sounds.json in your /data/config folder.
+        if you look at the sounds.json structure, you should be able to understand it (although it might be easier to learn from mods with less sounds)
+
+
+we are now going to check out our commodity in game. so lets save and close the CSV file
+i advice you to download and install the 'console commands' mod (https://fractalsoftworks.com/forum/index.php?topic=4106.0) for this part, so you can test out your commodity
+enable the game, and press 'CTRL' + 'SHIFT' + 'BACKSPACE' to open the console commands
+then type in the following command:
+'addItem commodityID'
+were 'commodityID' is replaced with the ID of your new commodity you added to your CSV file
+and if all went well, there it is!
+-->image 007 here<--
+but wait, if we move our mouse over the commodity, as some of you may have exspected...
+-->image 008 here<--
+there is no description!
+
+# the descriptions.csv file
+now we need to add a description to our commodity. and there are a few ways to do this. we will be starting with the descriptions.csv file.
+first, go into your mods data folder, and create a new folder named 'strings'
+from there, we are going to go into starsector\starsector-core\data\strings and copy and past its own 'descriptions.csv' file into our newly created string folder
+your new strings folder should now look something like this:
+-->image 009 here<--
+now we are going to open the newly copyed CSV file. and then we are going to deleat every line but the one at the top, and the catagory line
+your CSV file should now look like this:
+-->image 010 here<--
+now, we are going to start to change this to match out own commodity.
+first, change the id section to say your commodity id (so i would change 'lightmg' to say 'LobsterCombatant_CombatLobster')
+second, change the type section to say 'RESOURCE' (so i would change 'WEAPON' to say 'RESOURCE') (also, the reason for this is to let the game know that this is looking for a commodity. it -will not- work if it says anything else, because you have a commodity that you want to have a description)
+lastly, change the text1 section to say.. whatever you want your description to be (so i would change... i bunch of text to say 'mean, lean, fighting lobster')
+and that's it! your new description is completed. here what mine looks like for refrence:
+-->image 011 here<--
+also, ignore all the other sections (text2,text3,text4,notes) they are not needed here
+if you start up the game, and give yourself one of your commodity again, it should look like this
+-->image 012 here<--
+and thats all for the basic of descriptions.
+
+# advanced descriptions
+in this section, we are going to cover something slightly more advanced for the first time.
+if all you want to do is make a commodity and have it in game, skip this section.
+if you for some reason want the following:
+1) highlights in your description
+2) the ability to change your description with code
+3) the ability to change what is displayed when your press f1
+then please read this section
+
+so for advanced descriptions we are going to need 3 things:
+1) create a new class and name it 'modName_CommodityTooltipModifier' were 'modName' is the name of your mod.
+   next, make the new class 'implements CommodityTooltipModifier'
+   your new class should look like this:
+   -->image 13 here<--
+2) in your main java class (the one your mod_ingo says is your 'modPlugin')
+   add the following function:
+   @Override
+   public void onGameLoad(boolean newGame) {
+       super.onGameLoad(newGame);
+   }
+   your modPlugin should look something like this:
+   -->image 14 here<--
+3) add your newly created 'modName_CommodityTooltipModifier' class as a transient listener. (note, you can make it none transient if you want it to rembmer data, but if you do, I advice you to make sure you dont add one if the listiner is already present (make it so it only adds if new game is true or something maybe?))
+    you can use the following function to add such a listiner:
+    Global.getSector().getListenerManager().addListener(new modName_CommodityTooltipModifier(),true);
+    now your modPlugin should look something like this:
+    -->image 15 here<--
+
+and that it! the hard part is done.
+now its time to write your description. i will show you a simple example, but for more advanced things (like images, or crazy things) you will need to look up how to use the 'TooltipMakerAPI' on your own.
+-->image 16 here<--
+so, i would like to explain a few things about this.
+1) line 15 is so this code will only effect the one commodity. if i didn't have that if statement, this would effect every stack of items in the game.
+2) line 17 and 18 show how to create and highlight text. the text i want to highlight will always replace the %s in the first inputted text. this lets you have things like variables, instead of just static strings be added to your descriptions
+3) line 21-23 show how to display text only when the text is 'expanded'.
+now for showing it in game:
+not expanded:
+-->image 17 here<--
+expanded:
+-->image 18 here<--
+and that's all for 'advanced' descriptions. simple i hope.
+
+# Implementation
+so you made it. and now we are here.
+the question that must be asked, the one you have felt, silently at the back of your mind:
+'how do i actually see this in game without commands'
+and oh boy.. im glad you asked.
+there are 3 ways to see a commodity in game without commands:
+1) by adding it to loot tables:
+2) by adding it to the players cargo with code:
+3) by adding it to a markets supply and/or demand.
+    with this, there are a few ways to go about it:
+        1) replacing a industry so it makes your commodity.
+        2) creating a new industry that makes your commodity.
+        3) adding your commodity to a industry supply / demand remotely
+    I will go over each of the options here in detail soon, but i will focus on number 3.
+    if you want to know how to replace a industry... well copy the industry.csv file, delete everything but the industry you want to replace, change the plugin to something in your own mod, that extends the previous plugin, then in the apply function (that you should override) run both super.apply(); the following command:
+    this.addSupply("???","???");
+
+

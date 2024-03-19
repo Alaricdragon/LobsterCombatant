@@ -1,17 +1,20 @@
 questions:
-hello once again everyone here. I have returned with less strange questions
-what do the following variables do from the commodities.csv:
-    1) price variability
-    2) utility
-    3) origin
-    4) stack size (does not seem to be the size of a stack)
-    5) economyTier
-    6) econUnitOrigUnused
-    7) econUnit
-I have seen a lot of tags in the commodities.csv, but the only ones i that i know the function of are the 'no_drop' and 'no_loss_from_combat'. what do the rest do?
+hello! thanks for the info on how to find out things like this. i would like to make a report though, and correct some misinformation about tags, that i have discovered by experimenting and reading the code.
+[claimed info here]
+the personnel tag does determine if a commodity uses personnel space, but only for NPC trade fleets? It does nothing for at all for commodity's in the players cargo hold. and I think that might be a bug, because why would it be like that for only NPC trade fleets?? (as a side note, if this is a bug like i suspect, and you make the personnel tag make commodity use personnel space instead, please let us have values that are not '1' for how mush personnel space a commodity takes up. I ask this because i see no system in place to handle that right now)
 
-thanks again to everyone that answer all my questions last time and the thousand time before. its been really really helpful overall.
+secondly i have some questions:
+1) how do i make it so one can loot a commodity (be it from ruins or stations, or salvaging or what have you) is there like a loot table system or..?
 
+
+
+
+
+
+
+
+
+----------------------------------
 ok, so in this, i have a few objectives:
 first, I need to explain how to create a commodity. I will do this in this order:
 the sprite (max 100/100px, transparent background)
