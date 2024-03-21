@@ -273,13 +273,94 @@ and oh boy.. im glad you asked.
 there are 3 ways to see a commodity in game without commands:
 1) by adding it to loot tables:
 2) by adding it to the players cargo with code:
-3) by adding it to a markets supply and/or demand.
+    Global.getSector().getPlayerFleet().getCargo().addCommodity("LobsterCombatant_CombatLobster",100);
+    you can replace the "LobsterCombatant_CombatLobster" with the ID of the commodity you want to add, and the 100 with how many of said item you want to add
+    this can be useful when giving rewards for quests and, or other events.
+    you can also use the addCommodity("LobsterCombatant_CombatLobster",100); function on any cargo in existence, if you so desire.
+3) by adding it to a markets supply and/or demand (and therefore, a markets sub markets).
     with this, there are a few ways to go about it:
         1) replacing a industry so it makes your commodity.
         2) creating a new industry that makes your commodity.
         3) adding your commodity to a industry supply / demand remotely
-    I will go over each of the options here in detail soon, but i will focus on number 3.
-    if you want to know how to replace a industry... well copy the industry.csv file, delete everything but the industry you want to replace, change the plugin to something in your own mod, that extends the previous plugin, then in the apply function (that you should override) run both super.apply(); the following command:
-    this.addSupply("???","???");
+    I will go over each of the options here in soon, but i will focus on number 3. the others will only get a quick description, or we will be here all day.
+    1) replacing a industry:
+        if you want to know how to replace a industry...
+        1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
+        2) delete everything but the industry you want to replace,
+        3) change the plugin to something in your own mod, that extends the previous plugin (if you dont know what the previus plugin was, its in the plugin section. it should be after the last '.' in the line),
+        4) then in the apply() function (that you should override) run both super.apply(); the following command:
+           supply("LobsterCombatant_CombatLobster",5);
+            you can replace the "LobsterCombatant_CombatLobster" with the ID of your commodity.
+            you can replace the '5' with the amount of this commodity you want this market to produce.
+            please keep in mind: most commodity output increases with market size. so its wise to use an equation like:
+            supply("LobsterCombatant_CombatLobster",market.getSize() - 1);
+            (so the industry will produce '2' at size '3', '3' at size '4', '5' at size '6', and so on)
+            (you can also do the same thing for the demand a industry has with the 'demand("LobsterCombatant_CombatLobster",5)' function)
+        here's what your CSV could looks like (I overrode the lionsguard industry)
+        -->image 19 here<--
+        please pay attention to the plugin section. its the only section i changed, and the only one you need to change with this method.
+        here's what your code should look like
+        -->image 20 here<--
+        this is what your code should look like, although what 'supply' you are adding, and what class you are 'extend' might be different
+        we can even see the changes in game!
+        -->image 21 here<--
+        -->image 22 here<--
+        please note this method has some issues:
+        1) if anyone else try's to do the same thing to the same industry, one of your plugins is going to be overwritten, wish can cause issues
 
+    2) creating your own industry
+        if you want to create your own industry for your commodity.. it has less isuees, but can be a pain.
+        1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
+        2) delete everything but the industry you want that you think costs an OK amount,
+        3) change the plugin to something in your own mod, that extends BaseIndustry,
+        4) then in the apply() function (that you should override) run the following command:
+           supply("LobsterCombatant_CombatLobster",5);
+            you can replace the "LobsterCombatant_CombatLobster" with the ID of your commodity.
+            you can replace the '5' with the amount of this commodity you want this market to produce.
+            please keep in mind: most commodity output increases with market size. so its wise to use an equation like:
+            supply("LobsterCombatant_CombatLobster",market.getSize() - 1);
+            (so the industry will produce '2' at size '3', '3' at size '4', '5' at size '6', and so on)
+            (you can also do the same thing for the demand a industry has with the 'demand("LobsterCombatant_CombatLobster",5)' function)
+        here's what your CSV could looks like (I used the lions guard industry as my base)
+        -->image 23 here<--
+        this time, instead of only changeing the plugin, i also changed the id,name, and description
+        although, you technically only need to change the plugin and id for this to work, it can get confusing for players if you don't at least also change the name.
+        here's what your code should look like
+        -->image 24 here<--
+        this is what your code should look like, although what 'supply' you are adding, and your classname might be different
+        we can even see the changes in game!
+        -->image 25 here<--
+        -->image 26 here<--
 
+    and that's all i will be talking about, in relation to creating and modifying industry in this tutorial.
+    if i find/create some good tutorials on how to do this, i will likely put them -->here<--
+
+    now to the thing i wanted to teach:
+    3) adding supply and demand without overriding or creating industry:
+        this is... different. it can cause lag, but it allows for the ability to add supply and demand without worrying about your code being overridden.
+        also, normal when doing something like this, i use the marketRetrofits library, as it has a lot of things to help me run code more efficiently, but im not ready to create even a basic tutorial on how to use that yet, so here we are.
+        so, lets get started! I will try to explain what we are doing as we move along:
+        1) create a new class, and make sure it 'implements EconomyAPI.EconomyUpdateListener'. also, add the functions it wasnts you to.
+           -->image 27 here<--
+        2) now add this newly created class as a 'UpdateListener' useing the following command:
+            Global.getSector().getEconomy().addUpdateListener(new modName_BaseCampaignEventListener());
+            now your modplugin should look something like this:
+            -->image 28 here<--
+        3) and now for the fun part! adding supply or demand to a industry. for this, go back to the class you made (the one that implements the 'EconomyAPI.EconomyUpdateListener' class).
+            so, what you need to do here can vary a lot depending on what you are going to do, so im going to show a few examples, slowing increasing in complexity and function as we move along
+
+            @Override
+            public void economyUpdated() {
+                //making everything a variable for your convenience. just the values here for basic changes.
+                String commodity = "LobsterCombatant_CombatLobster";
+                String industry = "lionsguard";
+                String source = "LobsterCombatant_BaseCampaignEventListener";
+                //this for loop runs over every market in the game
+                for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy()){
+                    //this if statment prevents crashes if you try to get a industry that doe snot exsist.
+                    if (market.hasIndustry(industry)){
+                        //this line of code adds
+                        market.getIndustry(industry).getSupply(commodity).getQuantity().modifyFlat(source, market.getSize()-1);
+                    }
+                }
+            }

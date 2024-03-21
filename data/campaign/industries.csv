@@ -1,0 +1,4 @@
+id,name,cost mult,build time,income,upkeep,downgrade,upgrade,tags,data,image,plugin,desc,order,disruptDanger
+#lionsguard,Lion's Guard HQ,90,60,,6,,,"military, unraidable, tactical_bombardment, structure",,graphics/icons/industry/lions_guard.png,Lobster_Combatant.data.scripts.industry.LobsterCombatant_LionsGard,"Headquarters of the feared personal guard of Phillip ""The Lion of Sindria"" Andrada. Boasting superb training and access to the best equipment credits can buy, the fanatical loyalty of the Guard is maintained through a system of perks and incentives that both elevate and isolate the Guard from the Diktat's regular military.",2650,
+,,,,,,,,,,,,,,
+#LobsterCombatant_HQ,Lobster's Guard HQ,90,60,,6,,,"military, unraidable, tactical_bombardment, structure",,graphics/icons/industry/lions_guard.png,Lobster_Combatant.data.scripts.industry.LobsterCombatant_LobsterHQ,Headquarters to legons of combat lobsters. may the sectur quake in fear at the thought...,2650,
