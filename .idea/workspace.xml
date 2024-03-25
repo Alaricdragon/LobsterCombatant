@@ -11,9 +11,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0aa5c98e-92a5-4733-be8c-90642903eac4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jars/LobsterCombatant.jar" beforeDir="false" afterPath="$PROJECT_DIR$/jars/LobsterCombatant.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/jars/notes/howToCommodity" beforeDir="false" afterPath="$PROJECT_DIR$/jars/notes/howToCommodity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jars/src/Lobster_Combatant/data/scripts/LobsterCombatant_BaseCampaignEventListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/jars/src/Lobster_Combatant/data/scripts/LobsterCombatant_BaseCampaignEventListener.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

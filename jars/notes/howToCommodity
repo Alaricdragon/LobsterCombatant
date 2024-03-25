@@ -8,8 +8,7 @@ in this tutorials, we will cover the following:
 2) multiple methods of how to make a item show up in game
     -adding a item to the in game economy, and how that effects were the item is sold in markets
     -how to add items to the players inventory with code
-3) how to change your items description and picture dynamically (based on how literally anything you could think of)
-    -changing a commodity picture.
+3) how to change your items description dynamically (based on how literally anything you could think of)
     -adding text to a items description
     -adding 'F1 to show more' text to your items description
 4) and maybe latter, we can talk about 'special items' but not now sorry
@@ -397,4 +396,3 @@ there are 3 ways to see a commodity in game without commands:
 
     and that's all i will be talking about, in relation to creating and modifying industry in this tutorial.
     if i find/create some good tutorials on how to do this, i will likely put them -->here<--
-
