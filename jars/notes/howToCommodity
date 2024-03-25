@@ -271,7 +271,8 @@ the question that must be asked, the one you have felt, silently at the back of 
 'how do i actually see this in game without commands'
 and oh boy.. im glad you asked.
 there are 3 ways to see a commodity in game without commands:
-1) by adding it to loot tables:
+1) by making it so the item can be found and looted on things like ruins, salvage stations, and random kites outside the core worlds:
+   https://fractalsoftworks.com/forum/index.php?topic=15244.0
 2) by adding it to the players cargo with code:
     Global.getSector().getPlayerFleet().getCargo().addCommodity("LobsterCombatant_CombatLobster",100);
     you can replace the "LobsterCombatant_CombatLobster" with the ID of the commodity you want to add, and the 100 with how many of said item you want to add
@@ -279,11 +280,73 @@ there are 3 ways to see a commodity in game without commands:
     you can also use the addCommodity("LobsterCombatant_CombatLobster",100); function on any cargo in existence, if you so desire.
 3) by adding it to a markets supply and/or demand (and therefore, a markets sub markets).
     with this, there are a few ways to go about it:
-        1) replacing a industry so it makes your commodity.
-        2) creating a new industry that makes your commodity.
-        3) adding your commodity to a industry supply / demand remotely
-    I will go over each of the options here in soon, but i will focus on number 3. the others will only get a quick description, or we will be here all day.
-    1) replacing a industry:
+        1) adding your commodity to a industry supply / demand remotely
+        2) replacing a industry so it makes your commodity.
+        3) creating a new industry that makes your commodity.
+    I will go over each of the options here in soon, but i will focus on number 1. the others will only get a quick description, or we will be here all day.
+
+    1) adding supply and demand without overriding or creating industry:
+        this is... different. it can cause lag, but it allows for the ability to add supply and demand without worrying about your code being overridden.
+        also, normally when doing something like this, i use the marketRetrofits library, as it has a lot of things to help me run code more efficiently, but im not ready to create even a basic tutorial on how to use that yet, so here we are.
+        so, lets get started! I will try to explain what we are doing as we move along:
+        1) create a new class, and make sure it 'implements EconomyAPI.EconomyUpdateListener'. also, add the functions it wants you to.
+           -->image 27 here<--
+        2) now add this newly created class as a 'UpdateListener' using the following command in your modplugin:
+            Global.getSector().getEconomy().addUpdateListener(new modName_BaseCampaignEventListener());
+            now your modplugin should look something like this:
+            -->image 28 here<--
+        3) and now for the fun part! adding supply or demand to a industry. for this, go back to the class you made (the one that implements the 'EconomyAPI.EconomyUpdateListener' class).
+            so, what you need to do here can vary a lot depending on what you are going to do, so my first example is going to be extremely basic, but the example is going to increase in complexity as we move on.
+            so for the first example:
+            -->image 29 here<--
+            so in this example, im adding 'Combat Lobster' as supply on lions guard HQ's, and im adding 'Combat Lobster' as demand on heavy battery's. there are a few parts to this that i would like to point out
+            lines 17-20 are variables. i didn't need to make everything a variable, but it makes it easier to read and modify, so i did so.
+            on line 22 we have a for loop. it loops over every market in the game. all of them. you don't need to do this, unless you want to check every world and apply demand or supply changes to industry's on every one, wish i do, so i have.
+            on line 24 - 27, we see how to add supply. I would like to explain this in detail, line by line. so please read this if you want to fully understand whats going on here.
+            line 24: this if statement prevents us from trying to run functions on a industry that does not exist, and crashing the game.
+            line 26: this is a important line, the line that actually lets us add supply to a industry (and by extension a market) remotely. a few things to note however:
+                market.getIndustry(supplyIndustry).getSupply(commodity).getQuantity().modifyFlat(source, market.getSize()-1);
+                'supplyIndustry' needs to be the ID of a industry.
+                'commodity' represents the ID of the commodity you want to add.
+                'source' this is the 'source' of this modification. don't leave this blank please, as if anyone else try's to modify said supply or demand on the same markets industry's commodity, they might overwrite yours (or you might overwrite theres) because if the source is the same, the game assumes you mean to overwrite anything else with the same source. so be careful.
+                'market.getSize()-1' is the quantity of commodity this industry should produce. it can be any integer, but most commodity have an equation using 'market.getSize()', so the market can have more commodity demand / supply when it gets larger.
+            on lines 28 - 31, we see how to add demand. the function is exactly the same as lines 24 - 27, but we run 'getDemand' instead of 'getSupply'.
+
+            we can also look and see how this looks in game
+            -->image 30 here<--
+            -->image 31 here<--
+            as you can see, the lions guard is now producing lobster, and the heavy battery's are demanding it...
+            -->image 32 here<--
+            across the inter sector!
+            so you will see 'combat lobster' in trade fleets, in markets were it is demanded / supplied. everywhere. you can even get missions for combat lobster delivers.
+            your commodity is completely implemented into the economy. congratulations
+
+            ok, some design pacific issues that i would like to mention:
+                1) my lobsters are only being built at the lions guard HQ. and not at worlds that have lobster.
+                2) my lobsters are only being demanded at heavy battery's, and not at ground defences?
+            so lets fix that:
+            fair waring: this code is more complicated then the last, because i like this idea and want something good. also, i am terrible at explaining complicated things.
+            -->image 33 here<--
+            so, if you look at this and think 'what?' don't worry, understanding something like this is not required. this is more of a bonus section for my own peace of mind then anything.
+            so, lets go over the changes:
+            lines 16 - 22 have changed in 3 ways:
+                1) a new string called 'condition'. this references the market condition that will be required to add lobsters to the world.
+                2) both 'supplyIndustry' and 'demandIndustry' are now arrays. this is for letting me have multiple industry have as supply or demand easier
+                3) the new arrays called 'supplyValue' and 'demandValue'. this represents supply and demand + marketSize values of each industry (in supplyIndustry and demandIndustry respectively).
+            lines 26 - 35 have changed in 3 ways.
+                1) a new if statment stops supply from being added to markets if the 'volturnian_lobster_pens' is not present.
+                2) i now run a for loop, going through all items in supplyIndustry and adding supply to them.
+                3) i now run a a equation, involving supplyValue[a] to determin the amount of supply on this industry.
+            lines 36 - 41 have changed, the same as lines 26 - 35, but without the if statement.
+            things to note:
+                if you wanted to modify this for your own needs, make sure 'supplyValue' and 'demandValue' are at least as long as 'supplyIndustry' and 'demandIndustry' respectively, or you will get a crash.
+
+            if you don't understand this, please don't be afraid. this was something i needed to add because it was bugging me that if you played a mod that let you get lobster on one of your worlds, you would not beable to train combat lobster.
+
+
+
+
+    2) replacing a industry:
         if you want to know how to replace a industry...
         1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
         2) delete everything but the industry you want to replace,
@@ -308,7 +371,7 @@ there are 3 ways to see a commodity in game without commands:
         please note this method has some issues:
         1) if anyone else try's to do the same thing to the same industry, one of your plugins is going to be overwritten, wish can cause issues
 
-    2) creating your own industry
+    3) creating your own industry
         if you want to create your own industry for your commodity.. it has less isuees, but can be a pain.
         1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
         2) delete everything but the industry you want that you think costs an OK amount,
@@ -335,32 +398,3 @@ there are 3 ways to see a commodity in game without commands:
     and that's all i will be talking about, in relation to creating and modifying industry in this tutorial.
     if i find/create some good tutorials on how to do this, i will likely put them -->here<--
 
-    now to the thing i wanted to teach:
-    3) adding supply and demand without overriding or creating industry:
-        this is... different. it can cause lag, but it allows for the ability to add supply and demand without worrying about your code being overridden.
-        also, normal when doing something like this, i use the marketRetrofits library, as it has a lot of things to help me run code more efficiently, but im not ready to create even a basic tutorial on how to use that yet, so here we are.
-        so, lets get started! I will try to explain what we are doing as we move along:
-        1) create a new class, and make sure it 'implements EconomyAPI.EconomyUpdateListener'. also, add the functions it wasnts you to.
-           -->image 27 here<--
-        2) now add this newly created class as a 'UpdateListener' useing the following command:
-            Global.getSector().getEconomy().addUpdateListener(new modName_BaseCampaignEventListener());
-            now your modplugin should look something like this:
-            -->image 28 here<--
-        3) and now for the fun part! adding supply or demand to a industry. for this, go back to the class you made (the one that implements the 'EconomyAPI.EconomyUpdateListener' class).
-            so, what you need to do here can vary a lot depending on what you are going to do, so im going to show a few examples, slowing increasing in complexity and function as we move along
-
-            @Override
-            public void economyUpdated() {
-                //making everything a variable for your convenience. just the values here for basic changes.
-                String commodity = "LobsterCombatant_CombatLobster";
-                String industry = "lionsguard";
-                String source = "LobsterCombatant_BaseCampaignEventListener";
-                //this for loop runs over every market in the game
-                for (MarketAPI market : Global.getSector().getEconomy().getMarketsCopy()){
-                    //this if statment prevents crashes if you try to get a industry that doe snot exsist.
-                    if (market.hasIndustry(industry)){
-                        //this line of code adds
-                        market.getIndustry(industry).getSupply(commodity).getQuantity().modifyFlat(source, market.getSize()-1);
-                    }
-                }
-            }
