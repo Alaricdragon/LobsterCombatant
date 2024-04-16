@@ -1,0 +1,93 @@
+[spoiler][/spoiler][img][/img][url][/url][code][/code]
+
+so, you want to know how to use crew replacer, and its true potential?
+well, lucky for you, this is the place to be.
+in this tutorial we will be discussing:
+1)a basic rundown of crew replacer, some common misconceptions and its limits. this includes:
+    -why its called crew replacer at all.
+    -what a 'crew' is in this context.
+    -what is a 'job' in this context
+    -what is a 'task' in this context
+    -the things crew replacer can do
+    -this things crew replacer cant do
+1)how to add a crew to crew replacer. this includes:
+    -everything about crews, crew sets, and the basics behind jobs.
+    -how to make your commodity a 'crew' for certain things.
+    -all the crew stats, and how they interact.
+    -how to make 'custom crews' with interesting, or dynamic stats.
+    -how to make 'custom crews' that are in fact, not crews.
+2)how to add a job to crew replacer, and why you would do it. this includes:
+    -shameless self promotion about why crew replacer is great and the benefits of using it.
+    -how to make your mod support crew replacer, without making it so the user requires it installed.
+    -how to organize your crew sets and job names well, to avoid conflicts.
+    -some examples of how you might make one of your modding 'jobs' use crew replacer.
+
+
+
+[spoiler=a basic rundown of crew replacer, some common misconceptions and its limits]
+[spoiler=why its called crew replacer at all]
+the name 'crew replacer' is a kind of relic. when i was first developing this library, my only objective was to create a kind of 'substrate' for crew in certain tasks (like salvaging).
+however i quickly realized that 'crew replacer' could be used to change any other commodity in a given task just as easily as 'crew'. so i did it.
+so ya. crew replacer is not just for crew. its for every commodity in every event i can edit.
+a more appropriate name now in days would be 'commodity task manager' or something, but i quite like crew replacer. so im keeping the name.
+[/spoiler]
+[spoiler=what a 'crew' is in this context]
+a 'crew' in 'crew replacer' does not reference a normal in game 'crew'. it references the 'crewReplacer_Crew' class, wish acts as a representation of a commodity or something else in a 'job'.
+a 'crew' has 'stats' built into the class that can be used to determine a 'crew's losses, ability to do things, and the order a 'crew' is used in.
+every one of a 'crew's functions are also built to be overridden by modders, allowing for a 'crew' to represent something that's not a commodity, although with some effort (see the 'advanced' section in 'how to add a crew to crew replacer')
+[/spoiler]
+[spoiler=what is a 'job' in this context]
+a 'job' in crew replacer refers to the 'crewReplacer_Job' class. wish acts as a data storage and management for 'crew'. a 'job' generally replaces instances of a single commodity in single task.
+this means that in cases were 2 different 'tasks' share a commodity that 'crew replacer' replaces, there will be 2 different 'job's. one for each commodity (sxample: surveying takes crew. salvaging takes crew. there is 2 'job's one named 'survey_crew' and one named 'survey_crew'. they don't share data at all)
+if you want to add a 'crew' to every instance of a commodity crew replacer replaces, you will need to use a 'crew set'. this will be covered in the 'basic' section of 'how to add a crew to crew replacer'
+a 'job's functions can be overwritten by modders the same way a 'crew's can. but be careful when you do so, as some of the functions are quite fragile. we will discuss this farther in the 'advanced' section of 'how to add a job to crew replacer, and why you would do it'
+[/spoiler]
+[spoiler=what is a 'task' in this context]
+a 'task' in crew replacer, does not refers to any class or code. rather, it refers to any set of 'job's that all act on the same event.
+for example, the 'jobs' 'salvage_crew', and 'salvage_heavyMachinery' both are for salvaging. so the 'task' of 'salvaging' is both of said jobs.
+[/spoiler]
+[spoiler=the things crew replacer can do]
+is this section necessary? maybe replacer it with something else
+[/spoiler]
+[spoiler=this things crew replacer cant do]
+is this section necessary? maybe replacer it with something else
+[/spoiler]
+[/spoiler]
+
+
+
+
+[spoiler=how to add a crew to crew replacer]
+[/spoiler]
+
+
+
+
+
+
+[spoiler=how to add a job to crew replacer, and why you would do it]
+[/spoiler]
+
+
+
+
+so lets start with the basics: what is a 'crew', 'crew set', and 'job' in the context of crew replacer.
+if you are overwhelmed here, don't worry. i will show you examples of everything i talk about in different sections, for your convenience
+also, keep in mind that if you want to know more, i keep a updated documentation of my mod [url=https://github.com/Alaricdragon/Crew_Replacer/tree/master/jars/src/desing/documentation]here[/url]
+[spoiler]
+crew:
+[spoiler]
+a 'crew' in crew replacer represents any class that is, or extends the 'crewReplacer_Crew' class.
+most of the time, this something will be a simple commodity. although with some effort you can override functions to dramatically change what a 'crew' is. but we can talk about that latter.
+something to clear up: dispute its name, a 'crew' does not have to be a crew or marine, but rather represents a commodity. AKA almost any item in the game that is not a blueprint or installed on a ship.
+you can view the documentation for 'crew' [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/desing/documentation/classes/crewReplacer_Crew]here[/url]
+[/spoiler]
+job:
+[spoiler]
+a 'job' in the context of crew replacer is just a list of crews that can do a certain thing. its mush more then just that of course, but for the context of managing 'crew', that's all you need to understand about it
+a job is formed out of 4 variables
+[/spoiler]
+crew set:
+[spoiler][/spoiler]
+
+[/spoiler]
