@@ -11,6 +11,13 @@ in this tutorial we will be discussing:
     -the things crew replacer can do
     -this things crew replacer cant do
 1)how to add a crew to crew replacer. this includes:
+    -crew stats and what they do.
+    -how to call a crew to a certain job.
+    -how to use crew sets to put a crew in multiple jobs
+    -priority and blacklists, and how they work.
+    -
+    -
+
     -everything about crews, crew sets, and the basics behind jobs.
     -how to make your commodity a 'crew' for certain things.
     -all the crew stats, and how they interact.
@@ -26,7 +33,7 @@ in this tutorial we will be discussing:
 
 [spoiler=a basic rundown of crew replacer, some common misconceptions and its limits]
 [spoiler=why its called crew replacer at all]
-the name 'crew replacer' is a kind of relic. when i was first developing this library, my only objective was to create a kind of 'substrate' for crew in certain tasks (like salvaging).
+the name 'crew replacer' is a kind of relic. when i was first developing this library, my only objective was to create a kind of 'substitute' for crew in certain tasks (like salvaging).
 however i quickly realized that 'crew replacer' could be used to change any other commodity in a given task just as easily as 'crew'. so i did it.
 so ya. crew replacer is not just for crew. its for every commodity in every event i can edit.
 a more appropriate name now in days would be 'commodity task manager' or something, but i quite like crew replacer. so im keeping the name.
@@ -38,7 +45,7 @@ every one of a 'crew's functions are also built to be overridden by modders, all
 [/spoiler]
 [spoiler=what is a 'job' in this context]
 a 'job' in crew replacer refers to the 'crewReplacer_Job' class. wish acts as a data storage and management for 'crew'. a 'job' generally replaces instances of a single commodity in single task.
-this means that in cases were 2 different 'tasks' share a commodity that 'crew replacer' replaces, there will be 2 different 'job's. one for each commodity (sxample: surveying takes crew. salvaging takes crew. there is 2 'job's one named 'survey_crew' and one named 'survey_crew'. they don't share data at all)
+this means that in cases were 2 different 'tasks' share a commodity that 'crew replacer' replaces, there will be 2 different 'job's. one for each commodity (example: surveying takes crew. salvaging takes crew. there is 2 'job's one named 'survey_crew' and one named 'survey_crew'. they don't share data at all)
 if you want to add a 'crew' to every instance of a commodity crew replacer replaces, you will need to use a 'crew set'. this will be covered in the 'basic' section of 'how to add a crew to crew replacer'
 a 'job's functions can be overwritten by modders the same way a 'crew's can. but be careful when you do so, as some of the functions are quite fragile. we will discuss this farther in the 'advanced' section of 'how to add a job to crew replacer, and why you would do it'
 [/spoiler]
@@ -58,6 +65,48 @@ is this section necessary? maybe replacer it with something else
 
 
 [spoiler=how to add a crew to crew replacer]
+[spoiler=basic]
+in this part of the tutorial, im going to cover only the most basics of crew replacer. this will likely be a little hand holdy, but i do recommend you read it. i will try to keep this short and to the point.
+[spoiler=crew stats and what they do]
+crew have %s base stats, that can be edited. you can change said stats at any time.
+[spoiler=String name]
+the name of the crew represents the commodityID that this crew represents.
+only one crew with a given name can exist in a job at a time. if 2 crews are added to a job with the same name, only one of them will be kept.
+[/spoiler]
+[spoiler=float crewPriority]
+this value determines what order crew will be 'selected' for a job. mostly only effects what crew are lost.
+the default value is 10 (there might be a bug i forgot to fix were the default value is 0 instead. i will remove this line when that is fixed.)
+[/spoiler]
+[spoiler=float crewLoadPriority]
+this value comes into play when 2 crews with the same name are added to a job. when this happens, the one with the highest 'crewLoadPriority' will be keept, and the other discarded.
+the default value is 0.
+[/spoiler]
+[spoiler=float crewPower]
+this value represents how 'strong' this crew is at its job. a crew with a crewPower of 2 will be worth twice as mush as normal in job power calculations.
+the default value is 1.
+[/spoiler]
+[spoiler=float crewDefence]
+this value represents how resistant to losses this crew is at its job.
+a crew with a crewDefence twice as high as its crewPower will take 1/2 the expected losses. one with 1/2 the crewDefence as its crewPower will take twice the number of expected losses.
+[spoiler=advanced crewDefence]
+it should be noted, in loss calculations, because the code will also calculate what crew was used (based on every crews crewPriority in said job) changing the crewDefence value to not be equal to its crewPower might result in interesting side effects.
+example: if you set a crewDefence higher then its crewPower, and you have a job that removes 100% of the crews that are called in a job (example: colonisation uses all the crew, supply, and heavy machinery it calls) this can result in fewer of other crew losses then expected.
+example: if you set a crewDefence lower then its crewPower, and you have a job that removes some random % of crew that are called (example: losses from salvaging) this can result in more of other things being removed then expected.
+this is a expected and understood behaver, and will not be changed. please feel free to use the mechanics described however you want when designing your crews.
+[/spoiler]
+the default value is 1. (in cases were you create a new crew, if you only input the crewPower, the crewDefence will be set to the same value as the inputted crewPower.)
+[/spoiler]
+
+[/spoiler]
+[spoiler=how to call a crew to a certain job]
+[/spoiler]
+[spoiler=how to use crew sets to put a crew in multiple jobs]
+[/spoiler]
+[spoiler=priority and blacklists, and how they work]
+[/spoiler]
+[/spoiler]
+[spoiler=advanced]
+[/spoiler]
 [/spoiler]
 
 
