@@ -11,16 +11,17 @@ in this tutorial we will be discussing:
     -the things crew replacer can do
     -this things crew replacer cant do
 1)how to add a crew to crew replacer. this includes:
+    basic:
     -crew stats and what they do.
     -how to call a crew to a certain job.
     -how to use crew sets to put a crew in multiple jobs
-    -priority and blacklists, and how they work.
+    -load priority and blacklists, and how they work.
+    -how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)
     -
-    -
-
-    -everything about crews, crew sets, and the basics behind jobs.
-    -how to make your commodity a 'crew' for certain things.
-    -all the crew stats, and how they interact.
+    advanced:
+    //-everything about crews, crew sets, and the basics behind jobs.
+    //-how to make your commodity a 'crew' for certain things.
+    //-all the crew stats, and how they interact.
     -how to make 'custom crews' with interesting, or dynamic stats.
     -how to make 'custom crews' that are in fact, not crews.
 2)how to add a job to crew replacer, and why you would do it. this includes:
@@ -61,24 +62,27 @@ is this section necessary? maybe replacer it with something else
 [/spoiler]
 [/spoiler]
 
-
-
+some useful information that you might want:
+[url=https://github.com/Alaricdragon/Crew_Replacer/tree/master/jars/src/desing/documentation]documentation[/url]
+[spoiler=how to add a commodity to the game]
+[url=https://fractalsoftworks.com/forum/index.php?topic=29612.msg434214#msg434214]Commodity's and you: a basic tutorial on the complete commodity experience[/url]
+[/spoiler]
 
 [spoiler=how to add a crew to crew replacer]
 [spoiler=basic]
-in this part of the tutorial, im going to cover only the most basics of crew replacer. this will likely be a little hand holdy, but i do recommend you read it. i will try to keep this short and to the point.
+in this part of the tutorial, im going to cover only the most basics of crew replacer. it will only show you how to turn a 'commodity' into a 'crew'. this will likely be a little hand holdy, but i do recommend you read it. i will try to keep this short and to the point.
 [spoiler=crew stats and what they do]
-crew have %s base stats, that can be edited. you can change said stats at any time.
+crew have 5 base stats, that can be edited. you can change said stats at any time.
 [spoiler=String name]
 the name of the crew represents the commodityID that this crew represents.
 only one crew with a given name can exist in a job at a time. if 2 crews are added to a job with the same name, only one of them will be kept.
 [/spoiler]
 [spoiler=float crewPriority]
 this value determines what order crew will be 'selected' for a job. mostly only effects what crew are lost.
-the default value is 10 (there might be a bug i forgot to fix were the default value is 0 instead. i will remove this line when that is fixed.)
+the default value is 10 (there might be a bug i forgot to fix were the value is initialized as 0. this will be changed to 10 at some point, because all my code assumes 10 is the default value. i will remove this line when that is fixed.)
 [/spoiler]
 [spoiler=float crewLoadPriority]
-this value comes into play when 2 crews with the same name are added to a job. when this happens, the one with the highest 'crewLoadPriority' will be keept, and the other discarded.
+this value comes into play when 2 crews with the same name are added to a job. when this happens, the one with the highest 'crewLoadPriority' will be kept, and the other discarded.
 the default value is 0.
 [/spoiler]
 [spoiler=float crewPower]
@@ -96,13 +100,114 @@ this is a expected and understood behaver, and will not be changed. please feel 
 [/spoiler]
 the default value is 1. (in cases were you create a new crew, if you only input the crewPower, the crewDefence will be set to the same value as the inputted crewPower.)
 [/spoiler]
-
 [/spoiler]
 [spoiler=how to call a crew to a certain job]
+first of all, im going to be using a commodity i created (that has a ID of 'LobsterCombatant_CombatLobster') as the 'crew' here in this tutorial: [url=https://fractalsoftworks.com/forum/index.php?topic=29612.msg434214#msg434214]Commodity's and you: a basic tutorial on the complete commodity experience[/url]
+second, im going to import the crewReplacer.jar from the [url=https://fractalsoftworks.com/forum/index.php?topic=24249.0]crew replacer[/url] mod as a library.
+third, im going to review the [url=https://github.com/Alaricdragon/Crew_Replacer/tree/master/jars/src/desing/documentation/jobs]documentation on 'task's and 'job's[url] and determine the job name that i want my crew to use.
+now, im thinking my 'combat lobsters' should act as marines in raiding, so im going to add them to the appropriate job now, in my mod plugin, on application load.
+[code]
+@Override
+public void onApplicationLoad() {
+    crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1,10);
+}
+[/code]
+now some things to note:
+1) the 'onApplicationLoad'. I put my code here. why? because after the 'onApplicationLoad' phase of the game, crew replacer will organize all the relevent data on every single job.
+   this is rather important. so, if you want to, for whatever reason, do -anything- with a 'crew' or a 'job' and cant put the code in 'onApplicationLoad' you MUST run the following after you are done making your changes:
+   crewReplacer_Main.getJob("raiding_marines").organizePriority();
+   (of course, change the inputted job name, to the name of the job you have changed)
+   this will reorganize the job, and fix any potential issues that might arise.
+2) the 'crewReplacer_Main'. I wont talk about it mush, but its basically a storage for 'jobs' and 'crewSets'. you should always call a 'job' or 'crewSet' through crewReplacer_Main, to avoid issues from hopping in rare cases.
+3) the 'getJob'. 'getJob' is just a function that returns a job. feel free to change what is in the "" in this job, to whatever job ID you want.
+4) the 'addNewCrew()' 'addNewCrew()' is the goto way to add a crew to a job or a crew set. feel free to replace the "LobsterCombatant_CombatLobster" with the ID of the commodity you want to add to your job.
+5) the stats '1,10' is the crewPower and crewPriority. i made my CombatLobsters just as strong as a untrained marine. and they will be deployed at the same time as marines.
+
+now, i dont like the stats, so im going to make some changes.
+[code]
+@Override
+public void onApplicationLoad() {
+    crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,0,10);
+}
+[/code]
+what did i do here?
+1) well, i increased the 'crewPower' stat to 1.25 (a marine has between 1 and 2 power, depending on there skill level).
+2) I also added a new stat, crewDefence, and set it to 2. (a marine i think has between 1 and 1.2? 1.3? I don't remember... crewDefence. (and yes, this is in defiance to how everything else in the game is calculated))
+3) I also added another new stat, loadPriority, and set it to the default value (0).
+so in effect, the lobster is more capable then a untrained marine, but mush less strong then a fully trained marine. its also extremely tanky by comparison.
+
+if you go into the game, you can actually test and see if this worked. you can be extra sure what you did worked by going somewhere were you can do this job (in my case, finding a planet to raid), and removing all the normal 'crew' from your inventory (in my case, marines) before trying.
 [/spoiler]
-[spoiler=how to use crew sets to put a crew in multiple jobs]
+[spoiler=how to use crew sets to put a crew in multiple jobs (AKA how to crewSet)]
+a few things to note:
+1) a 'crewSet' is a list of 'crew' that is added to multiple jobs / crewSets.
+2) well there is a page in the documentation dedicated to crewSets, thats mostly to document modded crew sets. i will likely redo the base game 'crewSet' documentation sometime.
+   what you need to know, is that crew sets follow a simple rule (for all vanilla and modded items)
+   -if this 'job' replaces a commodity, it takes 'crew' from the 'crewSet' that's named as that's commodity id.
+   what this means is that, if you add a 'crew' to the crewSet named 'ore' every job that represents 'ore' will get that 'crew'. for example.
+
+[code]
+@Override
+public void onApplicationLoad() {
+    crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
+    crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,0);
+}
+[/code]
+some things to note:
+    1) 'getCrewSet' works the same as 'getJob', but only for crewSets. same with 'addNewCrew'.
+    2) I gave my combat lobsters different stats. this is important for this tutorial, but is not required at all.
+    3) because the job 'raiding_marines' uses the crew set 'marines', my lobsters stats will be overwritten by my crew set.
+       don't worry, there is a way around this, in the next section.
+
+also, if you want to check if this worked, you can always simply remove the line adding your 'crew' to a certain 'job', and then go and see your 'crew' in action again.
 [/spoiler]
-[spoiler=priority and blacklists, and how they work]
+[spoiler=load priority and blacklists, and how they work]
+somethings to note:
+    1) a 'BlackListCrew' is a special thing that can be added to 'job's and 'crewSet's the prevents a crew from being entered into a 'job'/'crewSet'
+    2) 'load priority' represents how must crew replacer wants to respect the inputted 'crew' / 'BlackListCrew'.
+now, to start, lets let my 'combat lobster' have its special stats when raiding again.
+[code]
+    @Override
+    public void onApplicationLoad() {
+        crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
+        crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,1);
+    }
+[/code]
+what did i do here?
+    1) I increased the 'load priority' of the crew I was adding to 'raiding_marines' from 0 to 1.
+what did that do? it makes it so when crew replacer organizing and applys data from the crew sets, it will respect the 'crew' I added to the 'raiding_marines' job more then the one i added to the 'marines' 'crewSet'.
+so long as my 'load priority' on my 'job' is higher then the one on my 'crewSet', my jobs 'crew' will not be overwritten by the 'crewSet'.
+this also apply to other someone might try to add the same 'crew' to this job. this is useful when 2 moders add the same commodity to the same job, as it will no longer be dependent on load order to determine what 'crew' is accepted into the 'job'
+
+now onto blacklists
+[code]
+@Override
+public void onApplicationLoad() {
+    crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
+    crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,1);
+    crewReplacer_Main.getJob("Mission_hijack_marines").addBlackListCrew("LobsterCombatant_CombatLobster",1);
+}
+[/code]
+so what happened here?
+    1) I added a new line of code, that gets the job 'Mission_hijack_marines' and blacklists my 'combat lobster' from doing this job, at a 'load priority' of 1.
+       this is important, because the crewSet "marines" includes the job "Mission_hijack_marines". but i don't want my lobsters to be able to do this job (on account of them being so cute and cuddly that they would draw to mush of a crowd and make it hard to steal anything, let alone a starship), but i do want them to use the 'marine' 'crew set'
+
+keep in mind: if you are ever doing anything when something might effect a 'crew' in a given 'job' more then once, make sure the thing you want to keep has the highest 'load priority' to make sure no issues happen.
+[/spoiler]
+[spoiler=how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)]
+so, a common compliant i hear about crew replacer, is the fact in order to use it one needs to have it as a dependency, and this can be to mush for some people.
+so let me show you a way around this. in 4 easy steps.
+1) add a if statement preventing code from running provided the 'crewReplacer' mod is not loaded.
+[code]
+    @Override
+    public void onApplicationLoad() {
+        if (Global.getSettings().getModManager().isModEnabled("aaacrew_replacer")) {
+            crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
+            crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,1);
+            crewReplacer_Main.getJob("Mission_hijack_marines").addBlackListCrew("LobsterCombatant_CombatLobster",1);
+        }
+    }
+[/code]
 [/spoiler]
 [/spoiler]
 [spoiler=advanced]
@@ -115,28 +220,4 @@ the default value is 1. (in cases were you create a new crew, if you only input 
 
 
 [spoiler=how to add a job to crew replacer, and why you would do it]
-[/spoiler]
-
-
-
-
-so lets start with the basics: what is a 'crew', 'crew set', and 'job' in the context of crew replacer.
-if you are overwhelmed here, don't worry. i will show you examples of everything i talk about in different sections, for your convenience
-also, keep in mind that if you want to know more, i keep a updated documentation of my mod [url=https://github.com/Alaricdragon/Crew_Replacer/tree/master/jars/src/desing/documentation]here[/url]
-[spoiler]
-crew:
-[spoiler]
-a 'crew' in crew replacer represents any class that is, or extends the 'crewReplacer_Crew' class.
-most of the time, this something will be a simple commodity. although with some effort you can override functions to dramatically change what a 'crew' is. but we can talk about that latter.
-something to clear up: dispute its name, a 'crew' does not have to be a crew or marine, but rather represents a commodity. AKA almost any item in the game that is not a blueprint or installed on a ship.
-you can view the documentation for 'crew' [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/desing/documentation/classes/crewReplacer_Crew]here[/url]
-[/spoiler]
-job:
-[spoiler]
-a 'job' in the context of crew replacer is just a list of crews that can do a certain thing. its mush more then just that of course, but for the context of managing 'crew', that's all you need to understand about it
-a job is formed out of 4 variables
-[/spoiler]
-crew set:
-[spoiler][/spoiler]
-
 [/spoiler]
