@@ -22,8 +22,18 @@ in this tutorial we will be discussing:
     //-everything about crews, crew sets, and the basics behind jobs.
     //-how to make your commodity a 'crew' for certain things.
     //-all the crew stats, and how they interact.
-    -how to make 'custom crews' with interesting, or dynamic stats.
-    -how to make 'custom crews' that are in fact, not crews.
+    -a overview of what a 'custom crew' is
+    -a short description of the safety's installed in crew replacer to make 'custom crew' more stable
+    -how each function of a 'custom crew' works
+    -how to add your new 'custom crew' to a 'job'.
+    -examples.
+        -a 'crew' with more power when there is 'volatiles' in the cargo bay.
+        -a 'crew' that's available amount is dependent on how many 'marines' you have in your cargo bay
+        -a 'crew' that when 'ore' is available, 'ore' is lost when this 'crew' should have been.
+        -a 'crew' that has a XP system (like marines)
+        -a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)
+        -a 'crew' that's actually just a player skill.
+        -a 'crew' that's a starship hullmod.
 2)how to add a job to crew replacer, and why you would do it. this includes:
     -shameless self promotion about why crew replacer is great and the benefits of using it.
     -how to make your mod support crew replacer, without making it so the user requires it installed.
@@ -195,8 +205,8 @@ so what happened here?
 keep in mind: if you are ever doing anything when something might effect a 'crew' in a given 'job' more then once, make sure the thing you want to keep has the highest 'load priority' to make sure no issues happen.
 [/spoiler]
 [spoiler=how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)]
-so, a common compliant i hear about crew replacer, is the fact in order to use it one needs to have it as a dependency, and this can be to mush for some people.
-so let me show you a way around this. in 4 easy steps.
+so, a common compliant i hear about crew replacer, is the fact in order to use it one needs to have it as a dependency. and i understand the dislike of that, as dependency suck.
+so let me show you a way around this. in 1 easy steps.
 1) add a if statement preventing code from running provided the 'crewReplacer' mod is not loaded.
 [code]
     @Override
@@ -208,9 +218,147 @@ so let me show you a way around this. in 4 easy steps.
         }
     }
 [/code]
+and yes, it feels weird that this works for me to.
 [/spoiler]
 [/spoiler]
 [spoiler=advanced]
+[spoiler=a overview of what a 'custom crew' is]
+so you might be wondering 'what is a custom crew, and why is this the 'advanced' section'?
+well, its relatively simple.
+a 'custom crew' is a crewReplacer_Crew that has one or more of its functions overwritten, with the goal of changing a crew in some way.
+as a example: in the AI-Retrofits mod, i make it so 'salvage robots' operate better if there is a 'AI-Core' of some type in the players cargo bay.
+the ability to do that is possible because i overwrite the function that determines the 'power' of each crew.
+as for why this is in the advanced section? well this is something crew replacer is built for... its no were near as simple as just the basic section. you will understand soon.
+if all you want is to have a commodity act as a 'crew' in a 'job' with non changing stats, please look to the basic section for how to accomplish this.
+if you want to do something, and am unsure if its even possible?
+well, here you go.
+[/spoiler]
+[spoiler=a short description of the safety's installed in crew replacer to make 'custom crew' more stable]
+because we are going to be modifying the 'crewReplacer_Crew' class here, you might be worryed about doing something to crash the game here.
+please don't worry to mush about that. the 'crewReplacer_Job' class (wish should be the only class the looks at any of the functions of the crewReplacer_Crew class) has very robust handling of the 'crewReplacer_Crew' class. with lots of 'try{}catch(){}' statements.
+in a case were anything a 'crew' did causes a crash, it should output some thing to the log. and 'crewReplacer_Job' will simply treat your crew like it does not exist.
+[/spoiler]
+[spoiler=how each function of a 'custom crew' works]
+so, before anything, i would like to link a link to both my [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/data/scripts/crewReplacer_Crew.java]crewReplacer_Crew class[/url] and my [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/desing/documentation/classes/crewReplacer_Crew]crewReplacer_Crew documentation[/url] on github.
+please feel free to reference the 2 links there at any time to learn more about this class we are going to be modifying.
+well i will try to keep this tutorial up to date, i might forget sometimes, so its important to be able to go into the documentation and look yourself if you feel like something is not working right.
+now, in order to create a custom crew, we are going to need to overwrite the functions of 'crewReplacer_Crew'. so lets look at each one, and i will tell you when you should overwrite wish one, to the best of my ability.
+[spoiler=functions you should not overwrite, and there functions.]
+first of all, i would like to talk about some functions that are eather worthless to overwrite, and some that are -unwise- to overwrite, for whatever reason.
+[spoiler=worthless to overwrite]
+[spoiler=public void resetExtraData()]
+
+[/spoiler]
+[spoiler=setExtraData(Object newData)]
+
+[/spoiler]
+[spoiler=public void setExtraData(Object newData)]
+
+[/spoiler]
+[spoiler=public boolean hasTag(String tag)]
+
+[/spoiler]
+[spoiler=public void AddTag(String tag)]
+
+[/spoiler]
+[spoiler=public void RemoveTag(String tag)]
+
+[/spoiler]
+[/spoiler]
+[spoiler=functions that are outdated, and you should ignore]
+[spoiler=public void removeCrew(CampaignFleetAPI fleet,float CrewToLost)]
+
+[/spoiler]
+[spoiler=public float getCrewInFleet(CampaignFleetAPI fleet)]
+
+[/spoiler]
+[spoiler=public float getCrewPowerInFleet(CampaignFleetAPI fleet)]
+
+[/spoiler]
+[/spoiler]
+[spoiler=functions you should never overwrite ever please don't you will break something]
+[spoiler=public float getCargoSpacePerItem(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCargoSpaceUse(CargoAPI cargo, float amountOfCrew)]
+
+[/spoiler]
+[spoiler=public float getCargoSpaceUse(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getFuelSpacePerItem(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getFuelSpaceUse(CargoAPI cargo, float amountOfCrew)]
+
+[/spoiler]
+[spoiler=public float getFuelSpaceUse(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCrewSpacePerItem(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCrewSpaceUse(CargoAPI cargo, float amountOfCrew)]
+
+[/spoiler]
+[spoiler=public float getCrewSpaceUse(CargoAPI cargo)]
+
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[spoiler=public float getCrewToLose(CargoAPI cargo,float crewUsed,float crewLost)]
+
+[/spoiler]
+[spoiler=public void removeCrew(CargoAPI cargo,float CrewToLost)]
+
+[/spoiler]
+[spoiler=public float getCrewInCargo(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCrewPowerInCargo(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public String getDisplayName(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public String getCrewIcon(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCrewPower(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public float getCrewDefence(CargoAPI cargo)]
+
+[/spoiler]
+[spoiler=public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text)]
+
+[/spoiler]
+[spoiler=public void displayCrewLost(CargoAPI cargo,float numberOfItems, TextPanelAPI text)]
+
+[/spoiler]
+[spoiler=public void DisplayedCrewNumbers(CargoAPI cargo,float numberOfItems, TextPanelAPI text)]
+
+[/spoiler]
+[/spoiler]
+[spoiler=how to add your new 'custom crew' to a 'job']
+[/spoiler]
+[spoiler=examples]
+here im going to walk you though some examples of creating 'custom crew'. feel free to read what you want.
+[spoiler=a 'crew' with more power when there is 'volatiles' in the cargo bay.]
+[/spoiler]
+[spoiler=a 'crew' that's available amount is dependent on how many 'marines' you have in your cargo bay]
+[/spoiler]
+[spoiler=a 'crew' that when 'ore' is available, 'ore' is lost when this 'crew' should have been]
+[/spoiler]
+[spoiler=a 'crew' that has a XP system (like marines)]
+[/spoiler]
+[spoiler=a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)]
+[/spoiler]
+[spoiler=a 'crew' that's actually just a player skill]
+[/spoiler]
+[spoiler=a 'crew' that's a starship hullmod]
+[/spoiler]
+[/spoiler]
 [/spoiler]
 [/spoiler]
 
