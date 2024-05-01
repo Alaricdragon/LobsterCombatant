@@ -34,6 +34,8 @@ in this tutorial we will be discussing:
         -a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)
         -a 'crew' that's actually just a player skill.
         -a 'crew' that's a starship hullmod.
+    -how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)
+        -NOTE: this is required to get custom crew to not crash your game. the basic version of this will not work at all. im sorry but its true.
 2)how to add a job to crew replacer, and why you would do it. this includes:
     -shameless self promotion about why crew replacer is great and the benefits of using it.
     -how to make your mod support crew replacer, without making it so the user requires it installed.
@@ -246,105 +248,384 @@ now, in order to create a custom crew, we are going to need to overwrite the fun
 [spoiler=functions you should not overwrite, and there functions.]
 first of all, i would like to talk about some functions that are eather worthless to overwrite, and some that are -unwise- to overwrite, for whatever reason.
 [spoiler=worthless to overwrite]
+most functions here are only used to set data sometimes. if you want to overwrite them, there is nothing stopping you.
 [spoiler=public void resetExtraData()]
-
-[/spoiler]
-[spoiler=setExtraData(Object newData)]
-
+sets the public Object ExtraData to null.
+only called at the end of crewReplacer_Job calculations. most of the time, at the loss calculations.
 [/spoiler]
 [spoiler=public void setExtraData(Object newData)]
-
+sets the public Object ExtraData to newData.
+tries to be called as early as possible in crewReplacer_Job calculations, but when can vary (if its used at all)
 [/spoiler]
 [spoiler=public boolean hasTag(String tag)]
-
+just checks if this 'crew' has a tag.
+tags are not used in crew replacer. they are for users and intercore interactions.
 [/spoiler]
 [spoiler=public void AddTag(String tag)]
-
+adds a tag to this 'crew'.
+tags are not used in crew replacer. they are for users and intercore interactions.
 [/spoiler]
 [spoiler=public void RemoveTag(String tag)]
-
+removes a tag from this crew
+tags are not used in crew replacer. they are for users and intercore interactions.
 [/spoiler]
 [/spoiler]
 [spoiler=functions that are outdated, and you should ignore]
 [spoiler=public void removeCrew(CampaignFleetAPI fleet,float CrewToLost)]
-
+just calls removeCrew(CargoAPI cargo,float CrewToLose)
+might remove someday.
 [/spoiler]
 [spoiler=public float getCrewInFleet(CampaignFleetAPI fleet)]
-
+calls getCrewInCargo(CargoAPI cargo)
+might remove someday.
 [/spoiler]
 [spoiler=public float getCrewPowerInFleet(CampaignFleetAPI fleet)]
-
+calls getCrewPowerInCargo(CargoAPI cargo)
+might remove someday.
 [/spoiler]
 [/spoiler]
 [spoiler=functions you should never overwrite ever please don't you will break something]
 [spoiler=public float getCargoSpacePerItem(CargoAPI cargo)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getCargoSpaceUse(CargoAPI cargo, float amountOfCrew)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getCargoSpaceUse(CargoAPI cargo)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getFuelSpacePerItem(CargoAPI cargo)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getFuelSpaceUse(CargoAPI cargo, float amountOfCrew)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getFuelSpaceUse(CargoAPI cargo)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getCrewSpacePerItem(CargoAPI cargo)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getCrewSpaceUse(CargoAPI cargo, float amountOfCrew)]
-
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [spoiler=public float getCrewSpaceUse(CargoAPI cargo)]
-
-[/spoiler]
+this is one of the many functions related to cargo / fuel / personnel use.
+please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [/spoiler]
 [spoiler=public float getCrewToLose(CargoAPI cargo,float crewUsed,float crewLost)]
+inputs:
+cargo: the cargo being used.
+crewUsed: the number of this 'crew' that were randomly selected to do this task.
+crewLost: the number of this 'crew' that crewReplacer job has set to be lost.
 
+output:
+the number of crew that will be lost in this calculation.
+
+default output:
+just outputs the inputted 'crewLost' variable.
+
+when its ran:
+just after crew losses are calculated.
+before removeCrew(cargo, CrewToLost) is ran.
+
+uses:
+this function lets a user customize how many of your own crew are lost in calculations.
+all other functions will respect changes made in this function.
 [/spoiler]
 [spoiler=public void removeCrew(CargoAPI cargo,float CrewToLost)]
+inputs:
+cargo: the cargo being used.
+CrewToLost: the amount of crew that are calculated to be lost.
 
+output:
+null. removes this 'crew' from the inputted cargo cargo.
+
+default output:
+--
+
+when its ran:
+this is the last thing ran when calculating what crew to remove from the players cargo bay.
+
+uses:
+this can be used to change what is removed from the used cargo bay. (for example, swapping your losses with another commodity that's not a crew)
+best used with 'displayCrewLost(CargoAPI cargo,float numberOfItems, TextPanelAPI text)' because said function wont respect changes made in this one.
 [/spoiler]
 [spoiler=public float getCrewInCargo(CargoAPI cargo)]
+inputs:
+cargo: the cargo used
 
+output:
+the number of 'crew' that crewReplacer will think or in the cargo (of this type)
+
+default output:
+cargo.getCommodityQuantity(name);
+
+when its ran:
+any time the game needs to get the amount of crew in your cargo bay.
+(like when its getting the total crew power in a job, or when its getting what crew are doing a job.)
+
+uses:
+modifying this value can be usefull when you want, for example, the game to think you have more / less crew then you do. or for more complecated 'losses' systems (see examples: 'a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)', 'a 'crew' that's a starship hullmod')
+all other functions will respect changes made with this function.
 [/spoiler]
 [spoiler=public float getCrewPowerInCargo(CargoAPI cargo)]
+inputs:
+cargo: the cargo used.
 
+output:
+the amount of crew power available in this cargo.
+
+default output:
+getCrewInCargo(cargo) * getCrewPower(cargo);
+
+when its ran:
+any time crew replacer needs to see how mush 'power' is available for a job. so a lot.
+
+uses:
+best used when you want to make a static increase to the available crew power. (like say, +200 from a skill bonus or something)
+all other functions respect changes made to this one.
 [/spoiler]
 [spoiler=public String getDisplayName(CargoAPI cargo)]
+inputs:
+cargo: the cargo used.
 
+output:
+the 'name' of this crew. the one the player sees.
+
+default output:
+Global.getSector().getEconomy().getCommoditySpec(name).getName();
+
+when its ran:
+any time the game needs to display the 'name' of a crew to the user (like displaying losses.)
+
+uses:
+changing this is useful when you want your 'crew' to have a different name, for some reason.
+also useful if your crew is not a commodity.
+all other functions respect changes made to this one
 [/spoiler]
 [spoiler=public String getCrewIcon(CargoAPI cargo)]
+inputs:
+cargo: the cargo used
 
+output:
+the name of the 'icon' that is displayed besides this 'crew'.
+
+default output:
+Global.getSector().getEconomy().getCommoditySpec(name).getIconName();
+
+when its ran:
+only in DisplayedCrewNumbers(CargoAPI cargo,float numberOfItems, TextPanelAPI text)
+
+uses:
+changing this function can be useful if you want to change the commodity icon that your crew uses to something other then itself.
+(note: if you are looking to replace the image of something with something not a 'icon', i suggest modifying DisplayCrewNumbers in some way)
+all other functions respect changes made to this one.
 [/spoiler]
 [spoiler=public float getCrewPower(CargoAPI cargo)]
+inputs:
+cargo: the cargo used
 
+output:
+the amount of power per crew.
+
+default output:
+crewPower
+
+when its ran:
+this function is ran in 'getCrewPowerInCargo(CargoAPI cargo)'
+
+uses:
+changing this function is amazing for changing how mush 'crewPower' your 'crew' has dynamically.
+all other functions respect changes made to this one
 [/spoiler]
 [spoiler=public float getCrewDefence(CargoAPI cargo)]
+inputs:
+cargo: the cargo used
 
+output:
+the amount of 'crewDefence' each crew has
+
+default output:
+crewDefence
+
+when its ran:
+its ran when calculating what crew should be lost.
+
+uses:
+changing this function is amazing for changing how mush 'crewDefence' your 'crew' has dynamically.
+all other functions respect changes made to this one
 [/spoiler]
 [spoiler=public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text)]
+inputs:
+cargo: the cargo used.
+numberOfItems: the number of 'crew' of this type that the game calculates are in the cargo
+text: the text API used for displays.
 
+output:
+null. displays the amount of crew available when called.
+
+default output:
+null. runs DisplayedCrewNumbers(cargo,numberOfItems,text);
+
+when its ran:
+any time a crewReplacerJob wants to display the amount of crew available.
+
+uses:
+changing this function is useful whenever you need a special display for the amount of crew available to you.
+also useful when your 'crew' needs different icons for displaying crew available VS crew lost.
+if you want to change both this function and 'displayCrewLost', look into changing 'DisplayCrewNumbers' instead, as both functions call it be default.
+all other functions respect the changes made to this function
 [/spoiler]
 [spoiler=public void displayCrewLost(CargoAPI cargo,float numberOfItems, TextPanelAPI text)]
+inputs:
+cargo: the cargo used.
+numberOfItems: the number of 'crew' of this type that the game calculates have been lost in this operation, wahtever it might be.
+text: the text API used for displays.
 
+output:
+null. displays the amount of crew lost when called.
+
+default output:
+null. runs DisplayedCrewNumbers(cargo,numberOfItems,text);
+
+when its ran:
+whenever a crewReplacerJob wants to display the number of crew lost.
+
+uses:
+changing this function is useful whenever you need a special display for the amount of crew lost in a operation.
+also useful when your 'crew' needs different icons for displaying crew available VS crew lost.
+if you want to change both this function and 'displayCrewAvailable', look into changing 'DisplayCrewNumbers' instead, as both functions call it be default.
+all other functions respect the changes made to this function
 [/spoiler]
 [spoiler=public void DisplayedCrewNumbers(CargoAPI cargo,float numberOfItems, TextPanelAPI text)]
+inputs:
+cargo: the cargo used.
+numberOfItems: the number of 'crew' that you want to be displayed.
+text: the text API used for displays.
 
+output:
+null. creates a display showing a 'icon', as well as the inputted number of crew.
+
+default output:
+null. runs like 15 lines of code in its display. includes the function: 'getDisplayName(cargo)' and 'getCrewIcon(cargo)'
+
+when its ran:
+only in 'displayCrewAvailable' and 'displayCrewLost'
+
+uses:
+changing this function is useful when you want to change both the 'displayCrewAvailable' and 'displayCrewLost' displays.
+also useful to change this when you need a none icon image for your 'crew'.
+all functions respect this one
 [/spoiler]
 [/spoiler]
 [spoiler=how to add your new 'custom crew' to a 'job']
+there is a function in 'job's and 'crew set's just for this.
+'.addCrew(crewReplacer_Crew);'
+however, you will need to initalize the data first.
+example:
+[code]
+public void onApplicationLoad() {
+    crewReplacer_Crew Crew = new CrewReplacer_CrewType_crew();
+    Crew.name = "LobsterCombatant_CombatLobster";
+    Crew.crewPower = 1.2f;
+    Crew.crewDefence = 1.2f;
+    Crew.crewPriority = 10;
+    Crew.crewLoadPriority = 1;
+    crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+
+
+    Crew = new CrewReplacer_CrewType_crew();
+    Crew.name = "LobsterCombatant_CombatLobster";
+    Crew.crewPower = 1.1f;
+    Crew.crewDefence = 1.1f;
+    Crew.crewPriority = 10;
+    Crew.crewLoadPriority = 0;
+    crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
+}
+[/code]
+please ignore the 'CrewReplacer_CrewType_crew'. its mostly junk data from crewReplacer, but it is technically a custom crew.
+please note how i inputted all the data for the 'crew' manually. yes it is required right now. because i was having issues. please don't judge me when i get around to fixing it i will change this part of the tutorial
+lastly, note that i created a new class when i wanted to add it to a crewSet, with a diffrent priority. its important that you dont just change the data on the old class then add it again because of the way java works with classes. doing so causes a change in both classes, so they would always have the same stats. but this lets us have different stats.
 [/spoiler]
 [spoiler=examples]
 here im going to walk you though some examples of creating 'custom crew'. feel free to read what you want.
 [spoiler=a 'crew' with more power when there is 'volatiles' in the cargo bay.]
+so the way i see this, there is a few ways i could handle something like this.
+also, as we all know, Lobsters love to eat gasses that we use to make industrial levels of antimatter, so im using them as examples.
+[spoiler=adding a 'static' amount of power]
+now, I think i only need one function here, as this is relatively simple.
+[code]
+public class LobsterCombatant_CustomCrew_Volatile_StaticBoost extends crewReplacer_Crew {
+    @Override
+    public float getCrewPowerInCargo(CargoAPI cargo) {
+        int bonus = (int)Math.min(getCrewInCargo(cargo),cargo.getCommodityQuantity("volatiles"));
+        bonus = (int)Math.min(bonus,250);
+        return super.getCrewPowerInCargo(cargo)+bonus;
+    }
+}
+[/code]
+I made sure that the max number of power i could add was caped to 250, because i feel like thats a good value.
+[/spoiler]
+[spoiler=increasing the crew power of each crew]
+so, for this, in theory i could do this with only one function (getCrewPower), but im going to use 2 (getCrewPower and getCrewDefence).
+why? because when crewPower and crewDefence are not the same value, it can effect crew losses.
+[code]
+import data.scripts.crewReplacer_Crew;
+public class LobsterCombatant_CustomCrew_Volatile_MultiBoost extends crewReplacer_Crew {
+    @Override
+    public float getCrewPower(CargoAPI cargo) {
+        float multi = 1;
+        if (cargo.getCommodityQuantity("volatiles") != 0){
+            multi = 1.25f;
+        }
+        return super.getCrewPower(cargo)*multi;
+    }
+
+    @Override
+    public float getCrewDefence(CargoAPI cargo) {
+        float multi = 1;
+        if (cargo.getCommodityQuantity("volatiles") != 0){
+            multi = 1.25f;
+        }
+        return super.getCrewDefence(cargo) * multi;
+    }
+}
+[/code]
+so the 2 functions here are effectively the same, but one gets crewPower and the other crewDefence.
+still quite cool.
+[/spoiler]
+now that out lobsters can be well fed on the job, its time to give them a job.
+[code]
+@Override
+public void onApplicationLoad(){
+    crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_Volatile_MultiBoost();
+    Crew.name = "LobsterCombatant_CombatLobster";
+    Crew.crewPower = 1.2f;
+    Crew.crewDefence = 1.2f;
+    Crew.crewPriority = 10;
+    Crew.crewLoadPriority = 1;
+    crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+
+    Crew = new LobsterCombatant_CustomCrew_Volatile_StaticBoost();
+    Crew.name = "LobsterCombatant_CombatLobster";
+    Crew.crewPower = 1.25f;
+    Crew.crewDefence = 1.25f;
+    Crew.crewPriority = 10;
+    Crew.crewLoadPriority = 0;
+    crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
+}
+[/code]
+and now we can watch out happy lobsters play around in volatiles in there off time, and work harder in there on time =)
 [/spoiler]
 [spoiler=a 'crew' that's available amount is dependent on how many 'marines' you have in your cargo bay]
 [/spoiler]
