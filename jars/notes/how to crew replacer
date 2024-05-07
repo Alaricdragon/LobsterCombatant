@@ -208,7 +208,10 @@ keep in mind: if you are ever doing anything when something might effect a 'crew
 [/spoiler]
 [spoiler=how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)]
 so, a common compliant i hear about crew replacer, is the fact in order to use it one needs to have it as a dependency. and i understand the dislike of that, as dependency suck.
-so let me show you a way around this. in 1 easy steps.
+so let me show you a 2 ways around this. one is in one easy step, and only works if your only crewReplacer based import is 'data.scripts.crewReplacer_Main'.
+the other is in 3 easy steps, and always works.
+pick your poison as it were
+[spoiler=in one easy step]
 1) add a if statement preventing code from running provided the 'crewReplacer' mod is not loaded.
 [code]
     @Override
@@ -221,6 +224,41 @@ so let me show you a way around this. in 1 easy steps.
     }
 [/code]
 and yes, it feels weird that this works for me to.
+[/spoiler]
+[spoiler=in 3 easy steps]
+1) create a new class. you can call it whatever you want, but it needs to have at least one static function.
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+
+    }
+}
+[/code]
+2) move all your crew replacer code into the newly created static function.
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
+        crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,1);
+        crewReplacer_Main.getJob("Mission_hijack_marines").addBlackListCrew("LobsterCombatant_CombatLobster",1);
+    }
+}
+[/code]
+3) make it so the game only runs your function when crew replacer is present
+[code]
+@Override
+public void onApplicationLoad() {
+    if (Global.getSettings().getModManager().isModEnabled("aaacrew_replacer")) {
+        LobsterCombatant_CrewReplacerCompatibility.apply();
+    }
+}
+[/code]
+this should -always- work. so long as you are not running crew replacer anywere else.
+some notes also:
+in step 3, yes it is required to have the if statement be outside of the class were you are running crew replacer stuff.
+if that class is even loaded and you don't have crew replacer, it will try to import all the crew replacer stuff, and crash.
+also, please name keep in mind the classname should likely not be 'LobsterCombatant_CrewReplacerCompatibility'. 'LobsterCombatant' is the name of the mod im making for the purposes of this tutorial.
+[/spoiler]
 [/spoiler]
 [/spoiler]
 [spoiler=advanced]
@@ -531,31 +569,34 @@ all functions respect this one
 [spoiler=how to add your new 'custom crew' to a 'job']
 there is a function in 'job's and 'crew set's just for this.
 '.addCrew(crewReplacer_Crew);'
-however, you will need to initalize the data first.
+however, you will need to initialize the data first.
+please note, all examples going forward will be useing the '3 step' compatibility process, because i want to encourage its use.
 example:
 [code]
-public void onApplicationLoad() {
-    crewReplacer_Crew Crew = new CrewReplacer_CrewType_crew();
-    Crew.name = "LobsterCombatant_CombatLobster";
-    Crew.crewPower = 1.2f;
-    Crew.crewDefence = 1.2f;
-    Crew.crewPriority = 10;
-    Crew.crewLoadPriority = 1;
-    crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new CrewReplacer_CrewType_crew();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1.2f;
+        Crew.crewDefence = 1.2f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
 
 
-    Crew = new CrewReplacer_CrewType_crew();
-    Crew.name = "LobsterCombatant_CombatLobster";
-    Crew.crewPower = 1.1f;
-    Crew.crewDefence = 1.1f;
-    Crew.crewPriority = 10;
-    Crew.crewLoadPriority = 0;
-    crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
-}
+        Crew = new CrewReplacer_CrewType_crew();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1.1f;
+        Crew.crewDefence = 1.1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 0;
+        crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
+    }
+    }
 [/code]
 please ignore the 'CrewReplacer_CrewType_crew'. its mostly junk data from crewReplacer, but it is technically a custom crew.
 please note how i inputted all the data for the 'crew' manually. yes it is required right now. because i was having issues. please don't judge me when i get around to fixing it i will change this part of the tutorial
-lastly, note that i created a new class when i wanted to add it to a crewSet, with a diffrent priority. its important that you dont just change the data on the old class then add it again because of the way java works with classes. doing so causes a change in both classes, so they would always have the same stats. but this lets us have different stats.
+lastly, note that i created a new class when i wanted to add it to a crewSet, with a different priority. its important that you don't just change the data on the old class then add it again because of the way java works with classes. doing so causes a change in both classes, so they would always have the same stats. but this lets us have different stats.
 [/spoiler]
 [spoiler=examples]
 here im going to walk you though some examples of creating 'custom crew'. feel free to read what you want.
@@ -606,32 +647,144 @@ still quite cool.
 [/spoiler]
 now that out lobsters can be well fed on the job, its time to give them a job.
 [code]
-@Override
-public void onApplicationLoad(){
-    crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_Volatile_MultiBoost();
-    Crew.name = "LobsterCombatant_CombatLobster";
-    Crew.crewPower = 1.2f;
-    Crew.crewDefence = 1.2f;
-    Crew.crewPriority = 10;
-    Crew.crewLoadPriority = 1;
-    crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_Volatile_MultiBoost();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1.2f;
+        Crew.crewDefence = 1.2f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
 
-    Crew = new LobsterCombatant_CustomCrew_Volatile_StaticBoost();
-    Crew.name = "LobsterCombatant_CombatLobster";
-    Crew.crewPower = 1.25f;
-    Crew.crewDefence = 1.25f;
-    Crew.crewPriority = 10;
-    Crew.crewLoadPriority = 0;
-    crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
+        Crew = new LobsterCombatant_CustomCrew_Volatile_StaticBoost();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1.25f;
+        Crew.crewDefence = 1.25f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 0;
+        crewReplacer_Main.getCrewSet("marines").addCrew(Crew);
+    }
 }
 [/code]
 and now we can watch out happy lobsters play around in volatiles in there off time, and work harder in there on time =)
 [/spoiler]
 [spoiler=a 'crew' that's available amount is dependent on how many 'marines' you have in your cargo bay]
+so, i think i can do this with only one function. should be interesting.
+[code]
+public class LobsterCombatant_CustomCrew_ReqMarines extends crewReplacer_Crew {
+    @Override
+    public float getCrewInCargo(CargoAPI cargo) {
+        return Math.min(super.getCrewInCargo(cargo), cargo.getCommodityQuantity("marines"));
+    }
+}
+[/code]
+so, rather simple. im just capping the number of available crew, to the number of marines. relatively simple.
+now, for implementing it
+[code]
+
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_ReqMarines();
+        Crew.name = "hand_weapons";
+        Crew.crewPower = 0.2f;
+        Crew.crewDefence = 5f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 0;
+        crewReplacer_Main.getCrewSet("heavy_machinery").addCrew(Crew);
+    }
+}
+[/code]
+so, same as last time, im just running it in my apply function that i run onApplicationLoad() in my mod plugin.
+some things that you might notice:
+'hand_weapons'. this refers to 'Heavy Armaments'. i guess the item had a change in development.
+the crew power and crew defence. they are way way way off. a armament counts as 1/5 a normal crew, but takes 1/25 the normal losses it should.
+I think its reasonable. i am making the 'Heavy Armaments' work in 'heavy_machinery' jobs. (like salvaging, or founding a market).
+it makes a lot of sense to me that well its possible to use guns in such a way, it would not be very effective.
+at the same time, having losses be equal to the power seems wrong. 'Heavy Armaments' are costly, and are probably not firing point blank? so very very low losses for them.
 [/spoiler]
 [spoiler=a 'crew' that when 'ore' is available, 'ore' is lost when this 'crew' should have been]
+something interesting. but simple.
+this time, i cant just do this with a single function. i think im going to need 2.
+[code]
+public class LobsterCombatant_CustomCrew_lossOre extends crewReplacer_Crew {
+    float oreLost=0;
+    @Override
+    public void removeCrew(CargoAPI cargo, float CrewToLost) {
+        oreLost = getOreLost(cargo, CrewToLost);
+        cargo.removeCommodity("ore",oreLost);
+        super.removeCrew(cargo, CrewToLost-oreLost);
+    }
+
+    @Override
+    public void displayCrewLost(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
+        String displayName = getDisplayName(cargo);
+
+        TooltipMakerAPI tt = text.beginTooltip();
+        TooltipMakerAPI iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
+        String numberStr = (int) numberOfItems-oreLost + "";
+        LabelAPI label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
+        tt.addImageWithText(0);
+        text.addTooltip();
+
+
+        displayName = Global.getSector().getEconomy().getCommoditySpec("ore").getName();
+
+        tt = text.beginTooltip();
+        iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
+        numberStr = (int) oreLost + "";
+        label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
+        tt.addImageWithText(0);
+        text.addTooltip();
+    }
+    public float getOreLost(CargoAPI cargo, float CrewToLost){
+        return Math.min(CrewToLost*0.5f,cargo.getCommodityQuantity("ore"));
+    }
+}
+[/code]
+ok, so that's quite a lot, so lets break this down.
+1) the removeCrew function is the same as normal, but it saves a number called 'ore lost', and makes us lose less of our 'crew'.
+2) the 'displayCrewLost' function. its a bit diffrent, in that it displays our lost 'crew' and the number of ore lost. I did this by just coping the code from the base crewReplacer_Crew.displayCrewNumbers function and running it twice. once for each commodity.
+3) the function 'getOreLost'. i put this here as a function, so its easier to edit, and i can find it easily. please don't judge me. as for the function itself.. you can see it caps the amount of ore lost to 50% of crew lost. thats because i dont feel likes its right to have some type of infinity revive with ore. so we still lose crew, just more ore then normal.
+
+some other notes:
+the 2 functions i picked to override. the first one i chose becuase i was applying another loss. i would have picked 'getCrewToLose' if i was only modifying the amount of crew lost, and not making another thing lost. doing so would also remove the requirement of editing the display.
+the second one, i chose it because im only doing things to the amount of crew lost. and also adding a second thing to lose. i prefure to edit 'displayCrewNumbers', but thats not the right chose here.
+
+and now, as always, for the implementation
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_lossOre();
+        Crew.name = "crew";
+        Crew.crewPower = 1f;
+        Crew.crewDefence = 1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("salvage_crew").addCrew(Crew);
+
+    }
+}
+[/code]
+so just like the last few. but i did do some things differently.
+for one, i am replacing 'crew' from one of the vanilla jobs. so i set the crewLoadPriority to 1.
+as for why the crew are being lost less because they have rocks?
+its because they eat them.
+why do you think crew deliver so mush ore when salvaging?
 [/spoiler]
 [spoiler=a 'crew' that has a XP system (like marines)]
+im only doing this because, like 3 people have asked. i made this possible, and now im going to show you how to do so. but fist some notes:
+the examples im going to show you will only work for 'crew' that work in the 'raiding_marines' job. this job has accuses to some 'extra data' that's only present there.
+if you want XP to be gained from doing other things? you will need to figger that out yourself.
+
+now, unlike all the other jobs, this will NOT be easy. we will need to override _ classes, and work with a _ to update the XP as you get more of your 'crew'. you will also require a _ to store the crew XP data, as crew replacer cannot store such data.
+also, i might add a quick in built custom crew to crew replacer at some ponit that handles all this hard stuff for you. not for a while though.
+[spoiler=if i did do that, i would put a short tutorial here]
+sorry. not yet.
+...
+i could rick roll people here.
+[/spoiler]
+
 [/spoiler]
 [spoiler=a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)]
 [/spoiler]

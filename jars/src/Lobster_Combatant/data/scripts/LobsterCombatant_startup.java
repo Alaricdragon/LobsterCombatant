@@ -13,15 +13,13 @@ public class LobsterCombatant_startup extends BaseModPlugin {
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
     }
 
-    /*@Override
+    @Override
     public void onApplicationLoad() {
         if (Global.getSettings().getModManager().isModEnabled("aaacrew_replacer")) {
-            crewReplacer_Main.getCrewSet("marines").addNewCrew("LobsterCombatant_CombatLobster",1.125f,1.5f,10,0);
-            crewReplacer_Main.getJob("raiding_marines").addNewCrew("LobsterCombatant_CombatLobster",1.25f,2,10,1);
-            crewReplacer_Main.getJob("Mission_hijack_marines").addBlackListCrew("LobsterCombatant_CombatLobster",1);
+            LobsterCombatant_CrewReplacerCompatibility.apply();
         }
-    }*/
-
+    }
+/*
     @Override
     public void onApplicationLoad(){
         LobsterCombatant_CustomCrew_Volatile_MultiBoost Crew = new LobsterCombatant_CustomCrew_Volatile_MultiBoost();
@@ -40,4 +38,5 @@ public class LobsterCombatant_startup extends BaseModPlugin {
         Crew2.crewLoadPriority = 0;
         crewReplacer_Main.getCrewSet("marines").addCrew(Crew2);
     }
+ */
 }
