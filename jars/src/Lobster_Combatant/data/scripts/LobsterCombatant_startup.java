@@ -1,16 +1,22 @@
 package Lobster_Combatant.data.scripts;
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_Volatile_MultiBoost;
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_Volatile_StaticBoost;
+import Lobster_Combatant.data.scripts.customCrews.listiners.LobsterCombatant_CustomCrew_XP_cargoHandler;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
-import data.scripts.crewReplacer_Main;
+import com.thoughtworks.xstream.XStream;
 
 public class LobsterCombatant_startup extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
         super.onGameLoad(newGame);
-        Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
+        //Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
+        Global.getSector().getListenerManager().addListener(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+    }
+
+    @Override
+    public void configureXStream(XStream x) {
+        super.configureXStream(x);
+        x.alias("LobsterCombatant_CustomCrew_XP_cargoHandler", LobsterCombatant_CustomCrew_XP_cargoHandler.class);
     }
 
     @Override

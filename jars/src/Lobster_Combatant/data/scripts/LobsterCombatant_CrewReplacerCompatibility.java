@@ -1,9 +1,7 @@
 package Lobster_Combatant.data.scripts;
 
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_ReqMarines;
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_Volatile_MultiBoost;
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_Volatile_StaticBoost;
-import Lobster_Combatant.data.scripts.customCrews.LobsterCombatant_CustomCrew_lossOre;
+import Lobster_Combatant.data.scripts.customCrews.*;
+import Lobster_Combatant.data.scripts.customCrews.listiners.LobsterCombatant_CustomCrew_XP_cargoHandler;
 import data.scripts.crewReplacer_Crew;
 import data.scripts.crewReplacer_Main;
 import data.scripts.crews.CrewReplacer_CrewType_crew;
@@ -59,6 +57,7 @@ public class LobsterCombatant_CrewReplacerCompatibility {
         crewReplacer_Main.getCrewSet("heavy_machinery").addCrew(Crew);
     }
      */
+    /*
     public static void apply(){
         crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_lossOre();
         Crew.name = "crew";
@@ -70,4 +69,14 @@ public class LobsterCombatant_CrewReplacerCompatibility {
 
     }
      /**/
+    public static void apply(){
+        ;
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_XPSystem();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1f;
+        Crew.crewDefence = 1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }
 }
