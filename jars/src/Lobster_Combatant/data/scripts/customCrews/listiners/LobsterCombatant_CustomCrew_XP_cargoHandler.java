@@ -5,18 +5,9 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.SubmarketAPI;
 import com.fs.starfarer.api.campaign.listeners.*;
-import com.fs.starfarer.api.combat.MutableStat;
-import com.fs.starfarer.api.fleet.MutableFleetStatsAPI;
-import com.fs.starfarer.api.impl.PlayerFleetPersonnelTracker;
-import com.fs.starfarer.api.impl.campaign.CargoPodsEntityPlugin;
-import com.fs.starfarer.api.impl.campaign.ids.Commodities;
-import com.fs.starfarer.api.impl.campaign.ids.Stats;
-import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
-import com.fs.starfarer.api.ui.Alignment;
-import com.fs.starfarer.api.ui.LabelAPI;
-import com.fs.starfarer.api.ui.PositionAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.CrewReplacer_Log;
 
 public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyInteractionListener,
         CommodityTooltipModifier,
@@ -83,7 +74,11 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
 
     @Override
     public String getRankIconName(CargoStackAPI stack) {
-        if(!stack.getCommodityId().equals(commodity) && !(stack.getCargo().getFleetData() != null && stack.getCargo().getFleetData().getFleet().isPlayerFleet())) return null;
+        //if(true){return Global.getSettings().getSpriteName("ui", ranks[2]);}
+        //if (!stack.getCommodityId().equals(commodity)) ;
+        //if (stack.getCargo().getFleetData() == null) ;
+        //if (!stack.getCargo().getFleetData().getFleet().isPlayerFleet()) ;
+        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return null;
         int[] thresholds = {25,50,75,100};
         String[] ranks = {"icon_crew_green","icon_crew_regular","icon_crew_veteran","icon_crew_elite"};
         int xp = getEffectiveXPPercent();
@@ -97,7 +92,7 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
 
     @Override
     public void addSectionAfterPrice(TooltipMakerAPI info, float width, boolean expanded, CargoStackAPI stack) {
-        if(!stack.getCommodityId().equals(commodity) && !(stack.getCargo().getFleetData() != null && stack.getCargo().getFleetData().getFleet().isPlayerFleet())) return;
+        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return;
         float xp = (float)Global.getSector().getMemory().getFloat(memoryKey);
         info.addPara("total XP is: %s",3,Misc.getHighlightColor(),xp+"");
         info.addPara("current XP is: %s",3,Misc.getHighlightColor(),getEffectiveXPPercent()+"%");

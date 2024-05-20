@@ -11,6 +11,7 @@ public class LobsterCombatant_startup extends BaseModPlugin {
         //Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
         Global.getSector().getListenerManager().addListener(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+        Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
     }
 
     @Override
