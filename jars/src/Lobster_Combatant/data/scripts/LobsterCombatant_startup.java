@@ -17,7 +17,7 @@ public class LobsterCombatant_startup extends BaseModPlugin {
     @Override
     public void configureXStream(XStream x) {
         super.configureXStream(x);
-        x.alias("LobsterCombatant_CustomCrew_XP_cargoHandler", LobsterCombatant_CustomCrew_XP_cargoHandler.class);
+        //x.alias("LobsterCombatant_CustomCrew_XP_cargoHandler", LobsterCombatant_CustomCrew_XP_cargoHandler.class);
     }
 
     @Override

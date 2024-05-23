@@ -777,7 +777,7 @@ im only doing this because, like 3 people have asked. i made this possible, and 
 the examples im going to show you will only work for 'crew' that work in the 'raiding_marines' job. this job has accuses to some 'extra data' that's only present there.
 if you want XP to be gained from doing other things? you will need to figger that out yourself.
 
-now, unlike all the other jobs, this will NOT be easy. we will need to override _ classes, and work with a _ to update the XP as you get more of your 'crew'. you will also require a _ to store the crew XP data, as crew replacer cannot store such data.
+now, unlike all the other jobs, this will NOT be easy. we will need to override 6 functions, and work with a group of listeners and plugins to update the XP as you get more of your 'crew'. you will also require a custom memory thingymabob to store the crew XP data, as crew replacer cannot store such data.
 also, i might add a quick in built custom crew to crew replacer at some ponit that handles all this hard stuff for you. not for a while though.
 [spoiler=if i did do that, i would put a short tutorial here]
 sorry. not yet.
@@ -786,11 +786,258 @@ i could rick roll people here.
 [/spoiler]
 [spoiler=custom crew class]
 [code]
+public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
+    private float crewUsedTemp;
+    private float ratio = 0;
+    private float crewLossMultiTemp = 1;
+    private float maxDef = 0.2f;
+    private float maxPower = 1f;
+    private final static String memoryKey="$LobsterCombatant_LobsterXP";
+    public void addXP(float xp,CargoAPI cargo){
+        try {
+            xp += Global.getSector().getMemory().getFloat(memoryKey);
+            xp = Math.min(xp, getCrewInCargo(cargo));
+            Global.getSector().getMemory().set(memoryKey, xp);
+        }catch (Exception e){
+        }
+    }
+    public float getXP(CargoAPI cargo){
+        return Math.min(Global.getSector().getMemory().getFloat(memoryKey),getCrewInCargo(cargo));
+    }
+    public float getEffectiveXP(float xp,CargoAPI cargo){
+        float crew = getCrewInCargo(cargo);
+        if (crew == 0) return 0f;
+        return xp/crew;
+    }
+    public float getXPDefneceMulti(float xp, CargoAPI cargo){
+        return 1 + (getEffectiveXP(xp,cargo) * maxDef);
+    }
+    public float getXPPowerMulti(float xp, CargoAPI cargo){
+        return 1 + (getEffectiveXP(xp,cargo) * maxPower);
+    }
+    @Override
+    public float getCrewDefence(CargoAPI cargo) {
+        return super.getCrewDefence(cargo) * getXPDefneceMulti(getXP(cargo),cargo);
+    }
 
+    @Override
+    public float getCrewPower(CargoAPI cargo) {
+        return super.getCrewPower(cargo) * getXPPowerMulti(getXP(cargo),cargo);
+    }
+    public float getCrewUsedRatio(CargoAPI cargo, float crewUsed){
+        Object[] ObjectTemp = (Object[])ExtraData;
+        float temp = crewUsed*getCrewPower(cargo);
+        ratio = (float)Math.floor(temp) / (int)ObjectTemp[1];
+        return ratio;
+    }
+    @Override
+    public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
+        float temp = super.getCrewToLose(cargo, crewUsed, crewLost);
+        crewUsedTemp = temp;
+        return temp;
+    }
+
+    @Override
+    public void removeCrew(CargoAPI cargo, float CrewToLost) {
+        super.removeCrew(cargo, CrewToLost);
+
+        float CrewUsed = crewUsedTemp;
+        //crewLossMultiTemp = getXPDefneceMulti(getXP(cargo),cargo);
+        if(CrewUsed == 0){
+            return;
+        }
+        try{
+            Object[] ObjectTemp = (Object[])ExtraData;
+            PlayerFleetPersonnelTracker thing = PlayerFleetPersonnelTracker.getInstance();
+            GroundRaidObjectivesListener.RaidResultData data = (GroundRaidObjectivesListener.RaidResultData) ObjectTemp[0];
+
+            float xpGain = data.xpGained;
+            xpGain *= thing.XP_PER_RAID_MULT;
+            if (xpGain < 0) xpGain = 0;
+            xpGain *= getCrewUsedRatio(cargo,crewUsedTemp);
+            addXP(xpGain,cargo);
+        }catch (Exception E){
+        }
+    }
+    @Override
+    public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text){
+        String displayName = getDisplayName(cargo);
+
+        TooltipMakerAPI tt = text.beginTooltip();
+        TooltipMakerAPI iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
+        String numberStr = (int) numberOfItems + "";
+        LabelAPI label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
+        int xpTemp = (int)Math.floor(100 * (getXPPowerMulti(getXP(cargo),cargo) - 1));
+        if(xpTemp != 0) {
+            String XP = xpTemp+"%";
+            iwt.addPara("- strength increase from XP: %s", 0, Misc.getHighlightColor(),XP);
+        }
+        tt.addImageWithText(0);
+
+        text.addTooltip();
+    }
+    @Override
+    public void displayCrewLost(CargoAPI cargo,float numberOfItems, TextPanelAPI text){
+        String displayName = getDisplayName(cargo);
+
+        TooltipMakerAPI tt = text.beginTooltip();
+        TooltipMakerAPI iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
+        String numberStr = (int) numberOfItems + "";
+        LabelAPI label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
+        int xpTemp = (int)Math.floor(100 * (getXPDefneceMulti(getXP(cargo),cargo)-1));//(crewLossMultiTemp-1));
+        if(xpTemp != 0) {
+            String XP = xpTemp+"%";
+            iwt.addPara("- loss reduction from XP: %s", 0, Misc.getHighlightColor(),XP);
+        }
+        tt.addImageWithText(0);
+
+        text.addTooltip();
+    }
+}
 [/code]
+so, this is quite a lot to take in. so im going to go over what every single function does and how/ why i added/overwrote it.
+fist, lets look at the functions i added.
+1) addXP
+2) getXP
+3) getEffectiveXP
+4) getXPDefneceMulti
+5) getXPPowerMulti
+6) getCrewUsedRatio
+please note: in theory you could go without any of the 6 added functions. i just added them to make things easyer for myself.
+next, lets look at the functions i overwrote.
+7) getCrewDefence
+8) getCrewPower
+9) getCrewToLose
+10) removeCrew
+11) displayCrewAvailable
+12) displayCrewLost
+
+this all together, lets us have a rougth mimic of the normal marrine XP gain and strangth system. but one last part is missing.
 [/spoiler]
-[spoiler=___ listener]
-[spoiler]
+[spoiler=plugin listener thing]
+[spoiler=the plugin]
+[code]
+public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyInteractionListener,
+        CommodityTooltipModifier,
+        CommodityIconProvider,
+        CargoScreenListener {
+    public static final String commodity = "LobsterCombatant_CombatLobster";
+    private final static String memoryKey="$LobsterCombatant_LobsterXP";
+    @Override
+    public int getHandlingPriority(Object params) {
+        return 0;
+    }
+
+    @Override
+    public void reportCargoScreenOpened() {
+
+    }
+
+    @Override
+    public void reportPlayerLeftCargoPods(SectorEntityToken entity) {
+
+    }
+
+    @Override
+    public void reportSubmarketOpened(SubmarketAPI submarket) {
+
+    }
+
+    @Override
+    public void reportPlayerOpenedMarket(MarketAPI market) {
+
+    }
+
+    @Override
+    public void reportPlayerClosedMarket(MarketAPI market) {
+
+    }
+
+    @Override
+    public void reportPlayerOpenedMarketAndCargoUpdated(MarketAPI market) {
+
+    }
+
+
+    @Override
+    public String getIconName(CargoStackAPI stack) {
+        return null;
+    }
+
+
+
+    @Override
+    public void reportPlayerNonMarketTransaction(PlayerMarketTransaction transaction, InteractionDialogAPI dialog) {
+        float got = transaction.getQuantityBought(commodity);
+        float lost = transaction.getQuantitySold(commodity);
+        processTransaction(got - lost);
+    }
+
+    @Override
+    public void reportPlayerMarketTransaction(PlayerMarketTransaction transaction) {
+        float got = transaction.getQuantityBought(commodity);
+        float lost = transaction.getQuantitySold(commodity);
+        processTransaction(got - lost);
+    }
+
+    @Override
+    public String getRankIconName(CargoStackAPI stack) {
+        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return null;
+        int[] thresholds = {25,50,75,100};
+        String[] ranks = {"icon_crew_green","icon_crew_regular","icon_crew_veteran","icon_crew_elite"};
+        int xp = getEffectiveXPPercent();
+        for (int a = 0; a < thresholds.length; a++){
+            if (thresholds[a] >= xp){
+                return Global.getSettings().getSpriteName("ui", ranks[a]);
+            }
+        }
+        return Global.getSettings().getSpriteName("ui", ranks[0]);
+    }
+
+    @Override
+    public void addSectionAfterPrice(TooltipMakerAPI info, float width, boolean expanded, CargoStackAPI stack) {
+        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return;
+        float xp = (float)Global.getSector().getMemory().getFloat(memoryKey);
+        info.addPara("total XP is: %s",3,Misc.getHighlightColor(),xp+"");
+        info.addPara("current XP is: %s",3,Misc.getHighlightColor(),getEffectiveXPPercent()+"%");
+    }
+
+    public void processTransaction(float change){
+        float xp = Global.getSector().getMemory().getFloat(memoryKey);
+        float commoditys = Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity(commodity);
+        xp = Math.min(xp,commoditys);
+        Global.getSector().getMemory().set(memoryKey,xp);// * -ratio);
+    }
+    public static int getEffectiveXPPercent(){
+        float xp = (float)Global.getSector().getMemory().getFloat(memoryKey);
+        float commoditys = Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity(commodity);
+        return (int)Math.min(Math.floor((xp*100)/commoditys),100);
+    }
+}
+[/code]
+so, once again, this is a long one. lots of plugins, lots of functions.
+im going to skip explaining the functions i didn't change, because im not using them
+as for the ones i did change:
+1)reportPlayerNonMarketTransaction
+2)reportPlayerMarketTransaction
+3)getRankIconName
+4)addSectionAfterPrice
+5)processTransaction
+6)getEffectiveXPPercent
+[/spoiler]
+[spoiler=implementation]
+[code]
+@Override
+public void onGameLoad(boolean newGame) {
+    super.onGameLoad(newGame);
+    Global.getSector().getListenerManager().addListener(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+    Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+}
+[/code]
+so, this is the normal 'add the listener on game load into starsectors listener manager', but im also doing the same thing with the GenericPlugins.
+the reason? some of the interfaces we implemented are listeners, and some are plugins. if you do this, you will also need to add your close to both the plugin manager and listener manager.
+[/spoiler]
+[/spoiler]
 [/spoiler]
 [spoiler=a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)]
 [/spoiler]

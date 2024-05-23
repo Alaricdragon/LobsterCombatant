@@ -74,10 +74,6 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
 
     @Override
     public String getRankIconName(CargoStackAPI stack) {
-        //if(true){return Global.getSettings().getSpriteName("ui", ranks[2]);}
-        //if (!stack.getCommodityId().equals(commodity)) ;
-        //if (stack.getCargo().getFleetData() == null) ;
-        //if (!stack.getCargo().getFleetData().getFleet().isPlayerFleet()) ;
         if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return null;
         int[] thresholds = {25,50,75,100};
         String[] ranks = {"icon_crew_green","icon_crew_regular","icon_crew_veteran","icon_crew_elite"};
@@ -99,10 +95,8 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
     }
 
     public void processTransaction(float change){
-        //if (change >= 0) return;
         float xp = Global.getSector().getMemory().getFloat(memoryKey);
         float commoditys = Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity(commodity);
-        //float ratio = -change/commoditys;
         xp = Math.min(xp,commoditys);
         Global.getSector().getMemory().set(memoryKey,xp);// * -ratio);
     }
