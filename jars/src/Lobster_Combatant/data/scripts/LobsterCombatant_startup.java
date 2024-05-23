@@ -8,5 +8,6 @@ public class LobsterCombatant_startup extends BaseModPlugin {
         super.onGameLoad(newGame);
         Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
+        Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_Commodity_iconAndImageChanger(),true);
     }
 }

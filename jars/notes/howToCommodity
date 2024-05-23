@@ -11,10 +11,15 @@ in this tutorials, we will cover the following:
 3) how to change your items description dynamically (based on how literally anything you could think of)
     -adding text to a items description
     -adding 'F1 to show more' text to your items description
-4) and maybe latter, we can talk about 'special items' but not now sorry
+4) how to dynamically change the way your commodity looks
+    -how to change the 'icon' your commodity uses
+    -how to add a 'rank' icon onto your commodity.
+5) and maybe latter, we can talk about 'special items' but not now sorry
 
-
+sprites:
+[spoiler]
 # requirements for a sprite:
+[spoiler]
 so, the requirements are as follows:
 1) *the image size should be 100 by 100 pixels or less.*
 although you can have images larger then this, it will be larger then the 'box' that you can put a given commodity in and will look weired.
@@ -27,38 +32,42 @@ besides the 2 rules both, there are not 'requirements' for a sprite. although ev
 I am not a spiriting expert, so if you don't know how to resize a given image, or how to make a background transparent, i found 2 tutorials for gimp here:
 cropping(1:44) and resizing(4:00) a image: https://www.youtube.com/watch?v=dQSlqcMCKx0&t=253s&ab_channel=DoiT8
 adding a transparent background: https://www.youtube.com/watch?v=nl2uqKqbryo&ab_channel=EZTutorials
-
+[/spoiler]
 # were to put your sprite
+[spoiler]
 now that you have a sprite, you need to put it somewhere the game can access.
 enter your mod folder, and create a folder named 'graphics'. inside that folder, create another folder named 'icons'. and inside that, create yet another folder named 'cargo'
 (please note: you can put your images anywhere in your mods folder, but this is the way most mods are structured, and the base game is structured. so it can help to organize yourself using others organization technics if you plan on your mod having a lot of things in it.)
 from there, put the sprite you intend to use in the newly created 'cargo' folder. your setup should look something like this:
--->image 000 here<--
+[img]https://imgur.com/7FRQFOT.png[/img]
 please take note of the name given to my sprite. most mods structure there sprites and other not player visible names to have a name like 'myModsName_WhatThisImageRepresentsName'. (were 'myModName' is the name of your mod, and 'WhatThisImageRepresentsName' is the in game name of whatever this image is suppose to be)
 you can use always use a different naming structure of course. but if by chance another mod happens to add a image of the same name, at the same location, Weather your mod or theres might end up using the wrong image, and that can be... uncomfortable.
 now that you have a image set up in your mod, we can move onto the interesting parts:
-
+[/spoiler]
+[/spoiler]
 # the commodities.csv file
+[spoiler]
 so the first thing we need to do is set up the location were the commodities.csv file will go. unlike were your image goes, this is extremely important. if you put this file in the wrong location, starsector will not read it.
 enter your mod folder, and create a folder named 'data'. inside that folder, create another folder named 'campaign'.
 now, we are going to get a commodity.csv file. because building one ourself is frustrating, im just going to go into the starsector-core and copy theres.
 so in the 'starsector\starsector-core\data\campaign folder, and find the file called commodities.csv
--->image 001 here<--
+[img]https://imgur.com/BR3bf9g.png[/img]
 now copy and past it into your own mods data\campaign folder
--->image 002 here<--
+[img]https://imgur.com/Lp8k07l.png[/img]
 now we need to open it. i use a editor called 'Rons CSV Editor' to open such files, but you might have your own way of opening them.
--->image 003 here<--
+[img]https://imgur.com/HPBPj1j.png[/img]
 wow. there is a lot of junk here. feel free to look around at everything, if you want, and try to guess what all the different stats do. I will of corse exsplain them all later.
 what i want to do right now, is delete every line below 'supply'. to clean it up a little.
 (in Rons CSV Editor, I don't know about others) you can do this by clicking on the numbers on the right, then dragging your mouse down to select multiple lines. then pressing the backspace button
--->image 004 here<--
+[img]https://imgur.com/bgjZyPw.png[/img]
 mush more clean!
 now, we are going to edit the 'Supplies' name and add a # in front of it. this will make the code ignore that inter commodity, so we don't mess with the base games supply somehow by mistake.
 next, we are going to insert a new line both the supply (in Rons CSV Editor) this can be done by right clicking anywhere on the line were the supply's are, and pressing the 'insert row(s) above' option
 your CSV file should look like this:
--->image 005 here<--
+[img]https://imgur.com/aV5AIJV.png[/img]
 so, now we can start to fill out all the boxes so we can have our commodity
 as we do, i am going to talk about what each and every box does, and what you mgiht want to put into it
+[spoiler]
 1) name: the name of your commodity is the name that it will be referred to in game.
     -im going to write: 'Combat Lobster' because: that's what i want this to be called.
 
@@ -88,6 +97,7 @@ as we do, i am going to talk about what each and every box does, and what you mg
 9) tags: a 'tag' is something that can be attached to a commodity, and can be read by the game or mods. you can add as many tags to a given commodity as you like, but a tag can change a lot of things, so make sure you know what your doing first
     -im going to write: 'military' because: a combat lobster should be 'military'.
     tags that exsist, and there functions, but only as far as i can tell. I miss things sometimes:
+[spoiler]
     1) military
         the military tag does a few things:
         1) it makes the commodity show up in the military market
@@ -125,7 +135,7 @@ as we do, i am going to talk about what each and every box does, and what you mg
         -I think this prevents you from getting this item? I don't know though, because i could not find the code for it.
     15)nosell
         -this tag exists in the code, but i cant find were its used. It might be unused
-
+[/spoiler]
 10) stack size: does nothing anymore. used to determine stack size
     -im going to write: '0' because: it is no longer used
 
@@ -172,9 +182,9 @@ as we do, i am going to talk about what each and every box does, and what you mg
 
 23) desc: this does nothing. a forgotten bit of data from a lost age. if you want to add descriptions to your items, i will show you soon.
     -im going to leave this blank because: this does nothing
-
+[/spoiler]
 now after setting up all the varubles there (or just copying something from the base games commodity.csv file, and changing the id to something different) your commodities.CSV file should look something like this:
--->image 006 here<--
+[img]https://imgur.com/uQaLTJs.png[/img]
 
 FAQ:
     Q: how do i make my commodity take crew space, or space in my fuel tanks
@@ -197,32 +207,34 @@ then type in the following command:
 'addItem commodityID'
 were 'commodityID' is replaced with the ID of your new commodity you added to your CSV file
 and if all went well, there it is!
--->image 007 here<--
-but wait, if we move our mouse over the commodity, as some of you may have exspected...
--->image 008 here<--
+[img]https://imgur.com/mhRRubs.png[/img]
+but wait, if we move our mouse over the commodity, as some of you may have expected...
+[img]https://imgur.com/mKjYaK6.png[/img]
 there is no description!
-
+[/spoiler]
 # the descriptions.csv file
+[spoiler]
 now we need to add a description to our commodity. and there are a few ways to do this. we will be starting with the descriptions.csv file.
 first, go into your mods data folder, and create a new folder named 'strings'
 from there, we are going to go into starsector\starsector-core\data\strings and copy and past its own 'descriptions.csv' file into our newly created string folder
 your new strings folder should now look something like this:
--->image 009 here<--
-now we are going to open the newly copyed CSV file. and then we are going to deleat every line but the one at the top, and the catagory line
+[img]https://imgur.com/hFx1o8a.png[/img]
+now we are going to open the newly copied CSV file. and then we are going to delete every line but the one at the top, and the category line
 your CSV file should now look like this:
--->image 010 here<--
+[img]https://imgur.com/1R5u8PA.png[/img]
 now, we are going to start to change this to match out own commodity.
 first, change the id section to say your commodity id (so i would change 'lightmg' to say 'LobsterCombatant_CombatLobster')
 second, change the type section to say 'RESOURCE' (so i would change 'WEAPON' to say 'RESOURCE') (also, the reason for this is to let the game know that this is looking for a commodity. it -will not- work if it says anything else, because you have a commodity that you want to have a description)
 lastly, change the text1 section to say.. whatever you want your description to be (so i would change... i bunch of text to say 'mean, lean, fighting lobster')
-and that's it! your new description is completed. here what mine looks like for refrence:
--->image 011 here<--
+and that's it! your new description is completed. here what mine looks like for reference:
+[img]https://imgur.com/FghhqY9.png[/img]
 also, ignore all the other sections (text2,text3,text4,notes) they are not needed here
 if you start up the game, and give yourself one of your commodity again, it should look like this
--->image 012 here<--
-and thats all for the basic of descriptions.
-
+[img]https://imgur.com/82HJnVV.png[/img]
+and that's all for the basic of descriptions.
+[/spoiler]
 # advanced descriptions
+[spoiler]
 in this section, we are going to cover something slightly more advanced for the first time.
 if all you want to do is make a commodity and have it in game, skip this section.
 if you for some reason want the following:
@@ -235,36 +247,37 @@ so for advanced descriptions we are going to need 3 things:
 1) create a new class and name it 'modName_CommodityTooltipModifier' were 'modName' is the name of your mod.
    next, make the new class 'implements CommodityTooltipModifier'
    your new class should look like this:
-   -->image 13 here<--
-2) in your main java class (the one your mod_ingo says is your 'modPlugin')
+   [img]https://imgur.com/gegRCOs.png[/img]
+2) in your main java class (the one your mod_info says is your 'modPlugin')
    add the following function:
    @Override
    public void onGameLoad(boolean newGame) {
        super.onGameLoad(newGame);
    }
    your modPlugin should look something like this:
-   -->image 14 here<--
+   [img]https://imgur.com/hFeoMqs.png[/img]
 3) add your newly created 'modName_CommodityTooltipModifier' class as a transient listener. (note, you can make it none transient if you want it to rembmer data, but if you do, I advice you to make sure you dont add one if the listiner is already present (make it so it only adds if new game is true or something maybe?))
     you can use the following function to add such a listiner:
     Global.getSector().getListenerManager().addListener(new modName_CommodityTooltipModifier(),true);
     now your modPlugin should look something like this:
-    -->image 15 here<--
+    [img]https://imgur.com/O2lB592.png[/img]
 
 and that it! the hard part is done.
 now its time to write your description. i will show you a simple example, but for more advanced things (like images, or crazy things) you will need to look up how to use the 'TooltipMakerAPI' on your own.
--->image 16 here<--
+[img]https://imgur.com/MUxRy8R.png[/img]
 so, i would like to explain a few things about this.
 1) line 15 is so this code will only effect the one commodity. if i didn't have that if statement, this would effect every stack of items in the game.
 2) line 17 and 18 show how to create and highlight text. the text i want to highlight will always replace the %s in the first inputted text. this lets you have things like variables, instead of just static strings be added to your descriptions
 3) line 21-23 show how to display text only when the text is 'expanded'.
 now for showing it in game:
 not expanded:
--->image 17 here<--
+[img]https://imgur.com/wfw7lfh.png[/img]
 expanded:
--->image 18 here<--
+[img]https://imgur.com/N1PF1GY.png[/img]
 and that's all for 'advanced' descriptions. simple i hope.
-
+[/spoiler]
 # Implementation
+[spoiler]
 so you made it. and now we are here.
 the question that must be asked, the one you have felt, silently at the back of your mind:
 'how do i actually see this in game without commands'
@@ -285,19 +298,20 @@ there are 3 ways to see a commodity in game without commands:
     I will go over each of the options here in soon, but i will focus on number 1. the others will only get a quick description, or we will be here all day.
 
     1) adding supply and demand without overriding or creating industry:
+[spoiler]
         this is... different. it can cause lag, but it allows for the ability to add supply and demand without worrying about your code being overridden.
         also, normally when doing something like this, i use the marketRetrofits library, as it has a lot of things to help me run code more efficiently, but im not ready to create even a basic tutorial on how to use that yet, so here we are.
         so, lets get started! I will try to explain what we are doing as we move along:
         1) create a new class, and make sure it 'implements EconomyAPI.EconomyUpdateListener'. also, add the functions it wants you to.
-           -->image 27 here<--
+           [img]https://imgur.com/WHphej2.png[/img]
         2) now add this newly created class as a 'UpdateListener' using the following command in your modplugin:
             Global.getSector().getEconomy().addUpdateListener(new modName_BaseCampaignEventListener());
             now your modplugin should look something like this:
-            -->image 28 here<--
+            [img]https://imgur.com/IzkS8yT.png[/img]
         3) and now for the fun part! adding supply or demand to a industry. for this, go back to the class you made (the one that implements the 'EconomyAPI.EconomyUpdateListener' class).
             so, what you need to do here can vary a lot depending on what you are going to do, so my first example is going to be extremely basic, but the example is going to increase in complexity as we move on.
             so for the first example:
-            -->image 29 here<--
+            [img]https://imgur.com/fD5hVI9.png[/img]
             so in this example, im adding 'Combat Lobster' as supply on lions guard HQ's, and im adding 'Combat Lobster' as demand on heavy battery's. there are a few parts to this that i would like to point out
             lines 17-20 are variables. i didn't need to make everything a variable, but it makes it easier to read and modify, so i did so.
             on line 22 we have a for loop. it loops over every market in the game. all of them. you don't need to do this, unless you want to check every world and apply demand or supply changes to industry's on every one, wish i do, so i have.
@@ -312,10 +326,10 @@ there are 3 ways to see a commodity in game without commands:
             on lines 28 - 31, we see how to add demand. the function is exactly the same as lines 24 - 27, but we run 'getDemand' instead of 'getSupply'.
 
             we can also look and see how this looks in game
-            -->image 30 here<--
-            -->image 31 here<--
+            [img]https://imgur.com/DnSfUFP.png[/img]
+            [img]https://imgur.com/nNyi1FA.png[/img]
             as you can see, the lions guard is now producing lobster, and the heavy battery's are demanding it...
-            -->image 32 here<--
+            [img]https://imgur.com/vQEb0Dc.png[/img]
             across the inter sector!
             so you will see 'combat lobster' in trade fleets, in markets were it is demanded / supplied. everywhere. you can even get missions for combat lobster delivers.
             your commodity is completely implemented into the economy. congratulations
@@ -325,7 +339,8 @@ there are 3 ways to see a commodity in game without commands:
                 2) my lobsters are only being demanded at heavy battery's, and not at ground defences?
             so lets fix that:
             fair waring: this code is more complicated then the last, because i like this idea and want something good. also, i am terrible at explaining complicated things.
-            -->image 33 here<--
+[spoiler]
+            [img]https://imgur.com/c5pVnbO.png[/img]
             so, if you look at this and think 'what?' don't worry, understanding something like this is not required. this is more of a bonus section for my own peace of mind then anything.
             so, lets go over the changes:
             lines 16 - 22 have changed in 3 ways:
@@ -341,11 +356,10 @@ there are 3 ways to see a commodity in game without commands:
                 if you wanted to modify this for your own needs, make sure 'supplyValue' and 'demandValue' are at least as long as 'supplyIndustry' and 'demandIndustry' respectively, or you will get a crash.
 
             if you don't understand this, please don't be afraid. this was something i needed to add because it was bugging me that if you played a mod that let you get lobster on one of your worlds, you would not beable to train combat lobster.
-
-
-
-
+[/spoiler]
+[/spoiler]
     2) replacing a industry:
+[spoiler]
         if you want to know how to replace a industry...
         1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
         2) delete everything but the industry you want to replace,
@@ -359,18 +373,19 @@ there are 3 ways to see a commodity in game without commands:
             (so the industry will produce '2' at size '3', '3' at size '4', '5' at size '6', and so on)
             (you can also do the same thing for the demand a industry has with the 'demand("LobsterCombatant_CombatLobster",5)' function)
         here's what your CSV could looks like (I overrode the lionsguard industry)
-        -->image 19 here<--
+        [img]https://imgur.com/ERrLriz.png[/img]
         please pay attention to the plugin section. its the only section i changed, and the only one you need to change with this method.
         here's what your code should look like
-        -->image 20 here<--
+        [img]https://imgur.com/FXQf8wA.png[/img]
         this is what your code should look like, although what 'supply' you are adding, and what class you are 'extend' might be different
         we can even see the changes in game!
-        -->image 21 here<--
-        -->image 22 here<--
+        [img]https://imgur.com/CcrhhgU.png[/img]
+        [img]https://imgur.com/HCt0hGH.png[/img]
         please note this method has some issues:
         1) if anyone else try's to do the same thing to the same industry, one of your plugins is going to be overwritten, wish can cause issues
-
+[/spoiler]
     3) creating your own industry
+[spoiler]
         if you want to create your own industry for your commodity.. it has less isuees, but can be a pain.
         1) copy the industry.csv file (placing it in the data\campaign folder of your mod folder),
         2) delete everything but the industry you want that you think costs an OK amount,
@@ -384,15 +399,147 @@ there are 3 ways to see a commodity in game without commands:
             (so the industry will produce '2' at size '3', '3' at size '4', '5' at size '6', and so on)
             (you can also do the same thing for the demand a industry has with the 'demand("LobsterCombatant_CombatLobster",5)' function)
         here's what your CSV could looks like (I used the lions guard industry as my base)
-        -->image 23 here<--
+        [img]https://imgur.com/oWadi5s.png[/img]
         this time, instead of only changeing the plugin, i also changed the id,name, and description
         although, you technically only need to change the plugin and id for this to work, it can get confusing for players if you don't at least also change the name.
         here's what your code should look like
-        -->image 24 here<--
+        [img]https://imgur.com/XskLBOh.png[/img]
         this is what your code should look like, although what 'supply' you are adding, and your classname might be different
         we can even see the changes in game!
-        -->image 25 here<--
-        -->image 26 here<--
-
+        [img]https://imgur.com/5qGVWse.png[/img]
+        [img]https://imgur.com/67iXGUh.png[/img]
+[/spoiler]
     and that's all i will be talking about, in relation to creating and modifying industry in this tutorial.
     if i find/create some good tutorials on how to do this, i will likely put them -->here<--
+[/spoiler]
+#changing the image of your commodity
+[spoiler]
+so this is something i have always wanted to do, but never figured it out. turns out, its relatively simple.
+but before we can talk about how this works, we need to set up the listiner.
+[spoiler=setting up the CommodityIconProvider]
+so first we set up a new class that implements blank. it should look like this:
+[code]
+public class LobsterCombatant_Commodity_iconAndImageChanger implements CommodityIconProvider{
+    @Override
+    public int getHandlingPriority(Object params) {
+            return 0;
+        }
+    @Override
+    public String getIconName(CargoStackAPI stack) {
+        return null;
+    }
+
+    @Override
+    public String getRankIconName(CargoStackAPI stack) {
+        return null;
+    }
+}
+[/code]
+next, you are going to want to add this class as a plugin in your 'onGameLoad' function in your mod plugin. your mod plugin should now look like this:
+[code]
+public class LobsterCombatant_startup extends BaseModPlugin {
+    @Override
+    public void onGameLoad(boolean newGame) {
+        super.onGameLoad(newGame);
+        Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
+        Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
+        Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_Commodity_iconAndImageChanger(),true);
+    }
+}
+[/code]
+(keep in mind: I left the 2 other listeners active. only the 3rd one is new, and required)
+now that that's set up, we can go onto doing something more interesting.
+[/spoiler]
+[spoiler=getting a custom image for your commodity's sprite or 'rank icon']
+so, im putting this here so i don't need to repetitively explain this.
+first, you are going to want an image. if you are creating a sprite for your icon, see section one for how to add a sprite to your game. if you are creating an icon, do the same thing. but keep in mind the size of your icon, as icons in general are mush smaller then commodity images
+secondly you are going to need to put this image somewhere. most images go into the graphics folder of your mod. but it does not matter so long as the image is in your mod folder. i would recommend keeping said folder organized though.
+lastly, there is the part we have not yet talked about. the setting.json file. this can be done in _ steps
+1) go into your mod folder and create or navatage to the data/config folder.
+[img]https://imgur.com/52hPxbD.png[/img]
+2) create a new text file and name it 'settings.json'.
+    -if you are unable to change file extensions, go into your main starsector folder, then go into starsector-core/data/config and copy the setting.json file into your data/config. then remove all the files within your newly copied settings.json.
+the resulting folder should look like this:
+[img]https://imgur.com/cDWDxAP.png[/img]
+3)now you are going to want to open your settings.json folder, and add the following lines
+[code]
+{
+  "graphics": {
+    "misc": {
+      "LobsterCombatant_ExstraLobsters": "graphics/icons/cargo/LobsterCombatant_LobsterFighter.png"
+    }
+  }
+}[/code]
+of course, you should not use the name 'LobsterCombatant_ExstraLobsters' instead, use something like "youModName_whatThisIs"
+also, the second part 'graphics/icons/cargo/LobsterCombatant_LobsterFighter.png' should be the path to the image you want to act as an 'rank icon' or 'sprite'.
+lastly 'misc' is only one of many category's you can use when adding graphics to starsector. I dont know what all of them do, so i just tend to use 'misc'
+
+4) lastly, when you use this type of code, you should use a line like 'Global.getSettings().getSpriteName("misc","LobsterCombatant_ExstraLobsters");' to get the sprites 'name' (aka, what the game uses to get sprites from its index)
+-also, the "misc" should be whatever catagory you put your sprite in (mine is misc)
+-also, your "LobsterCombatant_ExstraLobsters" should be the name you gave your json variable. not something like the image name.
+
+[/spoiler]
+[spoiler=changing your commodity's 'sprite']
+so, what is this?
+simply put, its a way to change that image represents your commodity in your inventory (or in other innovators, like in the open market).
+as for why? its useful if you want to dynamically change the image of an commodity. like what crew and marines do, depending on the number of them in your inventory.
+so lets give an example:
+[code]
+@Override
+public String getIconName(CargoStackAPI stack) {
+    if(stack == null) return null;
+    if (!stack.getCommodityId().equals("LobsterCombatant_CombatLobster")) return null;
+    if (stack.getSize() < 150) return null;
+    return Global.getSettings().getSpriteName("systemMap","icon_jump_point");
+}
+[/code]
+in this example, the sprite of my Combat Lobster remains normal, until there is more then 150 in a stack. then it gets turned into a vortex. like normal lobsters do.
+so some things to note here:
+1) anytime this function runs 'return null' it basically just exits the function. that's to say, when you return null here its just saying you don't want to change the sprite of this image.
+2) 'if (!stack.getCommodityId().equals("LobsterCombatant_CombatLobster"))'. this is important, because without a line exiting this code when the commodity we want is not present, this icon would be added to all commodity's. something that might be useful to someone, but not me right now.
+3) the returned value, 'Global.getSettings().getSpriteName("systemMap","icon_jump_point")' is a value gotten from the base games settings.json file. the "systemMap","icon_jump_point" is just the icon used to represent jump points on the map in game? maybe i don't remember..
+[img]https://imgur.com/YEbKkwj.png[/img]
+note: both inventory spaces have combat lobsters in them. but one has enough lobsters to create a lobster vertex.
+[/spoiler]
+[spoiler=changing your commodity's 'rank' icon]
+so first thing first: what does this even mean?
+its relatively simple. a commodity rank icon is the thing you see on, for example, marines in the top right conner. although saying that is a rather limited interpretation.
+a rank icon is a image that goes on top of your commodity. this images top right conner is always at the top right conner of your commodity. this image can be as large and as small as you like. so let your imagination go wild with that.
+and yet. this does work in congregation with changing your commodity's sprite.
+so, let me give you an example of this in practice.
+
+[spoiler=basic example]
+[code]
+@Override
+public String getRankIconName(CargoStackAPI stack) {
+    if(stack == null) return null;
+    if (!stack.getCommodityId().equals("LobsterCombatant_CombatLobster")) return null;
+    return Global.getSettings().getSpriteName("ui","icon_crew_elite");
+}
+[/code]
+so a few things to note about this function:
+1) anytime this function runs 'return null' it basically just exits the function. that's to say, when you return null here its just saying you don't want to add a icon to this image.
+2) 'if (!stack.getCommodityId().equals("LobsterCombatant_CombatLobster"))'. this is important, because without a line exiting this code when the commodity we want is not present, this icon would be added to all commodity's. something that might be useful to someone, but not me right now.
+3) the returned value, 'Global.getSettings().getSpriteName("ui","icon_crew_elite")' is a value gotten from the base games settings.json file. the "ui","icon_crew_elite" is just the icon used to represent max level marines in the base game.
+
+lastly, although im not going to show it in this example: this does allow for dynamic commodity 'rank icons'. just gotta use some if statments.
+and here's what this would look like in game:
+[img]https://imgur.com/fSsvYOb.png[/img]
+[/spoiler]
+[spoiler=second example]
+you can use any sprite from any category you want. just remember: the sprites top right conner will always match up with your commodity top right conner. so make sure your sprites are organized properly to avoid any issues.
+as an example: changing the icon to something that's not meant to be a RankIcon:
+[code]
+@Override
+public String getRankIconName(CargoStackAPI stack) {
+    if(stack == null) return null;
+    return Global.getSettings().getSpriteName("systemMap","icon_jump_point");
+}
+[/code]
+results in:
+[img]https://imgur.com/8NUOs08.png[/img]
+something you might notice, this is effecting all commodity in my inventory (but not special items, like the blueprint package that's present). this is because i removed the line that filters out all other commoditys. just to show you that you can.
+[/spoiler]
+[/spoiler]
+[/spoiler]
+lastly, i would like to link my little mod i mad for this tutorial, so you may look at it for examples, if you so wish: https://github.com/Alaricdragon/LobsterCombatant/tree/basic_Commoditys

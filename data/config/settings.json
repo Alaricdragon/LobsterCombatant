@@ -1,3 +1,8 @@
 {
+  "graphics": {
+    "misc": {
+      "LobsterCombatant_ExstraLobsters": "graphics/icons/cargo/LobsterCombatant_LobsterFighter.png"
+    }
+  }
 }
 
