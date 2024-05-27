@@ -41,6 +41,12 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
     public float getXPPowerMulti(float xp, CargoAPI cargo){
         return 1 + (getEffectiveXP(xp,cargo) * maxPower);
     }
+    public float getCrewUsedRatio(CargoAPI cargo, float crewUsed){
+        Object[] ObjectTemp = (Object[])ExtraData;
+        float temp = crewUsed*getCrewPower(cargo);
+        ratio = (float)Math.floor(temp) / (int)ObjectTemp[1];
+        return ratio;
+    }
     @Override
     public float getCrewDefence(CargoAPI cargo) {
         return super.getCrewDefence(cargo) * getXPDefneceMulti(getXP(cargo),cargo);
@@ -50,12 +56,7 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
     public float getCrewPower(CargoAPI cargo) {
         return super.getCrewPower(cargo) * getXPPowerMulti(getXP(cargo),cargo);
     }
-    public float getCrewUsedRatio(CargoAPI cargo, float crewUsed){
-        Object[] ObjectTemp = (Object[])ExtraData;
-        float temp = crewUsed*getCrewPower(cargo);
-        ratio = (float)Math.floor(temp) / (int)ObjectTemp[1];
-        return ratio;
-    }
+
     @Override
     public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
         float temp = super.getCrewToLose(cargo, crewUsed, crewLost);

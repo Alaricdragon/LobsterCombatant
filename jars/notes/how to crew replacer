@@ -784,9 +784,22 @@ sorry. not yet.
 ...
 i could rick roll people here.
 [/spoiler]
+[spoiler=notes on the XP system]
+so, i need to write this section for the code to make sense.
+the XP system is going to be structured like so:
+1) the max amount of XP you can have will be capped by the amount of crew you have.
+    -this is to mimic the way how marine XP works. its not an exact copy, because im lazy, but its something
+    -this also lets has have the cool thing starsector does were the XP of our crew effectively lowers when we add more crew, and increases when we remove crew. so thats cool.
+    -also, this lets has run the equadtion xp/crew amount to determin the 'effective xp' of our crew ('effective xp' is just the number we multiply the bonus damage/defence with). becuase its caped, this number will never be more then 1.
+2) XP is going to be stored in starsectors 'memory'
+    -I did this so its easier to get the XP data from wherever you might need it
+3) the 'memory key' i use to get the XP is "$LobsterCombatant_LobsterXP". if you want to make this yourself, please change this value. or you will likely have compatibility issues with anyone else who also refuses to change this value.
+3) I attempted to keep the xp system as close as possible to the way marines work. but like, I didn't look it up because im lazy. so there might be some funny things going on.
+[/spoiler]
 [spoiler=custom crew class]
 [code]
 public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
+
     private float crewUsedTemp;
     private float ratio = 0;
     private float crewLossMultiTemp = 1;
@@ -815,6 +828,12 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
     public float getXPPowerMulti(float xp, CargoAPI cargo){
         return 1 + (getEffectiveXP(xp,cargo) * maxPower);
     }
+    public float getCrewUsedRatio(CargoAPI cargo, float crewUsed){
+        Object[] ObjectTemp = (Object[])ExtraData;
+        float temp = crewUsed*getCrewPower(cargo);
+        ratio = (float)Math.floor(temp) / (int)ObjectTemp[1];
+        return ratio;
+    }
     @Override
     public float getCrewDefence(CargoAPI cargo) {
         return super.getCrewDefence(cargo) * getXPDefneceMulti(getXP(cargo),cargo);
@@ -824,12 +843,7 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
     public float getCrewPower(CargoAPI cargo) {
         return super.getCrewPower(cargo) * getXPPowerMulti(getXP(cargo),cargo);
     }
-    public float getCrewUsedRatio(CargoAPI cargo, float crewUsed){
-        Object[] ObjectTemp = (Object[])ExtraData;
-        float temp = crewUsed*getCrewPower(cargo);
-        ratio = (float)Math.floor(temp) / (int)ObjectTemp[1];
-        return ratio;
-    }
+
     @Override
     public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
         float temp = super.getCrewToLose(cargo, crewUsed, crewLost);
@@ -896,23 +910,64 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
 }
 [/code]
 so, this is quite a lot to take in. so im going to go over what every single function does and how/ why i added/overwrote it.
-fist, lets look at the functions i added.
+first, lets look at the functions i added.
+I could have avoided adding the functions if i wanted. i only added then to be more organized.
+also, I made it so every function has access to the 'cargo' variable that i put in every function in crewReplacer_crew. this was more out of habit then anything. please dont judge me
 1) addXP
+    -this function save the amount of xp my crew has.
+    -notice how we use math.min with the XP amount and the amount of crew we have? this prevents us from having more XP then crew, wish is importing in the way i designed this.
 2) getXP
+    -this function returns the amount of XP my crew has.
+    -again i use math.min to make sure XP is not grater then the amount of crew i have. this is just me being safe.
 3) getEffectiveXP
+    -this function gets the 'effective xp' that my crew has. this just turns the XP value into a number between 0 and 1. so i can multiply bonus stats to this value.
+    -the 'if(crew == 0)return 0;' is just there to stop an error when i have no XP. because you cant divide something by zero in java.
 4) getXPDefneceMulti
+    -this function just returns the value i want to multiply my 'defence' by. given however mush XP i have.
 5) getXPPowerMulti
+    -this function just returns the value i want to multiply my 'power' by. given however mush XP i have.
 6) getCrewUsedRatio
+    -this function get the ratio of this crew to every other crew used in a raid. this is important for limiting the amount of XP gained to just the amount of this crew used in this combat.
+    -regarding 'ExtraData': this is a bit of data i give -some- of my crewReplacer jobs. it simply lets the crew of this job gain accuses to some additional data.
+        be very very carefully when accessing this class. i try to record what all bits of 'ExtraData' do, but it does not change the fact that most crewReplacer_Jobs don't have the same 'ExtraData'. trying to accuses a bit of 'ExtraData' that does not exist for a job will result in your crew effectively being missing from the job (do to crash protection).
 please note: in theory you could go without any of the 6 added functions. i just added them to make things easyer for myself.
 next, lets look at the functions i overwrote.
 7) getCrewDefence
+    -in this function, i simply multiply the base defence of this crew by the 'getXPDefenceMulti' value. to get the defence bonus from this crew.
 8) getCrewPower
+    -in this function, i simply multiply the base power of this crew by the 'getXPPowerMulti' value. to get the power bonus from this crew.
 9) getCrewToLose
+    -the only reason i overrode this function is to store the amount of this crew that was used in the raid. this is useful when we determine the % of the raid that was this crew.
 10) removeCrew
+    -this function is a mess. but its were we add the newly gained XP to our crew. I chose to do so here because it happens just after we remove our crew. this helps prevent us from having more XP then crew, wish would allow us to have more then a 1X multiply on our XP bonuses.
+    -this is were we use the data gathers from getCrewToLoss. you can see it used in the variable 'CrewUsed'. you don't have to use a second variable for this like i did. i just did that to make it a little easier to modify.
+    -in regards to the 'PlayerFleetPersonnelTracker'. this is were the base games marine calculations are based (if you ever want to look at them yourself). i got it here to grab the 'XP_PER_RAID_MULT' value from it. because i feel like if this value is changed by settings or something we would also want our crew to change there XP gain, to avoid consistency issues. but that's just my opinion.
+    -notice the gained XP we got from the 'ExtraData'? this is the exsact same XP that marines gain in the base game. cool right?
+        if you wanted to gain XP a different way, you would need to decide that out on your own. sorry. but i believe in you. you can do it.
+    -the rest of it is just me getting the use crew ratio and multiplying the gained XP by that. this is important again, because we dont want to gain a bonch of XP on our guys if they were not even in the raid in the first place.
 11) displayCrewAvailable
+    -this is just a normal 'display crew numbers' but i also display the bonus crew power (provided the current bonus from XP is at least 1% bonus)
 12) displayCrewLost
+    -this is just a normal 'display crew numbers' but i also display the bonus crew defence (provided the current bonus from XP is at least 1% bonus)
 
-this all together, lets us have a rougth mimic of the normal marrine XP gain and strangth system. but one last part is missing.
+now, we need to handle the implementation of our crew.
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_XPSystem();
+        Crew.name = "LobsterCombatant_CombatLobster";
+        Crew.crewPower = 1f;
+        Crew.crewDefence = 1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }
+}
+I chose the job marines, because its the one that has the 'ExtraData' i built my crew for.
+also, i gave this the same stats as marines. just because im very very lazy.
+[/code]
+
+this all together, lets us have a rough mimic of the normal marine XP gain and strength system. but one last part is missing.
 [/spoiler]
 [spoiler=plugin listener thing]
 [spoiler=the plugin]
@@ -922,7 +977,8 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
         CommodityIconProvider,
         CargoScreenListener {
     public static final String commodity = "LobsterCombatant_CombatLobster";
-    private final static String memoryKey="$LobsterCombatant_LobsterXP";
+    private final static String memoryKey = "$LobsterCombatant_LobsterXP";
+
     @Override
     public int getHandlingPriority(Object params) {
         return 0;
@@ -965,29 +1021,25 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
     }
 
 
-
     @Override
     public void reportPlayerNonMarketTransaction(PlayerMarketTransaction transaction, InteractionDialogAPI dialog) {
-        float got = transaction.getQuantityBought(commodity);
-        float lost = transaction.getQuantitySold(commodity);
-        processTransaction(got - lost);
+        processTransaction();
     }
 
     @Override
     public void reportPlayerMarketTransaction(PlayerMarketTransaction transaction) {
-        float got = transaction.getQuantityBought(commodity);
-        float lost = transaction.getQuantitySold(commodity);
-        processTransaction(got - lost);
+        processTransaction();
     }
 
     @Override
     public String getRankIconName(CargoStackAPI stack) {
-        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return null;
-        int[] thresholds = {25,50,75,100};
-        String[] ranks = {"icon_crew_green","icon_crew_regular","icon_crew_veteran","icon_crew_elite"};
+        if (stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp())
+            return null;
+        int[] thresholds = {25, 50, 75, 100};
+        String[] ranks = {"icon_crew_green", "icon_crew_regular", "icon_crew_veteran", "icon_crew_elite"};
         int xp = getEffectiveXPPercent();
-        for (int a = 0; a < thresholds.length; a++){
-            if (thresholds[a] >= xp){
+        for (int a = 0; a < thresholds.length; a++) {
+            if (thresholds[a] >= xp) {
                 return Global.getSettings().getSpriteName("ui", ranks[a]);
             }
         }
@@ -996,34 +1048,47 @@ public class LobsterCombatant_CustomCrew_XP_cargoHandler implements ColonyIntera
 
     @Override
     public void addSectionAfterPrice(TooltipMakerAPI info, float width, boolean expanded, CargoStackAPI stack) {
-        if(stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp()) return;
-        float xp = (float)Global.getSector().getMemory().getFloat(memoryKey);
-        info.addPara("total XP is: %s",3,Misc.getHighlightColor(),xp+"");
-        info.addPara("current XP is: %s",3,Misc.getHighlightColor(),getEffectiveXPPercent()+"%");
+        if (stack == null || stack.getCargo() == null || stack.getCommodityId() == null || !stack.getCommodityId().equals(commodity) || stack.getCargo().getFleetData() == null || !stack.getCargo().getFleetData().getFleet().isPlayerFleet() || stack.isPickedUp())
+            return;
+        float xp = (float) Global.getSector().getMemory().getFloat(memoryKey);
+        info.addPara("total XP is: %s", 3, Misc.getHighlightColor(), xp + "");
+        info.addPara("current XP is: %s", 3, Misc.getHighlightColor(), getEffectiveXPPercent() + "%");
     }
 
-    public void processTransaction(float change){
+    public void processTransaction() {
         float xp = Global.getSector().getMemory().getFloat(memoryKey);
         float commoditys = Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity(commodity);
-        xp = Math.min(xp,commoditys);
-        Global.getSector().getMemory().set(memoryKey,xp);// * -ratio);
+        xp = Math.min(xp, commoditys);
+        Global.getSector().getMemory().set(memoryKey, xp);// * -ratio);
     }
-    public static int getEffectiveXPPercent(){
-        float xp = (float)Global.getSector().getMemory().getFloat(memoryKey);
+
+    public static int getEffectiveXPPercent() {
+        float xp = (float) Global.getSector().getMemory().getFloat(memoryKey);
         float commoditys = Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity(commodity);
-        return (int)Math.min(Math.floor((xp*100)/commoditys),100);
+        return (int) Math.min(Math.floor((xp * 100) / commoditys), 100);
     }
 }
 [/code]
 so, once again, this is a long one. lots of plugins, lots of functions.
-im going to skip explaining the functions i didn't change, because im not using them
+im going to skip explaining the functions i didn't change, because im not using them (implementing an interface requires that i have them around, even when they are doing nothing)
 as for the ones i did change:
 1)reportPlayerNonMarketTransaction
+    -every time this runs, i run 'process transaction'. a function i created, and will explain soon.
+    -this runs every time the player adds / removes items from there cargo, and its not a trade (like salvaging, or dropping cargo pods)
 2)reportPlayerMarketTransaction
+    -every time this runs, i run 'process transaction'. a function i created, and will explain soon.
+    -this runs every time the player adds / removes items from there cargo, and its is a trade (like on the open market)
 3)getRankIconName
+    -this function is more complicated, but the basics of it is that it give the crew an 'icon' at the same XP thresholds as normal marines get there icons. also the same icons marines get.
+    -if you want to learn more about how this works, go read my [url=Commodity's and you: a basic tutorial on the complete commodity experience]https://fractalsoftworks.com/forum/index.php?topic=29612.0[/url]
 4)addSectionAfterPrice
+    -this just displays the amount of XP. both the % of xp, and the total xp number.
+    -if you want to learn more about how this works, go read my [url=Commodity's and you: a basic tutorial on the complete commodity experience]https://fractalsoftworks.com/forum/index.php?topic=29612.0[/url]
 5)processTransaction
+    -this function simply compares the current XP to the amount of this crew you have in your inventory. if you have more XP then this crew, it cuts the xp down. then saves it.
 6)getEffectiveXPPercent
+    -this just gets the 'effective xp' of this crew, but as a value between 0 and 100.
+    -this is only used to display the amount of XP your crew has on your item.
 [/spoiler]
 [spoiler=implementation]
 [code]
@@ -1035,11 +1100,236 @@ public void onGameLoad(boolean newGame) {
 }
 [/code]
 so, this is the normal 'add the listener on game load into starsectors listener manager', but im also doing the same thing with the GenericPlugins.
-the reason? some of the interfaces we implemented are listeners, and some are plugins. if you do this, you will also need to add your close to both the plugin manager and listener manager.
+the reason? some of the interfaces we implemented are listeners, and some are plugins. if you do this, you will also need to add your class to both the plugin manager and listener manager.
 [/spoiler]
 [/spoiler]
+and that's how you do marine like XP on crew.
+...
+that took me more then a week to do.
 [/spoiler]
 [spoiler=a 'crew' named dave. the legendary doom pirate (with HP, and very high stats)]
+aaa, this is a interesting one. although, this might seem a little ponitless to some.
+the reason why i even want to talk about this is rather simple. crew replacer has a issue built into its crew loss system.
+when crew replacer calculates losses, it rounds up.
+this is fine on its own. to even notice this issue, one would need to be ether messing with some game breaking high stat crew, or be watching very very closely.
+this is in addition to the fact that losses are hard caped by the number of crew uses. so its mostly a none issue.
+but when it is, its really frustrating. so lets change that. with dave. the legendary doom pirate.
+
+so for this example, let us create a crew, with lets say, 10k power. and 10K defence. easily enough that they should be able to do most anything by themselves.
+but lets also give him, lets say, 10K hp. but whats HP? its something i made up just now, and am going to implement in the next crew
+[spoiler=dave, the crew]
+[code]
+public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crewReplacer_Crew {
+    public int maxHP= 10000;
+    public String memory = "$LobsterCombatant_DavesHPPercent";
+    public String HPGainedMemory = "$LobsterCombatant_TimeSinceDaveHealed";
+    float davesLostTemp=0;
+    float davesHPLost=0;
+    public int getDaves(CargoAPI cargo){
+        return (int)cargo.getCommodityQuantity(this.name);
+    }
+    public void attemptHealing(CargoAPI cargo){
+        float hpTemp = Global.getSector().getMemory().getFloat(memory);
+        if (hpTemp == 1 || hpTemp == 0){
+            Global.getSector().getMemory().set(HPGainedMemory,Global.getSector().getClock().getTimestamp());
+            return;
+        }
+        float days = Global.getSector().getClock().getElapsedDaysSince(Global.getSector().getMemory().getLong(HPGainedMemory));
+        if (days < 1) return;
+        hpTemp+= (days*0.01);
+        hpTemp = Math.min(hpTemp,1);
+        Global.getSector().getMemory().set(HPGainedMemory,Global.getSector().getClock().getTimestamp());
+        setHP(cargo,hpTemp);
+    }
+    public float getHP(CargoAPI cargo){
+        attemptHealing(cargo);
+        float a = Global.getSector().getMemory().getFloat(memory);
+        if (a == 0) a = 1;
+        a *= getMaxHP(cargo);
+        return a;
+    }
+    public void setHP(CargoAPI cargo,float HP){
+        Global.getSector().getMemory().set(memory,HP);
+    }
+    public float getMaxHP(CargoAPI cargo){
+        return maxHP * getDaves(cargo);
+    }
+    @Override
+    public float getCrewInCargo(CargoAPI cargo) {
+        return getHP(cargo);
+    }
+
+    @Override
+    public float getCrewPower(CargoAPI cargo) {
+        return this.crewPower*(getDaves(cargo) / getCrewInCargo(cargo));
+    }
+
+    @Override
+    public float getCrewDefence(CargoAPI cargo) {
+        return this.crewDefence*(getDaves(cargo) / getCrewInCargo(cargo));
+    }
+
+    @Override
+    public void displayCrewLost(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
+        numberOfItems = davesLostTemp;
+        String displayName = getDisplayName(cargo);
+
+        TooltipMakerAPI tt = text.beginTooltip();
+        TooltipMakerAPI iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
+        String numberStr = (int) numberOfItems + "";
+        LabelAPI label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
+        int hpTemp = (int)Math.floor(100 * davesHPLost);//(crewLossMultiTemp-1));
+        if(hpTemp != 0) {
+            String HP = hpTemp+"%";
+            iwt.addPara("dave's lost %s hp", 0, Misc.getHighlightColor(),HP);
+        }
+        tt.addImageWithText(0);
+
+        text.addTooltip();
+    }
+
+    @Override
+    public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
+        super.displayCrewAvailable(cargo, getDaves(cargo), text);
+    }
+
+    @Override
+    public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
+        float hpLost = 0;
+        float hp = getHP(cargo);
+        float daves = getDaves(cargo);
+        float losses = 0;
+        float hpPerDave = maxHP/daves;
+        while(crewLost >= hpPerDave && crewLost > 0){
+            hp -= Math.min(crewLost,hpPerDave);
+            losses++;
+            crewLost-=hpPerDave;
+            hpLost+=hpPerDave;
+        }
+        hp-=crewLost;
+        hpLost+=crewLost;
+        davesHPLost = hpLost / getMaxHP(cargo);
+        setHP(cargo,hp / getMaxHP(cargo));
+        davesLostTemp = losses;
+        return super.getCrewToLose(cargo, crewUsed, crewLost);
+    }
+
+    @Override
+    public void removeCrew(CargoAPI cargo, float CrewToLost) {
+        super.removeCrew(cargo, davesLostTemp);
+    }
+}
+[/code]
+so now, let us talk about the functions i put into dave, as well as what i have overwriten.
+first, the new functions:
+1)getDaves
+    -this might seem redundant, but with the way we have overwriten 'getCrewInCargo', i would like a way to get the actual amount of crew in cargo for when we need it
+2)attemptHealing
+    -this attempts to heal dave. right now its set up to 'remember' the last time dave was healed, and then heal him by 1% of his hp per day.
+    -also, the memory is returned when HP is equal to 1 or 0 because that ether means dave is at full hp (and therefore is not healing), or dave is not created. and therefore should not heal, but instead just let the function that gets daves HP set him to max HP.
+    -the reason there is a math.min for daves HP is because this is looking at daves % of hp. not the number of hit ponits he has
+3)getHP
+    -this gets daves total HP. not as a percent value like everything else does, but his true HP number.
+    -this runs attemptHealing, to make sure any missed healing always happens just before anything in the class gets daves hp.
+    -also, the reason this sets daves HP to 1 if its zero (before the calculation that turns the HP from a percent value that is stored to the his hit point value) is because when the HP variable is first created, it has a value of 0. so this fixes that.
+4)setHP
+    -this just sets daves hp memory to a value. nice and simple
+5)getMaxHP
+    -this just gets daves true max hp. although we do have a varuble to manage this, this lets us view that max HP in cases were we have many daves.
+     the army of dave. scary.
+next, the functions i have overwriten
+6)getCrewInCargo
+    -you might be confused on this. and i dont blame you.
+    what im doing here is simply changing out the amount of 'daves' crewReplacer_Job thinks i have with the number of HP he has. this makes it simple to have dave loes HP instead of himself.
+7)getCrewPower
+    -this is made necessary by getCrewInCargo being changed. this makes sure that the effective power of 'dave' always remains as it should. even though i have changed the number of 'daves' crewReplacer thinks are present dramatically
+8)getCrewDefence
+    -this is made necessary by getCrewInCargo being changed. this makes sure that the effective defence of 'dave' always remains as it should. even though i have changed the number of 'daves' crewReplacer thinks are present dramatically
+9)displayCrewLost
+    -this runs the normal code for 'displayCrewLost' with 2 diffrences:
+    1) instead of the inputed number of crew lost (wish would be based around the stats given in functions 6-8) it instead takes a stored varuble, davesLostTemp, that i assing in getCrewToLose
+    2) this also outputs the amount of HP dave lost. also set in getCrewToLose.
+10)displayCrewAvailable
+    -this runs the normal code for 'displayCrewAvailable', but is set to always show the number of 'daves' we have.
+    -this is important because of the changes made in getCrewInCargo
+11)getCrewToLose
+    -what this function does is get the amount of 'daves' that should be lost, as well as get the amount of daves HP that should be lost.
+    -this is required, again, because of what i did in function 6-8. so ya.
+    -also, the while loop could likely be removed. I put it there thinking i would give each dave his own HP, but decided not to because that would take forever and be past the scope of what im trying to show you.
+12)removeCrew
+    -the only diffrece here is that we are removing a number of crew equal to davesLostTemp (set in getCrewToLose)
+    -you might be wondering, why not move the data from getCrewToLose into this function? simply put, this function runs after displayCrewLost. and i wanted to display the amount of daves HP that was lost as well.
+
+and now for implementing dave
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate();
+        Crew.name = "LobsterCombatant_Dave";
+        Crew.crewPower = 10000f;
+        Crew.crewDefence = 10000f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }
+}
+[/code]
+yep. that's 10k power and defence. a lot of power.
+if we tried this without this type of class, dave would be killed the moment he tried to raid. how very sad =(
+also to note: unlike the XP system, dave could work with any crewReplacer_job, as he is not relent on extra data to function
+
+now, there is one thing missing: how are we suppose to know how mush HP dave is at? are we suppose to guess?
+[/spoiler]
+[spoiler=dave, the plugin]
+so, we want a few things. we want dave to know daves HP. this also means, as we are going to view daves HP, we want it to update when we do.
+relatively simple. we just need a 'CommodityTooltipModifier'
+[code]
+public class LobsterCombatant_DavesDescription implements CommodityTooltipModifier {
+    public String memory = "$LobsterCombatant_DavesHPPercent";
+    public String HPGainedMemory = "$LobsterCombatant_TimeSinceDaveHealed";
+    public String crew = "LobsterCombatant_Dave";
+    @Override
+    public void addSectionAfterPrice(TooltipMakerAPI info, float width, boolean expanded, CargoStackAPI stack) {
+        if (!stack.getCommodityId().equals(crew)) return;
+        attemptHealing();
+        info.addPara("daves currently at %s HP",3, Misc.getHighlightColor(),(int)(Global.getSector().getMemory().getFloat(memory)*100)+"%");
+    }
+    public void attemptHealing(){
+        float hpTemp = Global.getSector().getMemory().getFloat(memory);
+        if (hpTemp == 1 || hpTemp == 0){
+            Global.getSector().getMemory().set(HPGainedMemory,Global.getSector().getClock().getTimestamp());
+            setHP(1);
+            return;
+        }
+        float days = Global.getSector().getClock().getElapsedDaysSince(Global.getSector().getMemory().getLong(HPGainedMemory));
+        if (days < 1) return;
+        hpTemp+= (days*0.01);
+        hpTemp = Math.min(hpTemp,1);
+        Global.getSector().getMemory().set(HPGainedMemory,Global.getSector().getClock().getTimestamp());
+        setHP(hpTemp);
+    }
+    public void setHP(float HP){
+        Global.getSector().getMemory().set(memory,HP);
+    }
+}
+[/code]
+so, lets talk about the functions i have here:
+1)addSectionAfterPrice
+    -this function simplys runs 'attemptHealing', as well as displays daves HP as a percent.
+2)attemptHealing
+    -this function is copyed directly from dave's 'crewReplacer_Crew' class, and serves in the same way
+3)setHP
+    -this function is copyed directly from dave's 'crewReplacer_Crew' class, and serves in the same way
+
+and now to implememt it
+[code]
+public void onGameLoad(boolean newGame) {
+    super.onGameLoad(newGame);
+    Global.getSector().getListenerManager().addListener(new LobsterCombatant_DavesDescription());
+}
+[/code]
+again, relatively simple. just add it to the games ListenerManager.
+[/spoiler]
 [/spoiler]
 [spoiler=a 'crew' that's actually just a player skill]
 [/spoiler]

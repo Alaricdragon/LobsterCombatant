@@ -1,3 +1,4 @@
 name,id,demand class,base price,export value,price variability,utility,origin,tags,stack size,cargo space,icon,sound id,sound id drop,order,economyTier,econUnitOrigUnused,econUnit,baseRaidDanger,eU * base value,iconWidthMult,plugin,desc
 Combat Lobster,LobsterCombatant_CombatLobster,LobsterCombatant_CombatLobster,250,500,3,1,,military,0,1,graphics/icons/cargo/LobsterCombatant_LobsterFighter.png,ui_cargo_volturn_lobster,ui_cargo_volturn_lobster_drop,3,1,0,150,MEDIUM,75000,1,,
 #Supplies,supplies,supplies,100,250,3,1,,"military, expensive",1000,1,graphics/icons/cargo/supplies.png,ui_cargo_supplies,ui_cargo_supplies_drop,0.5,2.1,200,750,,75000,1,,
+Dave,LobsterCombatant_Dave,LobsterCombatant_Dave,40000,0,3,1,,"marines, military, personnel",1000,0,graphics/icons/cargo/marine.png,ui_cargo_marines,ui_cargo_marines_drop,0.9,3.4,200,100,,20000,0.6,,

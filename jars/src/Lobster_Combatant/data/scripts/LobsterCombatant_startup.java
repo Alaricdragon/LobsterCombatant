@@ -1,5 +1,6 @@
 package Lobster_Combatant.data.scripts;
 import Lobster_Combatant.data.scripts.customCrews.listiners.LobsterCombatant_CustomCrew_XP_cargoHandler;
+import Lobster_Combatant.data.scripts.customCrews.listiners.LobsterCombatant_DavesDescription;
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
 import com.thoughtworks.xstream.XStream;
@@ -10,8 +11,9 @@ public class LobsterCombatant_startup extends BaseModPlugin {
         super.onGameLoad(newGame);
         //Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());
-        Global.getSector().getListenerManager().addListener(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
-        Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+        //Global.getSector().getListenerManager().addListener(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+        //Global.getSector().getGenericPlugins().addPlugin(new LobsterCombatant_CustomCrew_XP_cargoHandler(),true);
+        Global.getSector().getListenerManager().addListener(new LobsterCombatant_DavesDescription());
     }
 
     @Override
