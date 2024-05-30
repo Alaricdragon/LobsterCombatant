@@ -1405,10 +1405,10 @@ secondly, i made this crew work the 'raiding_marines' job again. this is because
 [spoiler=a 'crew' that's a starship hullmod]
 well, this is something.
 I wanted to demonstrate one of the more confusing things to do with custom crews. so i do hope you are prepared, because this will be.. somewhat simple.
-what? no, really. this is just the last 'custom crew' in practice. let me show you something interesting now.`
+what? no, really. this is just like 'a 'crew' that's actually just a player skill' in practice. well, maybe with a little 'a 'crew' named dave. the legendary doom pirate' thrown in. let me show you something interesting now.`
 [spoiler=custom crew class]
 [code]
-
+NOTE TO SELF: THIS IS NOT DONE YET. I HAVE FAILED TO FIND OUT HOW TO GET/REMOVE COMBAT READYNESS ON SHIPS
 [/code]
 [/spoiler]
 [spoiler=implementation]

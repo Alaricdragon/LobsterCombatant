@@ -91,11 +91,21 @@ public class LobsterCombatant_CrewReplacerCompatibility {
         crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
     }
      */
+    /*
     public static void apply(){
         crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_PlayerSkill();
         Crew.name = "LobsterCombatant_AutomatedShipSkillCrew";
         Crew.crewPower = 1f;
         Crew.crewDefence = 1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }*/
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_Hullmod();
+        Crew.name = "LobsterCombatant_HullModAttempt";
+        Crew.crewPower = 20f;
+        Crew.crewDefence = 20f;
         Crew.crewPriority = 10;
         Crew.crewLoadPriority = 1;
         crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
