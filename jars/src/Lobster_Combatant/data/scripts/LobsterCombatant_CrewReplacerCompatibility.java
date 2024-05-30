@@ -80,11 +80,22 @@ public class LobsterCombatant_CrewReplacerCompatibility {
         crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
     }
      */
+    /*
     public static void apply(){
         crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate();
         Crew.name = "LobsterCombatant_Dave";
         Crew.crewPower = 10000f;
         Crew.crewDefence = 10000f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }
+     */
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_PlayerSkill();
+        Crew.name = "LobsterCombatant_AutomatedShipSkillCrew";
+        Crew.crewPower = 1f;
+        Crew.crewDefence = 1f;
         Crew.crewPriority = 10;
         Crew.crewLoadPriority = 1;
         crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);

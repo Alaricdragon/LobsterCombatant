@@ -1332,8 +1332,90 @@ again, relatively simple. just add it to the games ListenerManager.
 [/spoiler]
 [/spoiler]
 [spoiler=a 'crew' that's actually just a player skill]
+well, this is going to be interesting.
+some of you might ask when this could possibly be useful? but that's not the point of this example.
+the point of this example is to show you that one can make a 'crew' out of -anything-. there are no limits to what you can use.
+im also going to use this example to show you the minimum amount of changes for something like this to function
+so, lets get started.
+[spoiler=custom crew class]
+so, i think i can do this in only 4 functions.
+[code]
+public class LobsterCombatant_CustomCrew_PlayerSkill extends crewReplacer_Crew {
+    @Override
+    public float getCrewInCargo(CargoAPI cargo) {
+        try {
+            if(cargo.getFleetData().getCommander().getStats().getSkillLevel("automated_ships") == 0) return 0f;
+            float skill = 20;
+            float level = cargo.getFleetData().getCommander().getStats().getLevel();
+            skill *= level;
+            return skill;
+        }catch (Exception e){
+            return 0f;
+        }
+    }
+
+    @Override
+    public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
+        return 0;
+    }
+
+    @Override
+    public String getCrewIcon(CargoAPI cargo) {
+        return Global.getSettings().getSpriteName("systemMap", "mission_indicator");
+    }
+
+    @Override
+    public String getDisplayName(CargoAPI cargo) {
+        return "automated tokens";
+    }
+}
+[/code]
+so lets talk about the functions i chose, and what they do.
+1) getCrewInCargo
+    -I chose this function, because all other functions respect it. from there, i simply got skill level * 20 if you have the 'automated ship' skill.
+    -the try-catch loop is just because im a bit lazy today. normally i would use a if statement to find out if the fleet or commanded exist, but not today.
+2) getCrewToLose
+    -i set this to return zero, because i didn't want to have to deal with losses here. this is suppose to be a demonstration about the minimum required amount of work for a non commodity crew after all.
+    -NOTE: you could override 'removeCrew' instead, if you intended this custom crew to have the possibility of losing something
+3) getCrewIcon
+    -this is important to set up here, as crew replacer will assume that your 'crew' is a commodity, and try to get an icon from that. wish might prevent your crew from being displayed at all. (this is do to crash protection)
+4) getDisplayName
+    -this is also important to get up here, as crew replacer will assume that your 'crew' is a commodity, and try to get the name from that. wish might prevent your crew from being displayed at all. (this is do to crash protection)
+now we just need to worry about the implementation.
+[spoiler]
+[spoiler=implementation]
+[code]
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_PlayerSkill();
+        Crew.name = "LobsterCombatant_AutomatedShipSkillCrew";
+        Crew.crewPower = 1f;
+        Crew.crewDefence = 1f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+    }
+}
+[/code]
+simple enough, but there are some things i would like to note.
+first of all, the crew 'name'. you will notice it does not match a commodity. this is because its not a commodity. you could give it a name equal to a commodity, but that can cause compatibility issues if someone wants said commodity to act like a crew.
+secondly, i made this crew work the 'raiding_marines' job again. this is because its the only vanilla job that shows what crew you have available, and if you chose to run this, i would like you to see how the crew looks.
+[/spoiler]
 [/spoiler]
 [spoiler=a 'crew' that's a starship hullmod]
+well, this is something.
+I wanted to demonstrate one of the more confusing things to do with custom crews. so i do hope you are prepared, because this will be.. somewhat simple.
+what? no, really. this is just the last 'custom crew' in practice. let me show you something interesting now.`
+[spoiler=custom crew class]
+[code]
+
+[/code]
+[/spoiler]
+[spoiler=implementation]
+[code]
+
+[/code]
+[/spoiler]
 [/spoiler]
 [/spoiler]
 [/spoiler]
