@@ -108,6 +108,6 @@ public class LobsterCombatant_CrewReplacerCompatibility {
         Crew.crewDefence = 20f;
         Crew.crewPriority = 10;
         Crew.crewLoadPriority = 1;
-        crewReplacer_Main.getJob("raiding_marines").addCrew(Crew);
+        crewReplacer_Main.getJob("salvage_crew").addCrew(Crew);
     }
 }

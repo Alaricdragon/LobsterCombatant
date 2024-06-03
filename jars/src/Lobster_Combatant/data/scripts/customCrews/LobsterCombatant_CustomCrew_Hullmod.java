@@ -8,7 +8,6 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.ui.LabelAPI;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.CrewReplacer_Log;
 import data.scripts.crewReplacer_Crew;
 
 import java.util.ArrayList;
@@ -18,25 +17,25 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
     public float[] powerPerSize = {1,2,4,8};
     public float[] lossesTemp;
     public float HP = 100;
+    float crMin = 0.35f;
     public ArrayList<FleetMemberAPI> getFleetMembers(CargoAPI cargo){
         ArrayList<FleetMemberAPI> out = new ArrayList<>();
         for (FleetMemberAPI a : cargo.getFleetData().getMembersListCopy()){
-            if(a.getVariant().getHullMods().contains(hullModID)) {
+            if(a.getVariant().getHullMods().contains(hullModID) && a.getRepairTracker().getCR() >= crMin) {
                 out.add(a);
             }
         }
         return out;
     }
-    public float[] getCRLosses(float numberOfItems,ArrayList<FleetMemberAPI> fleet){
-        //NOTE: NOT DONE YET
+    public float[] getCRLosses(CargoAPI cargo, float numberOfItems,ArrayList<FleetMemberAPI> fleet){
         float[] out = new float[fleet.size()];
-        float averageLossTemp = numberOfItems / (fleet.size());
-        for (int a = 0; a < fleet.size(); a++){
-            float averageLoss = numberOfItems / (fleet.size()-a);
+        float CRTotal = this.getCrewInCargo(cargo);
+        float HPLossPerCR = numberOfItems / CRTotal;
+        for (int a = 0; a < fleet.size(); a++) {
             FleetMemberAPI b = fleet.get(a);
-            //fleet.get(a);
-            //float maxLoss = fleet.get(a);
-            out[a] = averageLossTemp/getSizePower(b);//NOTE: This will need to be modified by the % of current CR readiness.
+            float cr = b.getRepairTracker().getCR();
+            float loss = HPLossPerCR*cr;
+            out[a] = Math.min(loss,cr);
         }
         return out;
     }
@@ -48,23 +47,18 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
         if (size.equals(ShipAPI.HullSize.CAPITAL_SHIP.name())) return powerPerSize[3];
         return powerPerSize[1];
     }
+    @Override
     public float getCrewInCargo(CargoAPI cargo) {
         try {
             float power = 0;
             for (FleetMemberAPI a : getFleetMembers(cargo)) {
-                power += getSizePower(a)*HP;//NOTE: change this to be *HP*percent of available CR readyness.
+                power += getSizePower(a)*HP*a.getRepairTracker().getCR();
             }
             return power;
         }catch (Exception e){
             return 0f;
         }
     }
-    /*
-    @Override
-    public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
-        return 0;
-    }*/
-
     @Override
     public float getCrewDefence(CargoAPI cargo) {
         return super.getCrewDefence(cargo)/HP;
@@ -79,7 +73,7 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
     public void removeCrew(CargoAPI cargo, float CrewToLost) {
         ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
         for (int a = 0; a < lossesTemp.length; a++){
-            //remove combat readiness of ships here.
+            fleet.get(a).getRepairTracker().setCR(fleet.get(a).getRepairTracker().getCR() - lossesTemp[a]);
         }
     }
 
@@ -90,7 +84,7 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
 
     @Override
     public String getDisplayName(CargoAPI cargo) {
-        return "salvage ships";//"automated tokens";
+        return "salvage ships";
     }
 
     @Override
@@ -102,15 +96,15 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
     @Override
     public void displayCrewLost(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
         ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
-        lossesTemp = getCRLosses(numberOfItems,fleet);
-        //fleet.get(a).getSpriteOverride()
+        lossesTemp = getCRLosses(cargo,numberOfItems,fleet);
         for (int a = 0; a < lossesTemp.length; a++){
             if (lossesTemp[a] != 0) {
-                String displayName = fleet.get(a).getShipName();//getDisplayName(cargo);
+                String displayName = fleet.get(a).getShipName();
                 TooltipMakerAPI tt = text.beginTooltip();
                 TooltipMakerAPI iwt = tt.beginImageWithText(fleet.get(a).getHullSpec().getSpriteName(), 24);
-                String numberStr = (int) /*numberOfItems*/lossesTemp[a] + "%";
-                LabelAPI label = iwt.addPara("%s lost %s of its CR", 0, Misc.getHighlightColor(),displayName, numberStr);
+                String numberStr = (int) (lossesTemp[a]*100) + "%";
+                String CRLeft = (int)((fleet.get(a).getRepairTracker().getCR() - lossesTemp[a])*100)+"%";
+                LabelAPI label = iwt.addPara("%s lost %s of its CR. it has %s CR remaining", 0, Misc.getHighlightColor(),displayName, numberStr,CRLeft);
                 tt.addImageWithText(0);
                 text.addTooltip();
             }

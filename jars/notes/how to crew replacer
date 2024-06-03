@@ -35,7 +35,7 @@ in this tutorial we will be discussing:
         -a 'crew' that's actually just a player skill.
         -a 'crew' that's a starship hullmod.
     -how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)
-        -NOTE: this is required to get custom crew to not crash your game. the basic version of this will not work at all. im sorry but its true.
+        -NOTE: when crew replacer is not present, this is required to get custom crew to not crash your game. the basic version of this will not work at all. im sorry but its true.
 2)how to add a job to crew replacer, and why you would do it. this includes:
     -shameless self promotion about why crew replacer is great and the benefits of using it.
     -how to make your mod support crew replacer, without making it so the user requires it installed.
@@ -1405,16 +1405,176 @@ secondly, i made this crew work the 'raiding_marines' job again. this is because
 [spoiler=a 'crew' that's a starship hullmod]
 well, this is something.
 I wanted to demonstrate one of the more confusing things to do with custom crews. so i do hope you are prepared, because this will be.. somewhat simple.
-what? no, really. this is just like 'a 'crew' that's actually just a player skill' in practice. well, maybe with a little 'a 'crew' named dave. the legendary doom pirate' thrown in. let me show you something interesting now.`
+what? no, really. this is just like 'a 'crew' that's actually just a player skill' in practice. well, maybe with a little 'a 'crew' named dave. the legendary doom pirate' thrown in.
+
+but let me give an overview on the construction of this custom crew.
+first, I think it would be cool if the 'losses' were converted into ship CR. a bit harder then something like, destroying a ship instead of a commodity, but more fun.
+secondly, I think larger ships should contribute more then smaller ships. so i will make it so larger ships have a multiplyer to how mush stats they provide.
+lastly, i think that ships that are 2 damaged should not join in. that would not make sense.
+
+so how many functions am i going to need to override to do this?
+8. i will need to override 8 functions.
+don't worry, i will explain everything.
 [spoiler=custom crew class]
 [code]
-NOTE TO SELF: THIS IS NOT DONE YET. I HAVE FAILED TO FIND OUT HOW TO GET/REMOVE COMBAT READYNESS ON SHIPS
+public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
+    public String hullModID = "repair_gantry";
+    public float[] powerPerSize = {1,2,4,8};
+    public float[] lossesTemp;
+    public float HP = 100;
+    float crMin = 0.35f;
+    public ArrayList<FleetMemberAPI> getFleetMembers(CargoAPI cargo){
+        ArrayList<FleetMemberAPI> out = new ArrayList<>();
+        for (FleetMemberAPI a : cargo.getFleetData().getMembersListCopy()){
+            if(a.getVariant().getHullMods().contains(hullModID) && a.getRepairTracker().getCR() >= crMin) {
+                out.add(a);
+            }
+        }
+        return out;
+    }
+    public float[] getCRLosses(CargoAPI cargo, float numberOfItems,ArrayList<FleetMemberAPI> fleet){
+        float[] out = new float[fleet.size()];
+        float CRTotal = this.getCrewInCargo(cargo);
+        float HPLossPerCR = numberOfItems / CRTotal;
+        for (int a = 0; a < fleet.size(); a++) {
+            FleetMemberAPI b = fleet.get(a);
+            float cr = b.getRepairTracker().getCR();
+            float loss = HPLossPerCR*cr;
+            out[a] = Math.min(loss,cr);
+        }
+        return out;
+    }
+    public float getSizePower(FleetMemberAPI ship){
+        String size = ship.getVariant().getHullSpec().getHullSize().name();
+        if (size.equals(ShipAPI.HullSize.FRIGATE.name())) return powerPerSize[0];
+        if (size.equals(ShipAPI.HullSize.DESTROYER.name())) return powerPerSize[1];
+        if (size.equals(ShipAPI.HullSize.CRUISER.name())) return powerPerSize[2];
+        if (size.equals(ShipAPI.HullSize.CAPITAL_SHIP.name())) return powerPerSize[3];
+        return powerPerSize[1];
+    }
+    @Override
+    public float getCrewInCargo(CargoAPI cargo) {
+        try {
+            float power = 0;
+            for (FleetMemberAPI a : getFleetMembers(cargo)) {
+                power += getSizePower(a)*HP*a.getRepairTracker().getCR();
+            }
+            return power;
+        }catch (Exception e){
+            return 0f;
+        }
+    }
+    @Override
+    public float getCrewDefence(CargoAPI cargo) {
+        return super.getCrewDefence(cargo)/HP;
+    }
+
+    @Override
+    public float getCrewPower(CargoAPI cargo) {
+        return super.getCrewPower(cargo)/HP;
+    }
+
+    @Override
+    public void removeCrew(CargoAPI cargo, float CrewToLost) {
+        ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
+        for (int a = 0; a < lossesTemp.length; a++){
+            fleet.get(a).getRepairTracker().setCR(fleet.get(a).getRepairTracker().getCR() - lossesTemp[a]);
+        }
+    }
+
+    @Override
+    public String getCrewIcon(CargoAPI cargo) {
+        return Global.getSettings().getSpriteName("systemMap", "icon_fleet0");
+    }
+
+    @Override
+    public String getDisplayName(CargoAPI cargo) {
+        return "salvage ships";
+    }
+
+    @Override
+    public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
+        numberOfItems = getFleetMembers(cargo).size();
+        super.displayCrewAvailable(cargo, numberOfItems, text);
+    }
+
+    @Override
+    public void displayCrewLost(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
+        ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
+        lossesTemp = getCRLosses(cargo,numberOfItems,fleet);
+        for (int a = 0; a < lossesTemp.length; a++){
+            if (lossesTemp[a] != 0) {
+                String displayName = fleet.get(a).getShipName();
+                TooltipMakerAPI tt = text.beginTooltip();
+                TooltipMakerAPI iwt = tt.beginImageWithText(fleet.get(a).getHullSpec().getSpriteName(), 24);
+                String numberStr = (int) (lossesTemp[a]*100) + "%";
+                String CRLeft = (int)((fleet.get(a).getRepairTracker().getCR() - lossesTemp[a])*100)+"%";
+                LabelAPI label = iwt.addPara("%s lost %s of its CR. it has %s CR remaining", 0, Misc.getHighlightColor(),displayName, numberStr,CRLeft);
+                tt.addImageWithText(0);
+                text.addTooltip();
+            }
+        }
+    }
+}
 [/code]
+remember when i said it would be simple? its simple in concept.
+so lets go over every function i added / edited one by one to find out whats up.
+first, the functions i added in
+1)getFleetMembers
+    -this function gets all members of the players fleet that have the salvage hullmod, and more combat readiness then crMin (a value that's set to 0.35 for this example)
+2)getCRLosses
+    -this function gets the amount of CR i want to loss in this operation, based on the calculated amount of losses i will be sustaining.
+     to do this, i just get the amount of expected losses crew replacer wants me to take, then divide that by the 'hp' of my salvage ships (aka, the total number of HP i calculated in 'getCrewInCargo'). then its just the simple task of making all my ships take that mush cr damage.
+3)getSizePower
+    -this is just a function to get the a power 'multiplyer' for larger salvage ships. just in case mods are involved. hopefully its simple enough to follow.
+now, the functions that i overrided, and why.
+4)getCrewInCargo
+    -just like 'dave' this will require an HP system of some type, to get the amount of 'CR' loss that we need, we cant just output the number of ships we have. we need something more complicated. like this.
+    -the reason im multiplying the numbers by my ships CR is because CR ranges from 0 to 1 (0% cr to 100% cr). so by doing this, its an easy way to make our ships count for less when they are low CR.
+    -the reason im multiplying this by getSizePower, is because i want larger ships to provide more 'power' and 'defence'. this is a easy way to do so, when using an HP system.
+    -also note: because im modifying the amount of 'crew' i have by my CR, it measn that the 'power' and 'defence' of this 'crew' is what the 'power' would be if the ship had 100% cr. so thats interesting.
+5)getCrewDefence
+    -here, we just modify the 'defence' by our HP.
+    -this is nice, because it plays well with the strangeness we did in 4). effectively, the ship has less total defence when its wounded. also, the ship has more total defence the larger it is
+    -also to note: we did not divide this number by the CR or the 'getSizePower' function, as would be proper. again, this is so it increases the total 'defence' the larger and higher HP the ships are.
+6)getCrewPower
+    -here, we just modify the 'power' by our HP.
+    -this is nice, because it plays well with the strangeness we did in 4). effectively, the ship has less total power when its wounded. also, the ship has more total power the larger it is
+    -also to note: we did not divide this number by the CR or the 'getSizePower' function, as would be proper. again, this is so it increases the total 'power' the larger and higher HP the ships are.
+7)removeCrew
+    -this function just sets all the ships CR to be modifyed by something i called 'losses temp'. this is just a variable that i set in displayCrewLost.
+8)getCrewIcon
+    -I set this to be something diffrent, but i dont like it. i should have used the 'salvage' hullmod icon or something.
+    -if you were really really clever, you could just make this icon be the ship icon of one of the players salvage ships, but i don't want to over complicate this any more then i must.
+    -also, remember with custom crew that are not a commodity: if you don't override this function, and the game trys to get the icon for this crew, it will cause the crew to not display.
+9)getDisplayName
+    -i set this to be 'salvage ships'. relatively simple.
+    -remember with custom crew that are not a commodity: if you don't override this function, and the game trys to get the name of this crew, it will cause the crew to not display.
+10)displayCrewAvailable
+    -in this, i just modify the number of displayed crew to be the number of available ships. no need to show that scary 'getCrewInCargo' the game wants us to display. its not reflective of anything the player need to know about after all.
+11)displayCrewLost
+    -this might look scary, but its just 2 parts.
+    -'lossesTemp = getCRLosses(cargo,numberOfItems,fleet);'. this just gets the losses that i want and stores them for latter. this will then be used in the 'remove crew' function.
+    -the for loop. normally, i only need to display one line, but if you are doing this, most players will want to know what ships were damaged doing whatever. so i included text to show that, as well as a little image of the ship
+
+well, that was something. onto the last part. the implementation.
 [/spoiler]
 [spoiler=implementation]
 [code]
-
+public class LobsterCombatant_CrewReplacerCompatibility {
+    public static void apply(){
+        crewReplacer_Crew Crew = new LobsterCombatant_CustomCrew_Hullmod();
+        Crew.name = "LobsterCombatant_HullModAttempt";
+        Crew.crewPower = 20f;
+        Crew.crewDefence = 20f;
+        Crew.crewPriority = 10;
+        Crew.crewLoadPriority = 1;
+        crewReplacer_Main.getJob("salvage_crew").addCrew(Crew);
+    }
+}
 [/code]
+there we go. just a normal initialization of our class. nice and simple.
+please note: the power and defence of this crew is effected by ship sizes and CR. a ships with 50% cr would get 1/2 the power/defence. larger ships would get a mush larger power and defence.
 [/spoiler]
 [/spoiler]
 [/spoiler]
