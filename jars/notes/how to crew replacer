@@ -19,9 +19,6 @@ in this tutorial we will be discussing:
     -how to use crew replaces features, only if crew replacer is present (as such allowing one to use this mod without having it as a dependency)
     -
     advanced:
-    //-everything about crews, crew sets, and the basics behind jobs.
-    //-how to make your commodity a 'crew' for certain things.
-    //-all the crew stats, and how they interact.
     -a overview of what a 'custom crew' is
     -a short description of the safety's installed in crew replacer to make 'custom crew' more stable
     -how each function of a 'custom crew' works
@@ -58,7 +55,7 @@ every one of a 'crew's functions are also built to be overridden by modders, all
 [/spoiler]
 [spoiler=what is a 'job' in this context]
 a 'job' in crew replacer refers to the 'crewReplacer_Job' class. wish acts as a data storage and management for 'crew'. a 'job' generally replaces instances of a single commodity in single task.
-this means that in cases were 2 different 'tasks' share a commodity that 'crew replacer' replaces, there will be 2 different 'job's. one for each commodity (example: surveying takes crew. salvaging takes crew. there is 2 'job's one named 'survey_crew' and one named 'survey_crew'. they don't share data at all)
+this means that in cases were 2 different 'tasks' share a commodity that 'crew replacer' replaces, there will be 2 different 'job's. one for each commodity (example: surveying takes crew. salvaging takes crew. there is 2 'job's one named 'survey_crew' and one named 'salvage_crew'. they don't share data at all)
 if you want to add a 'crew' to every instance of a commodity crew replacer replaces, you will need to use a 'crew set'. this will be covered in the 'basic' section of 'how to add a crew to crew replacer'
 a 'job's functions can be overwritten by modders the same way a 'crew's can. but be careful when you do so, as some of the functions are quite fragile. we will discuss this farther in the 'advanced' section of 'how to add a job to crew replacer, and why you would do it'
 [/spoiler]
@@ -360,6 +357,7 @@ this is one of the many functions related to cargo / fuel / personnel use.
 please don't tamper with them. they will not change how mush cargo / fuel / personnel space a given crew uses. they are simply used in internal calculations, as apposed to something hard coded to help me not add ways to change cargo, fuel, or personnel space latter.
 [/spoiler]
 [/spoiler]
+[/spoiler]
 [spoiler=public float getCrewToLose(CargoAPI cargo,float crewUsed,float crewLost)]
 inputs:
 cargo: the cargo being used.
@@ -564,6 +562,7 @@ uses:
 changing this function is useful when you want to change both the 'displayCrewAvailable' and 'displayCrewLost' displays.
 also useful to change this when you need a none icon image for your 'crew'.
 all functions respect this one
+[/spoiler]
 [/spoiler]
 [/spoiler]
 [spoiler=how to add your new 'custom crew' to a 'job']
@@ -1382,7 +1381,6 @@ so lets talk about the functions i chose, and what they do.
 4) getDisplayName
     -this is also important to get up here, as crew replacer will assume that your 'crew' is a commodity, and try to get the name from that. wish might prevent your crew from being displayed at all. (this is do to crash protection)
 now we just need to worry about the implementation.
-[spoiler]
 [spoiler=implementation]
 [code]
 public class LobsterCombatant_CrewReplacerCompatibility {
@@ -1400,6 +1398,7 @@ public class LobsterCombatant_CrewReplacerCompatibility {
 simple enough, but there are some things i would like to note.
 first of all, the crew 'name'. you will notice it does not match a commodity. this is because its not a commodity. you could give it a name equal to a commodity, but that can cause compatibility issues if someone wants said commodity to act like a crew.
 secondly, i made this crew work the 'raiding_marines' job again. this is because its the only vanilla job that shows what crew you have available, and if you chose to run this, i would like you to see how the crew looks.
+[/spoiler]
 [/spoiler]
 [/spoiler]
 [spoiler=a 'crew' that's a starship hullmod]
@@ -1579,12 +1578,65 @@ please note: the power and defence of this crew is effected by ship sizes and CR
 [/spoiler]
 [/spoiler]
 [/spoiler]
+
+
+
+/*
+    -shameless self promotion about why crew replacer is great and the benefits of using it.
+    -how to make your mod support crew replacer, without making it so the user requires it installed.
+    -how to organize your crew sets and job names well, to avoid conflicts.
+    -some examples of how you might make one of your modding 'jobs' use crew replacer.
+*/
+
+[spoiler=adding crew replacer support to your mods, and why should you?]
+[spoiler= why should you? shameless self promotion edition]
+looking at crew replacer you might be wondering about why someone would even want to support crew replacer, but i will go over all of my arguments on why you might want to here.
+lets say you have, some task in your mod that has requires commodity's, like for example, terraform and stations construction 'stations construction' (wish requires crew, metal, heavy machinery, rare metals, and credits, i think?)
+say, someone wants to have there own commodity act as one of the resources required to create a station? (like for example, they want 'nano bots' to act like 'metal' in the stations construction)?
+well, there might be a few ways depending on the mod. they could override the mods function to change the skill for founding stations, or they could ask the mod maker to add support for there 'nanobots'.
+this is fine, on its own, but, what if 5 people want to do the same, all with there own commoditys? 6? 200?
+this quickly becomes a complete mess and a bit of a nightmare to manage, both for the modders that want to add things to make stations with, and for the modder who built the original mod.
+but how does crew replacer help in this example?
+quite simply, crew replacer is built to handle this. that's why its a library and not just a bit of code in AI-Retrofits like how it started.
+if terraforming and station construction had crew replacer support in its 'tasks' then crew replacer could handle all that. other modders would not need to bug the orignal mod creater mush, if at all. they would also beable to (mostly) not have to worry about compatibility issues between the increasingly complicated web of mods that try to add onto this feature.
+(also note: i am picking aon TASC a little, but it does in fact have crew replacer support.)
+
+now, i know what some of you might be thinking "there is nothing stopping someone from just having a list stored in the original mod that stores all the commodity's for all the different things in TASC. you could even make it so other modders could edit it without bugging the main modder. so why bother with the big clunky crew replacer?"
+and this is true. in fact, that's what crew replacer started as, and in some ways still is. just a big set of lists that handles a bunch of commodity interactions. but at this ponit, crew replacer is a bit more then that.
+here is a list of things that crew replacer does, that you would not find very easy to add to your own mods without it:
+1) the 'crew set' system
+    -'crew sets' were not talked about mush, but they are far far more then you might think.
+     adding a 'crew set' to your 'job' lets another user designate a 'crew' as part of that 'crew set', then without even knowing of your mods existence, have that 'crew' be capable to doing that 'job' that your mod added.
+2) the more complicated 'losses' calculations
+    -I love to talk about this, but the losses calculation for the jobs is one of the best parts of crew replacer, and is one of the most interesting.
+    its hard to create something of this level of randomness, well still respecting things like 'what crew were actually on the job that day'.
+3) the customizable crew class.
+    -if you read the 'advanced' section of how to add a crew, you might be started to understand just how complicated the custom crew are. this is not something that's easy to replicate without flaw.
+4) the documentation that lets users learn how to add 'crew' to 'jobs' without them having to have you guid them through it every single time.
+    -do you really want to have to guide people thorough this process every single time anyone wants to add anything like this to your mod? it can be a headache. having a library handle this, lets you have access to any resources made about using the library, and gives you a simple place to point to when ever you might require it.
+5) the ease of use, both on your end, and on whoever is trying to add 'crew' to your 'jobs' end.
+    -crew replacer is built to be as easy to use as i was able. its not effortless per say, but its a hell of a lot easier then making all the systems yourself. trust me i know.
+    -crew replacer is built to be as simple as i could possible make it on the end of adding 'crew' to 'jobs'. this is because i use this feature a lot, and i like not being confused by it.
+6) visibility
+    -by adding support for crew replacer to your mod, you help normalize it. this also helps normalize the idea that people can easily add commodity to do tasks in different mods.
+     this lets more modders add more cross mod interactions in this way yes, but also lets more moders know its possible. it lets them know, yes you can try this and its relatively easy.
+[spoiler]
+[spoiler=the basics of adding support for crew replacer to your mods]
+[spoiler=the basic functions used when adding support to crew replacer]
+
 [/spoiler]
+[spoiler=rule.csv based functions that might help with ease of use]
+[/spoiler]
+[spoiler=how to organize your 'job' and 'crewset' names to avoid any confusion or issues]
 
+[/spoiler]
+[spoiler=examples]
+[/spoiler]
+[/spoiler]
+[spoiler=how to make it so your mod has crew replacer support, without requiring crew replacer]
 
+[/spoiler]
+[spoiler=examples]
 
-
-
-
-[spoiler=how to add a job to crew replacer, and why you would do it]
+[/spoiler]
 [/spoiler]
