@@ -1,3 +1,28 @@
+NOTICE:
+1) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
+    -why? because 'get crew available' effects it... this can cause some issues.
+2) I need to move instances of me setting data from the display, over to the 'get losses' functions.
+    -why? because the display is -sometimes- before the removal, and -sometimes- its after...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 questions:
 hello! thanks for the info on how to find out things like this. i would like to make a report though, and correct some misinformation about tags, that i have discovered by experimenting and reading the code.
 [claimed info here]
