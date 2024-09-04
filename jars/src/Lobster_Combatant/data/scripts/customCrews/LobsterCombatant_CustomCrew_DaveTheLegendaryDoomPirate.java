@@ -77,7 +77,6 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
 
         text.addTooltip();
     }
-
     @Override
     public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
         super.displayCrewAvailable(cargo, getDaves(cargo), text);

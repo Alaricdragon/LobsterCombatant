@@ -1,7 +1,19 @@
 NOTICE:
-1) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
-    -why? because 'get crew available' effects it... this can cause some issues.
-2) I need to move instances of me setting data from the display, over to the 'get losses' functions.
+1)(DONE) I need to look at all my custom crews, and change the data of ones that relied on the display being before losing crew.
+2)(DONE) I need to add onto the 'basics' section to exsplain hos the new 'defalt crew' system works.
+
+2) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
+    -(done)cover this in the 'custom crews' class intro thing
+    -add this function to all custom crew classes that require it
+        -LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate
+            -need to get the total amount of cargo space, as well as the total amount of cargo space used.
+        -(DONE)LobsterCombatant_CustomCrew_Hullmod
+            -just need to set the size to zero, in effect.
+        -(in progress)LobsterCombatant_CustomCrew_lossOre
+            (possability of crew sizes between crew and ore being diffrent. need to advradge them)
+        -(DONE)LobsterCombatant_CustomCrew_PlayerSkill
+            -just need to set the size to zero, in effect.
+3) I need to move instances of me setting data from the display, over to the 'get losses' functions.
     -why? because the display is -sometimes- before the removal, and -sometimes- its after...
 
 

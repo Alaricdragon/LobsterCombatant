@@ -42,4 +42,26 @@ public class LobsterCombatant_CustomCrew_lossOre extends crewReplacer_Crew {
     public float getOreLost(CargoAPI cargo, float CrewToLost){
         return Math.min(CrewToLost*0.5f,cargo.getCommodityQuantity("ore"));
     }
+
+    @Override
+    public float getCargoSpaceUse(CargoAPI cargo, float amountOfCrew) {
+        return getCargoSpace(cargo,amountOfCrew);
+    }
+
+    @Override
+    public float getCargoSpaceUse(CargoAPI cargo) {
+        return getCargoSpace(cargo,this.getCrewInCargo(cargo));
+    }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        return  super.getCargoSpacePerItem(cargo);
+    }
+
+    public float getCargoSpace(CargoAPI cargo, float amount){
+        float oreuse = getOreLost(cargo,amount);
+        float oreCargo = Global.getSector().getEconomy().getCommoditySpec("ore").getCargoSpace();
+        float crewCargo = Global.getSector().getEconomy().getCommoditySpec(this.name).getCargoSpace();
+        return (oreCargo*oreuse) + ((amount-oreuse)*crewCargo);
+    }
 }

@@ -72,6 +72,7 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
     @Override
     public void removeCrew(CargoAPI cargo, float CrewToLost) {
         ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
+        lossesTemp = getCRLosses(cargo,CrewToLost,fleet);
         for (int a = 0; a < lossesTemp.length; a++){
             fleet.get(a).getRepairTracker().setCR(fleet.get(a).getRepairTracker().getCR() - lossesTemp[a]);
         }
@@ -96,7 +97,6 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
     @Override
     public void displayCrewLost(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
         ArrayList<FleetMemberAPI> fleet = getFleetMembers(cargo);
-        lossesTemp = getCRLosses(cargo,numberOfItems,fleet);
         for (int a = 0; a < lossesTemp.length; a++){
             if (lossesTemp[a] != 0) {
                 String displayName = fleet.get(a).getShipName();
@@ -109,5 +109,10 @@ public class LobsterCombatant_CustomCrew_Hullmod extends crewReplacer_Crew {
                 text.addTooltip();
             }
         }
+    }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        return 0;
     }
 }

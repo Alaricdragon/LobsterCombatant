@@ -32,4 +32,9 @@ public class LobsterCombatant_CustomCrew_PlayerSkill extends crewReplacer_Crew {
     public String getDisplayName(CargoAPI cargo) {
         return "automated tokens";
     }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        return 0;
+    }
 }

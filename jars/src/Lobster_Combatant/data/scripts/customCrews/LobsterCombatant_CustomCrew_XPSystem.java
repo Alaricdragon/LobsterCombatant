@@ -15,7 +15,7 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
 
     private float crewUsedTemp;
     private float ratio = 0;
-    private float crewLossMultiTemp = 1;
+    private int crewLossMultiTemp = 1;
     private float maxDef = 0.2f;
     private float maxPower = 1f;
     private final static String memoryKey="$LobsterCombatant_LobsterXP";
@@ -61,6 +61,7 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
     public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
         float temp = super.getCrewToLose(cargo, crewUsed, crewLost);
         crewUsedTemp = temp;
+        crewLossMultiTemp = (int)Math.floor(100 * (getXPDefneceMulti(getXP(cargo),cargo)-1));
         return temp;
     }
 
@@ -111,7 +112,7 @@ public class LobsterCombatant_CustomCrew_XPSystem extends crewReplacer_Crew {
         TooltipMakerAPI iwt = tt.beginImageWithText(getCrewIcon(cargo), 24);
         String numberStr = (int) numberOfItems + "";
         LabelAPI label = iwt.addPara(numberStr + " " + displayName, 0, Misc.getHighlightColor(), numberStr);
-        int xpTemp = (int)Math.floor(100 * (getXPDefneceMulti(getXP(cargo),cargo)-1));//(crewLossMultiTemp-1));
+        int xpTemp = crewLossMultiTemp;
         if(xpTemp != 0) {
             String XP = xpTemp+"%";
             iwt.addPara("- loss reduction from XP: %s", 0, Misc.getHighlightColor(),XP);
