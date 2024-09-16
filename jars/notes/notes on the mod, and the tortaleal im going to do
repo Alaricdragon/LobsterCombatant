@@ -1,29 +1,40 @@
 NOTICE:
 1)(DONE) I need to look at all my custom crews, and change the data of ones that relied on the display being before losing crew.
 2)(DONE) I need to add onto the 'basics' section to exsplain hos the new 'defalt crew' system works.
-
-2) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
-    -(done)cover this in the 'custom crews' class intro thing
-    -add this function to all custom crew classes that require it
-        -LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate
-            -need to get the total amount of cargo space, as well as the total amount of cargo space used.
-        -(DONE)LobsterCombatant_CustomCrew_Hullmod
-            -just need to set the size to zero, in effect.
-        -(in progress)LobsterCombatant_CustomCrew_lossOre
-            (possability of crew sizes between crew and ore being diffrent. need to advradge them)
-        -(DONE)LobsterCombatant_CustomCrew_PlayerSkill
-            -just need to set the size to zero, in effect.
-3) I need to move instances of me setting data from the display, over to the 'get losses' functions.
-    -why? because the display is -sometimes- before the removal, and -sometimes- its after...
+3)(done. dave might need testing) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
 
 
 
-
-
-
-
-
-
+ok, so how exsactly do i want to structure the tortoreal?
+basic->
+    first, lets talk about the 3 stages to adding crew replacer support.
+        1) initializing your crewReplacer jobs
+            -> crewReplacer job initialization AKA how to add your first crew
+            -> crewReplacer crewSet initialization AKA how to have other people add your job to your own god dam code.
+                -> its OK not to add crewSets to your job if your job does not use any 'normal' commodity, but i recommend you do even if your job uses a commodity you added in yourself.
+                -> adding base crewSets to your job.
+                -> adding crewSets just for your job (for ease of access for other users)
+        2) organizing your job names
+            -> the 'standard' job name setup.
+            -> the 'standard' crewSet name setup
+        3) installing crew replacer into your mod
+            -> what functions exsist, and how to use them
+            -> what CSV file tools exsist, and how to use them
+            -> a basic description about how to add crew replacer support to a 'in theory' existing job
+            -> examples of me adding crew replacer support to base game jobs (but only the simple ones)
+        4) having crew replacer support, without having crew replacer as an requirement
+            -> a basic rundown of a 'commodity handling class'
+                -> the 'normal' version
+                -> the 'crew replacer' version
+            -> a basic rundown of the start up sequences
+                -> having what version of the 'commoditu handling class' runs be based off of wether or not crew replacer is instaled
+                -> putting the startup data into the 'crew replacer' version of the 'commodity handling class'
+                -> examples
+                    ->TASC (terraform and station construction)
+                        -> 'commodity handling class'
+                        -> 'startup procedures'
+                        -> 'implementation examples'
+advanced ->
 
 
 

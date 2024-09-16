@@ -5,18 +5,17 @@
     -some examples of how you might make one of your modding 'jobs' use crew replacer.
 */
 
-[spoiler=adding crew replacer support to your mods, and why should you?]
 [spoiler= why should you? shameless self promotion edition]
 looking at crew replacer you might be wondering about why someone would even want to support crew replacer, but i will go over all of my arguments on why you might want to here.
-lets say you have, some task in your mod that has requires commodity's, like for example, terraform and stations construction 'stations construction' (wish requires crew, metal, heavy machinery, rare metals, and credits, i think?)
+lets say you have some task in your mod that has requires commodity's like for example terraform and stations construction 'stations construction' (wish requires crew, metal, heavy machinery, rare metals, and credits, i think?)
 say, someone wants to have there own commodity act as one of the resources required to create a station? (like for example, they want 'nano bots' to act like 'metal' in the stations construction)?
 well, there might be a few ways depending on the mod. they could override the mods function to change the skill for founding stations, or they could ask the mod maker to add support for there 'nanobots'.
 this is fine, on its own, but, what if 5 people want to do the same, all with there own commoditys? 6? 200?
 this quickly becomes a complete mess and a bit of a nightmare to manage, both for the modders that want to add things to make stations with, and for the modder who built the original mod.
 but how does crew replacer help in this example?
 quite simply, crew replacer is built to handle this. that's why its a library and not just a bit of code in AI-Retrofits like how it started.
-if terraforming and station construction had crew replacer support in its 'tasks' then crew replacer could handle all that. other modders would not need to bug the original mod creator mush, if at all. they would also be able to (mostly) not have to worry about compatibility issues between the increasingly complicated web of mods that try to add onto this feature.
-(also note: i am picking aon TASC a little, but it does in fact have crew replacer support.)
+if terraform and station construction had crew replacer support in its 'tasks' then crew replacer could handle all that. other modders would not need to bug the original mod creator mush, if at all. they would also be able to (mostly) not have to worry about compatibility issues between the increasingly complicated web of mods that try to add onto this feature.
+(also note: i am picking on TASC a little, but it does in fact have crew replacer support.)
 
 now, i know what some of you might be thinking "there is nothing stopping someone from just having a list stored in the original mod that stores all the commodity's for all the different things in TASC. you could even make it so other modders could edit it without bugging the main modder. so why bother with the big clunky crew replacer?"
 and this is true. in fact, that's what crew replacer started as, and in some ways still is. just a big set of lists that handles a bunch of commodity interactions. but at this point, crew replacer is a bit more then that.
@@ -37,11 +36,14 @@ here is a list of things that crew replacer does, that you would not find very e
 6) visibility
     -by adding support for crew replacer to your mod, you help normalize it. this also helps normalize the idea that people can easily add commodity to do tasks in different mods.
      this lets more modders add more cross mod interactions in this way yes, but also lets more moders know its possible. it lets them know, yes you can try this and its relatively easy.
-[spoiler]
+[/spoiler]
 [spoiler=the basics of adding support for crew replacer to your mods]
-[spoiler=crewReplacer_Job? and crewReplacer_CrewSet]
-so, the first thing we need to talk about are 'crewReplacer_Job' and 'crewReplacer_Crewset', and there relation to adding crew replacer support to your mod.
 
+[spoiler=crewReplacer_Job? and crewReplacer_CrewSet]
+[spoiler=crewReplacer_Job]
+[/spoiler]
+[spoiler=crewReplacer_CrewSet]
+[/spoiler]
 [/spoiler]
 [spoiler=the basic functions used when adding support to crew replacer]
 here, we will go over all the functions in crew replacer that relate to handling crew.
@@ -107,10 +109,10 @@ inputs:
 (optional) Object newdata
     -this is the 'extra data' you want to transfer over to the jobs 'crew'.
     -if no newdata is inputted, will give all of this jobs 'crew' the stored 'extra data' instead
-what this does:
-    gives the inputted extra data to all crew that use this job.
 outputs:
     none
+what this does:
+    gives the inputted extra data to all crew that use this job.
 when you should use it:
     whenever you want to give 'extra data' over to the 'crew' that use your job.
 
@@ -119,32 +121,32 @@ when you should use it:
 inputs:
 Object newData
     -this is the 'extra data' that you want to give both your crew and your job.
+outputs:
+    none.
 what this does:
     1) runs applyExtraDataToCrew with the inputted 'extra data'
     2) sets the jobs stored 'extra data' to the inputed 'newData'
-outputs:
-    none.
 when you should use it:
     anytime you want to give both your job, and said jobs crew, exstra data.
 [/spoiler]
 [spoiler=resetExtraDataToCrewsAndJob]
 inputs:
     none
+outputs:
+    none
 what this does:
     1) sets the jobs stored 'extra data' variable to null.
     2) runs 'resetExtraDataToCrews'
-outputs:
-    none
 when you should use it:
     anytime you want to reset the 'extra data' you gave to your crew and your job.
 [/spoiler]
 [spoiler=resetExtraDataToCrews]
 inputs:
     none
-what this does:
-    1) sets every 'crew' in this 'jobs' 'extra data' to null
 outputs:
     none.
+what this does:
+    1) sets every 'crew' in this 'jobs' 'extra data' to null
 when you should use it:
     you should always run this function in some form after you are 'done' using your job for a single operation, provided you ran 'applyExtraDataToCrew' or 'applyExtraDataToCrewAndJob' at some point for this job drawing this operation.
 [/spoiler]
@@ -155,10 +157,10 @@ all the functions in crewReplacer_Job that you might need, in there most basic f
 inputs:
 CargoAPI cargo
     -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-what this does:
-    runs 'getCrewPowerInCargo' on every 'crew' in this 'job', adding the outputs together.
 outputs:
     the combined output of every 'crews' in this 'jobs' 'getCrewPowerInCargo' function
+what this does:
+    runs 'getCrewPowerInCargo' on every 'crew' in this 'job', adding the outputs together.
 when you should use it:
     this function is used to get the total 'crew power' this job has available.
     if you were replacing a default in game job with this (like scavenging's heavy machinery) you would use this function instead of getting the number of 'heavy machinery' in the players cargo.
@@ -167,10 +169,10 @@ when you should use it:
 inputs:
 CargoAPI cargo
     -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-what this does:
-    it returns a list of the amount of each 'crew' in this 'job' that are in the cargo bay, as based of the 'crews' 'getCrewInCargo' function
 outputs:
     an array containing the numbers of all available 'crew' in this job
+what this does:
+    it returns a list of the amount of each 'crew' in this 'job' that are in the cargo bay, as based of the 'crews' 'getCrewInCargo' function
 when you should use it:
     you should use it when you want to get the number of each crew in the players cargo bay.
     please note: this function can result in inaccuracy's if there are 'custom crew' involved that overwrite a 'crews' 'getCrewInCargo' function. as a result, its not recreated to depend on this function, but it remains an option.
@@ -181,10 +183,10 @@ CargoAPI cargo
     -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
 TextPanelAPI text
     -this is the textPanel that you want to output the available crew display to.
-what this does:
-    this function displays the amount crew available to preform this job, by running each 'crews' 'displayCrewAvailable' function.
 outputs:
     none.
+what this does:
+    this function displays the amount crew available to preform this job, by running each 'crews' 'displayCrewAvailable' function.
 when you should use it:
     you should use this function whenever you have any reason at all to display the number of crew available for a given task.
 [/spoiler]
@@ -192,10 +194,10 @@ when you should use it:
 inputs:
 CargoAPI cargo
     -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-what this does:
-    this gets the 'name' variable from every 'crew' in this 'job' and returns an String[] containing all of them
 outputs:
     this function outputs a String[] that contains the name that every 'crew' in this 'job'.
+what this does:
+    this gets the 'name' variable from every 'crew' in this 'job' and returns an String[] containing all of them
 when you should use it:
     I am unsure if you would ever need this, but it will remain an option, just in case.
     note: if you intend to get this to remember the 'commodity ID' of crew, its important to remember that 'custom crew' can often have .name's that don't match any commodity ID.
@@ -204,10 +206,10 @@ when you should use it:
 [spoiler=getCrewDisplayNames]
 CargoAPI cargo
     -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-what this does:
-    this runs every 'crews' 'getDisplayName' and returns the output of all of them.
 outputs:
     this function outputs a String[] that contains the name that every 'crew' in this 'job' wants to display.
+what this does:
+    this runs every 'crews' 'getDisplayName' and returns the output of all of them.
 when you should use it:
     I am unsure of whenever this will be useful. or if it will ever be. but I imagine someone will want to be able to get the 'names' of each 'crew' in your job at some point. so here it is.
 [/spoiler]
@@ -220,10 +222,10 @@ String cargoType
         -.CARGO_CARGO
         -.CARGO_CREW
         -.CARGO_FUEL
-what this does:
-    this function returns the total amount of cargo space (of the inputted type) that all the 'crew' in this 'job', in the inputted cargo, use.
 outputs:
     the total amount of cargo space of the inputted type that 'crew' in this 'job' use in the inputted cargo.
+what this does:
+    this function returns the total amount of cargo space (of the inputted type) that all the 'crew' in this 'job', in the inputted cargo, use.
 when you should use it:
     whenever you want to find out how mush cargo space things from your 'job' are using.
 [/spoiler]
@@ -240,10 +242,10 @@ String cargoType
         -.CARGO_CARGO
         -.CARGO_CREW
         -.CARGO_FUEL
-what this does:
-    this function returns the possible 'range' of cargo space (of the inputted type) that the inputted 'power' of 'crew' in this 'job' could use
 outputs:
     an float[] were [0] is the min amount of 'cargo' this amount of 'crew power' could use, and [1] is the max amount of 'cargo' this amount of 'crew power' could use.
+what this does:
+    this function returns the possible 'range' of cargo space (of the inputted type) that the inputted 'power' of 'crew' in this 'job' could use
 when you should use it:
     you should use this whenever you want to know how mush 'cargo space' is being used by a certain amount of power of 'crew' in this 'job'.
     you should also use this if you ever want to know how mush 'cargo space' will be freed up after a certain amount of 'crew' is removed from a 'cargo'.
@@ -251,31 +253,65 @@ when you should use it:
 [/spoiler]
 [spoiler=getCrewForJob]
 inputs:
-what this does:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+float crewPowerRequired
+    -this is the amount of crew power currently being used in a given job
 outputs:
+    an ArrayList<Float> holding the number of each type of crew that is used in this job. (in the same order as this jobs Crews array.)
+what this does:
+    this gets the crew that crew replacer calculates will be used in a given task.
+    also note: there is some randomness here. so running it twice can result in different outputs.
 when you should use it:
-
+    as the second input for 'getCrewLost'.
 [/spoiler]
 [spoiler=getCrewLost]
 inputs:
-what this does:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+ArrayList<Float> crewUsed
+    -should be the output from 'getCrewForJob'
+    -this is an ArrayList holding the amount of each 'crew' that was used in this job.
+    -each value corresponds to a given Crew.
+float crew_power_to_lose
+    -this is the amount of crew power we are calculated to loss in this task.
 outputs:
+    an ArrayList<Float> holding the number of each type of crew that is calculated to be lost. (in the same order as this jobs Crews array.)
+what this does:
+    this gets the crew that crew replacer thinks should be lost in a given task.
+    also note: there is some randomness here. so running it twice can result in different outputs.
 when you should use it:
+    as the first input in 'applyCrewLost'.
 
 [/spoiler]
 [spoiler=applyCrewLost]
 inputs:
+ArrayList<Float> crewLost
+    -should be the output from 'getCrewLost'.
+    -is an ArrayList holding the amount of each 'crew' that is to be lost in a giving job.
+    -each value corresponds to a given Crew.
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
 what this does:
+    this removes crews from the inputted cargo that are calculated to be lost
 outputs:
+    none
 when you should use it:
-
+    before you run 'displayCrewLost'
+    whenever you want to apply losses to a given cargo.
 [/spoiler]
 [spoiler=displayCrewLost]
 inputs:
-what this does:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+TextPanelAPI text
+    -this is the TextPanelAPI that you are going to display what crew is lost on.
 outputs:
+    -none
+what this does:
+    -this displays the crew lost onto a given TextPanelAPI.
 when you should use it:
-
+    -whenever you want to display what crew were lost in an operation.
 [/spoiler]
 [/spoiler]
 [/spoiler]
@@ -296,5 +332,4 @@ here we will talk about how to use some of the random functions that i built to 
 [/spoiler]
 [spoiler=examples]
 
-[/spoiler]
 [/spoiler]

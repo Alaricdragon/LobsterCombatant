@@ -44,6 +44,25 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
     public float getMaxHP(CargoAPI cargo){
         return maxHP * getDaves(cargo);
     }
+    public float getDavesAndHPLost(CargoAPI cargo,float crewLost){
+        float hpLost = 0;
+        float hp = getHP(cargo);
+        float daves = getDaves(cargo);
+        float losses = 0;
+        float hpPerDave = maxHP/daves;
+        while(crewLost >= hpPerDave && crewLost > 0){
+            hp -= Math.min(crewLost,hpPerDave);
+            losses++;
+            crewLost-=hpPerDave;
+            hpLost+=hpPerDave;
+        }
+        hp-=crewLost;
+        hpLost+=crewLost;
+        davesHPLost = hpLost / getMaxHP(cargo);
+        davesLostTemp = losses;
+        return hp;
+    }
+
     @Override
     public float getCrewInCargo(CargoAPI cargo) {
         return getHP(cargo);
@@ -84,27 +103,24 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
 
     @Override
     public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
-        float hpLost = 0;
-        float hp = getHP(cargo);
-        float daves = getDaves(cargo);
-        float losses = 0;
-        float hpPerDave = maxHP/daves;
-        while(crewLost >= hpPerDave && crewLost > 0){
-            hp -= Math.min(crewLost,hpPerDave);
-            losses++;
-            crewLost-=hpPerDave;
-            hpLost+=hpPerDave;
-        }
-        hp-=crewLost;
-        hpLost+=crewLost;
-        davesHPLost = hpLost / getMaxHP(cargo);
+        float hp = getDavesAndHPLost(cargo,crewLost);
         setHP(cargo,hp / getMaxHP(cargo));
-        davesLostTemp = losses;
         return super.getCrewToLose(cargo, crewUsed, crewLost);
     }
 
     @Override
     public void removeCrew(CargoAPI cargo, float CrewToLost) {
         super.removeCrew(cargo, davesLostTemp);
+    }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        return (getDaves(cargo) * super.getCargoSpacePerItem(cargo)) / getHP(cargo);
+    }
+
+    @Override
+    public float getCargoSpaceUse(CargoAPI cargo, float amountOfCrew) {
+        getDavesAndHPLost(cargo,amountOfCrew);
+        return davesLostTemp * super.getCargoSpacePerItem(cargo);
     }
 }

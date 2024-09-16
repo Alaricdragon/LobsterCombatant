@@ -3,8 +3,8 @@
   "LobsterCombatant_CustomCrew_Volatile_MultiBoost": false,
   "LobsterCombatant_CustomCrew_ReqMarines": false,
   "LobsterCombatant_CustomCrew_lossOre": false,
-  "LobsterCombatant_CustomCrew_XPSystem": true,
-  "LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate": false,
+  "LobsterCombatant_CustomCrew_XPSystem": false,
+  "LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate": true,
   "LobsterCombatant_CustomCrew_PlayerSkill": false,
   "LobsterCombatant_CustomCrew_Hullmod": false
 }

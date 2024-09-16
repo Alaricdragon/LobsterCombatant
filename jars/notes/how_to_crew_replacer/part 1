@@ -857,10 +857,14 @@ at the same time, having losses be equal to the power seems wrong. 'Heavy Armame
 [/spoiler]
 [spoiler=a 'crew' that when 'ore' is available, 'ore' is lost when this 'crew' should have been]
 something interesting. but simple.
-this time, i cant just do this with a single function. i think im going to need 2.
+this time, i cant just do this with a single function. i think im going to need 4.
 [code]
 public class LobsterCombatant_CustomCrew_lossOre extends crewReplacer_Crew {
     float oreLost=0;
+    public float getOreLost(CargoAPI cargo, float CrewToLost){
+        return Math.min(CrewToLost*0.5f,cargo.getCommodityQuantity("ore"));
+    }
+
     @Override
     public void removeCrew(CargoAPI cargo, float CrewToLost) {
         oreLost = getOreLost(cargo, CrewToLost);
@@ -889,18 +893,31 @@ public class LobsterCombatant_CustomCrew_lossOre extends crewReplacer_Crew {
         tt.addImageWithText(0);
         text.addTooltip();
     }
-    public float getOreLost(CargoAPI cargo, float CrewToLost){
-        return Math.min(CrewToLost*0.5f,cargo.getCommodityQuantity("ore"));
+
+    @Override
+    public float getCrewInCargo(CargoAPI cargo) {
+        float crew = super.getCrewInCargo(cargo);
+        return crew + Math.min(crew,cargo.getCommodityQuantity("ore"));
+    }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        float crew = super.getCrewInCargo(cargo);
+        float ore = Math.min(crew,cargo.getCommodityQuantity("ore"));
+        return ((super.getCargoSpacePerItem(cargo) * crew) + (Global.getSector().getEconomy().getCommoditySpec("ore").getCargoSpace() * ore)) / (crew + ore);
     }
 }
 [/code]
 ok, so that's quite a lot, so lets break this down.
-1) the removeCrew function is the same as normal, but it saves a number called 'ore lost', and makes us lose less of our 'crew'.
-2) the 'displayCrewLost' function. its a bit diffrent, in that it displays our lost 'crew' and the number of ore lost. I did this by just coping the code from the base crewReplacer_Crew.displayCrewNumbers function and running it twice. once for each commodity.
-3) the function 'getOreLost'. i put this here as a function, so its easier to edit, and i can find it easily. please don't judge me. as for the function itself.. you can see it caps the amount of ore lost to 50% of crew lost. thats because i dont feel likes its right to have some type of infinity revive with ore. so we still lose crew, just more ore then normal.
+1) the function 'getOreLost'. i put this here as a function, so its easier to edit, and i can find it easily. please don't judge me. as for the function itself.. you can see it caps the amount of ore lost to 50% of crew lost. thats because i dont feel likes its right to have some type of infinity revive with ore. so we still lose crew, just more ore then normal.
 
+2) the removeCrew function is the same as normal, but it saves a number called 'ore lost', and makes us lose less of our 'crew'.
+3) the 'displayCrewLost' function. its a bit different, in that it displays our lost 'crew' and the number of ore lost. I did this by just coping the code from the base crewReplacer_Crew.displayCrewNumbers function and running it twice. once for each commodity.
+4) the 'getCrewInCargo' function is here for a simple reason: because i can reduce the amount of crew lost by up to 50% (with enouth ore), this in effect means that i can complete jobs that should use all my crew, but leave 50% remaining. I dont like that, so i simply increase the amount of crew i have by the amount of ore i could lose.
+5) the 'getCargoSpacePerItem' function is not required here, but i thought i would show it off anyways, just in case you are ever doing this with 2 crew with different cargo sizes. this will get the advradge.
+    -something to note: this does not have full accuracy. if i wanted to have 100% perfect accuracy i would also override the 'getCargoSpaceUse(CargoAPI cargo, float amountOfCrew)' function, because with different amounts of crew there is a different ore / crew balance.
 some other notes:
-the 2 functions i picked to override. the first one i chose becuase i was applying another loss. i would have picked 'getCrewToLose' if i was only modifying the amount of crew lost, and not making another thing lost. doing so would also remove the requirement of editing the display.
+the 4 functions i picked to override. the first one i chose becuase i was applying another loss. i would have picked 'getCrewToLose' if i was only modifying the amount of crew lost, and not making another thing lost. doing so would also remove the requirement of editing the display.
 the second one, i chose it because im only doing things to the amount of crew lost. and also adding a second thing to lose. i prefure to edit 'displayCrewNumbers', but thats not the right chose here.
 
 and now, as always, for the implementation
@@ -914,7 +931,6 @@ public class LobsterCombatant_CrewReplacerCompatibility {
         Crew.crewPriority = 10;
         Crew.crewLoadPriority = 1;
         crewReplacer_Main.getJob("salvage_crew").addCrew(Crew);
-
     }
 }
 [/code]
@@ -1308,6 +1324,25 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
     public float getMaxHP(CargoAPI cargo){
         return maxHP * getDaves(cargo);
     }
+    public float getDavesAndHPLost(CargoAPI cargo,float crewLost){
+        float hpLost = 0;
+        float hp = getHP(cargo);
+        float daves = getDaves(cargo);
+        float losses = 0;
+        float hpPerDave = maxHP/daves;
+        while(crewLost >= hpPerDave && crewLost > 0){
+            hp -= Math.min(crewLost,hpPerDave);
+            losses++;
+            crewLost-=hpPerDave;
+            hpLost+=hpPerDave;
+        }
+        hp-=crewLost;
+        hpLost+=crewLost;
+        davesHPLost = hpLost / getMaxHP(cargo);
+        davesLostTemp = losses;
+        return hp;
+    }
+
     @Override
     public float getCrewInCargo(CargoAPI cargo) {
         return getHP(cargo);
@@ -1341,7 +1376,6 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
 
         text.addTooltip();
     }
-
     @Override
     public void displayCrewAvailable(CargoAPI cargo, float numberOfItems, TextPanelAPI text) {
         super.displayCrewAvailable(cargo, getDaves(cargo), text);
@@ -1349,28 +1383,25 @@ public class LobsterCombatant_CustomCrew_DaveTheLegendaryDoomPirate extends crew
 
     @Override
     public float getCrewToLose(CargoAPI cargo, float crewUsed, float crewLost) {
-        float hpLost = 0;
-        float hp = getHP(cargo);
-        float daves = getDaves(cargo);
-        float losses = 0;
-        float hpPerDave = maxHP/daves;
-        while(crewLost >= hpPerDave && crewLost > 0){
-            hp -= Math.min(crewLost,hpPerDave);
-            losses++;
-            crewLost-=hpPerDave;
-            hpLost+=hpPerDave;
-        }
-        hp-=crewLost;
-        hpLost+=crewLost;
-        davesHPLost = hpLost / getMaxHP(cargo);
+        float hp = getDavesAndHPLost(cargo,crewLost);
         setHP(cargo,hp / getMaxHP(cargo));
-        davesLostTemp = losses;
         return super.getCrewToLose(cargo, crewUsed, crewLost);
     }
 
     @Override
     public void removeCrew(CargoAPI cargo, float CrewToLost) {
         super.removeCrew(cargo, davesLostTemp);
+    }
+
+    @Override
+    public float getCargoSpacePerItem(CargoAPI cargo) {
+        return (getDaves(cargo) * super.getCargoSpacePerItem(cargo)) / getHP(cargo);
+    }
+
+    @Override
+    public float getCargoSpaceUse(CargoAPI cargo, float amountOfCrew) {
+        getDavesAndHPLost(cargo,amountOfCrew);
+        return davesLostTemp * super.getCargoSpacePerItem(cargo);
     }
 }
 [/code]
@@ -1391,6 +1422,12 @@ first, the new functions:
 5)getMaxHP
     -this just gets daves true max hp. although we do have a varuble to manage this, this lets us view that max HP in cases were we have many daves.
      the army of dave. scary.
+6)getDavesAndHPLost
+    -the calculates the amount of daves one would lose form a given amount of 'crew loss'.
+    -it also saves the amount of HP dave would lose, and the amount of daves that would be killed
+    -lastly, it returns the new amount of HP dave would have.
+    -also, the while loop could likely be removed. I put it there thinking i would give each dave his own HP, but decided not to because that would take forever and be past the scope of what im trying to show you.
+    -this is required, again, because of what i did in function 7-9. so ya.
 next, the functions i have overwriten
 6)getCrewInCargo
     -you might be confused on this. and i dont blame you.
@@ -1407,13 +1444,16 @@ next, the functions i have overwriten
     -this runs the normal code for 'displayCrewAvailable', but is set to always show the number of 'daves' we have.
     -this is important because of the changes made in getCrewInCargo
 11)getCrewToLose
-    -what this function does is get the amount of 'daves' that should be lost, as well as get the amount of daves HP that should be lost.
-    -this is required, again, because of what i did in function 6-8. so ya.
-    -also, the while loop could likely be removed. I put it there thinking i would give each dave his own HP, but decided not to because that would take forever and be past the scope of what im trying to show you.
+    -this function simply runs 'getDavesAndHPLost' before setting daves HP to his new HP.
 12)removeCrew
     -the only diffrece here is that we are removing a number of crew equal to davesLostTemp (set in getCrewToLose)
     -you might be wondering, why not move the data from getCrewToLose into this function? simply put, this function runs after displayCrewLost. and i wanted to display the amount of daves HP that was lost as well.
-
+13)getCargoSpacePerItem
+    -this makes it so this function returns a value collating to the number of daves lost from a certain amount of hp, as apposed to treating each of daves hp like they cost cargo sapce
+    -NOTE: this is not required in this instance, but only because i set daves cargo space use to zero. in all other times it would be required.
+14)getCargoSpaceUse
+    -this just gets the daves we would lose if we used the inputed amount of crew, then returns the cargo space said daves would use.
+    -NOTE: this is not required in this instance, but only because i set daves cargo space use to zero. in all other times it would be required.
 and now for implementing dave
 [code]
 public class LobsterCombatant_CrewReplacerCompatibility {
@@ -1479,7 +1519,7 @@ and now to implememt it
 [code]
 public void onGameLoad(boolean newGame) {
     super.onGameLoad(newGame);
-    Global.getSector().getListenerManager().addListener(new LobsterCombatant_DavesDescription());
+    Global.getSector().getListenerManager().addListener(new LobsterCombatant_DavesDescription(),true);
 }
 [/code]
 again, relatively simple. just add it to the games ListenerManager.
