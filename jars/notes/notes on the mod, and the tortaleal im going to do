@@ -1,13 +1,12 @@
 NOTICE:
-1)(DONE) I need to look at all my custom crews, and change the data of ones that relied on the display being before losing crew.
-2)(DONE) I need to add onto the 'basics' section to exsplain hos the new 'defalt crew' system works.
 3)(done. dave might need testing) I FUCKING FORGOT to cover the effects on 'get cargo space per item'. this is a issue.
-
+4) make it so i cover what 'crewReplacer_Main' is.
 
 
 ok, so how exsactly do i want to structure the tortoreal?
+note: its not required to go over the definitions of a job / crewSet. they should have been coverd in the first part.
 basic->
-    first, lets talk about the 3 stages to adding crew replacer support.
+    next, lets talk about the 3 stages to adding crew replacer support.->
         1) initializing your crewReplacer jobs
             -> crewReplacer job initialization AKA how to add your first crew
             -> crewReplacer crewSet initialization AKA how to have other people add your job to your own god dam code.
@@ -18,8 +17,8 @@ basic->
             -> the 'standard' job name setup.
             -> the 'standard' crewSet name setup
         3) installing crew replacer into your mod
-            -> what functions exsist, and how to use them
-            -> what CSV file tools exsist, and how to use them
+            -> what functions exist, and how to use them
+            -> what CSV file tools exist, and how to use them
             -> a basic description about how to add crew replacer support to a 'in theory' existing job
             -> examples of me adding crew replacer support to base game jobs (but only the simple ones)
         4) having crew replacer support, without having crew replacer as an requirement
@@ -27,7 +26,7 @@ basic->
                 -> the 'normal' version
                 -> the 'crew replacer' version
             -> a basic rundown of the start up sequences
-                -> having what version of the 'commoditu handling class' runs be based off of wether or not crew replacer is instaled
+                -> having what version of the 'commodity handling class' runs be based off of weather or not crew replacer is active
                 -> putting the startup data into the 'crew replacer' version of the 'commodity handling class'
                 -> examples
                     ->TASC (terraform and station construction)
@@ -35,6 +34,8 @@ basic->
                         -> 'startup procedures'
                         -> 'implementation examples'
 advanced ->
+    -> here, we will go over everything related to the creation of 'custom job' classes.
+    -> also, we will cover the default crew system and how to change it.
 
 
 

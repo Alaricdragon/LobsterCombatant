@@ -37,6 +37,515 @@ here is a list of things that crew replacer does, that you would not find very e
     -by adding support for crew replacer to your mod, you help normalize it. this also helps normalize the idea that people can easily add commodity to do tasks in different mods.
      this lets more modders add more cross mod interactions in this way yes, but also lets more moders know its possible. it lets them know, yes you can try this and its relatively easy.
 [/spoiler]
+
+
+[spoiler=adding support for crew replacer to your mods]
+[spoiler=basic]
+[spoiler=initializing your crewReplacer jobs]
+although not technically required, I would feel very silly if i failed to cover this.
+please keep in mind that the load order of mods does not matter for crew replacer, so long as your mod is loaded after crew replacer, everything will work AOK.
+lastly, remember to always run your initalization code in 'onApplicationLoad()' of your 'mod plugin'. if you run this code latter (for whatever reason), you need to run 'crewReplacer_Main.getJob("jobName").organizePriority();'
+
+so in this example, we are going to initialize a job named 'LobsterCombatant_Job_Crew'. we are also going to add the crewSet 'crew' to this job.
+[spoiler=crewReplacer job initialization]
+the basics of initializing a job does not require anything fancy. you just need to add your first crew to your job.
+[code]
+public class LobsterCombatant_startup extends BaseModPlugin {
+    @Override
+    public void onApplicationLoad() {
+        crewReplacer_Main.getJob("LobsterCombatant_Job_Crew").addNewCrew("crew",1,10);
+    }
+}
+[/code]
+now, if you are like me you might be somewhat confused on how this initializes the job at all.
+well, crew replacer will automatically initialize a job any time it is requested from crewReplacer_Main.
+this also means that its possible that your job was initialized even before you did. but in truth that's not what the objective is here.
+what we are doing here is adding in the first crew to a job. that is all we are doing here. that's the initialization.
+[/spoiler]
+[spoiler=crewReplacer crewSet initialization]
+now lets add a crew set to our job, so people who don't even know our job exists can add crew to it.
+[spoiler=single crew set]
+[code]
+public class LobsterCombatant_startup extends BaseModPlugin {
+    @Override
+    public void onApplicationLoad() {
+        crewReplacer_Main.getJob("LobsterCombatant_Job_Crew").addNewCrew("crew",1,10);
+        crewReplacer_Main.getJob("LobsterCombatant_Job_Crew").addCrewSet("crew");
+    }
+}
+[/code]
+so, you might ask 'if we are adding the crewSet 'crew' to our job, why even add 'crew' as a crew to our job'?
+well, its quite simple. the crew named 'crew' is not in the crewset named 'crew'.
+why? because in some rare cases, its completely impossible to remove the base 'crew' from a job crew replacer is trying to interface with. if i were to allow 'crew' to be part of the crewSet 'crew', every such job would have 'crew' be counted twice.
+this is the same for every crewSet there is. they should never include the crew that is part of the crew set for this very reason.
+lastly, please keep in mind that you can add as many crew sets to a job as you need.
+[/spoiler]
+[spoiler=crew sets within crew sets]
+this is something more strange.
+in this example, we have 3 different jobs, and i want all of them to have the crew set crew.
+now, you can just have each different job have the 'crew' crew set, but there is another way that's worth considering.
+[code]
+public class LobsterCombatant_startup extends BaseModPlugin {
+    @Override
+    public void onApplicationLoad() {
+        crewReplacer_Main.getJob("LobsterCombatant_Job_Crew").addNewCrew("crew",1,10);
+        crewReplacer_Main.getJob("LobsterCombatant_Job_Crew").addCrewSet("LobsterCombatant_crew");
+
+        crewReplacer_Main.getJob("LobsterCombatant_Job1_Crew").addNewCrew("crew",1,10);
+        crewReplacer_Main.getJob("LobsterCombatant_Job1_Crew").addCrewSet("LobsterCombatant_crew");
+
+        crewReplacer_Main.getJob("LobsterCombatant_Job2_Crew").addNewCrew("crew",1,10);
+        crewReplacer_Main.getJob("LobsterCombatant_Job2_Crew").addCrewSet("LobsterCombatant_crew");
+
+        crewReplacer_Main.getCrewSet("LobsterCombatant_crew").addCrewSet("crew");
+    }
+}
+[/code]
+so, whats going on here?
+first of all, we are initializing 3 different jobs. however, instead of having the jobs add the crewSet 'crew', they are adding the crew set 'LobsterCombatant_crew'. a crew set i made up just now.
+afterwards, the crew set 'LobsterCombatant_crew' is adding the crew set 'crew' to itself.
+in effect, all 3 of the jobs gain access to the crew set 'crew'. but they also gain access to a crew set named 'LobsterCombatant_crew'.
+so how is this helpful?
+to put it simply: it makes it so that if a moder comes around, and wants to add a crew to every 'crew' job in your mod (but not every job connected to the 'crew' crew set) they can. no issues at all.
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[spoiler=organizing your job names]
+something you might have notice in the last section is that I organize job names quite strangely.
+the reason behind this is because crew replacer does not allow for more jobs to share names. nor does it allow crew sets to share names (its fine if a job has the same name as a crew set though. or vice versa)
+so lets go over some rules in regards to job / crew set names that make them easier to read, and less likely to give you compatibility issues
+[spoiler=the 'standard' job name setup]
+so for jobs, i organize the names into 3 parts
+modName
+    -this is the name of your mod. always put this first to (hopefully) prevent any possibility of other mods using the same job name as you.
+taskName
+    -this is the 'task' this job is a part of. (for example if this job handled the 'ore' in some type of refinery, taskName would be 'refinery')
+replacedCommodity
+    -this is the commodity this job represents.
+
+together they would be something like:
+modName_taskName_replacedCommodity
+
+[spoiler=examples]
+im just going to leave this as a short list of examples. i feel like making a spoilers for all of them would only cause frustration
+LobsterCombatant_training_marines
+    -the mod is 'LobsterCombatant'
+    -the 'task' is training. maybe they are trying to create dave?
+    -the represented commodity is 'marines'
+
+LobsterCombatant_donate_food
+    -the mod is 'LobsterCombatant'
+    -the 'task' is 'donate'. maybe they are just giving things away to the hungry?
+    -the represented commodity is 'food'
+
+LobsterCombatant_bioProcessing_crew
+    -the mod is 'LobsterCombatant'
+    -the 'task' is bio processing. maybe this represents crew that are working to bio process something?
+    -the represented commodity is 'crew'
+
+LobsterCombatant_refinery_ore
+    -the mod is 'LobsterCombatant'
+    -the 'task' is 'refinery'. maybe its some type of metal refinery?
+    -the represented commodity is 'ore'
+[/spoiler]
+[/spoiler]
+[spoiler=the 'standard' crewSet name setup]
+for crewSets, i organize them into 2 or 3 parts.
+modName
+    -this is the name of your mod. always put this first to (hopefully) prevent any possibility of other mods using the same crew set name as you.
+groupName (optional)
+    -this is for instances when you require addition 'crew sets' for the sake of organization. like, if you had 5 'crew' jobs related to 'mining', you might have a group of crew sets donated just to that set of jobs, for ease of use.
+representedCommodity
+    -this is the commodity this crew set represents.
+
+together they would be something like:
+modName_replacedCommodity
+OR
+modName_taskName_replacedCommodity
+depending on if you have a task name at all.
+[spoiler=examples]
+LobsterCombatant_crew
+    -the mod name is LobsterCombatant
+    -the crew that this represents is named 'crew'.
+
+LobsterCombatant_ore
+    -the mod name is LobsterCombatant
+    -the crew that this represents is named 'ore'.
+
+LobsterCombatant_metal
+    -the mod name is LobsterCombatant
+    -the crew that this represents is named 'metal'.
+
+LobsterCombatant_refining_crew
+    -the mod name is LobsterCombatant
+    -the group name is 'refining'. there is likely a lot of refining going on in this very real mod.
+    -the crew that this represents is named 'crew'.
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[spoiler=installing crew replacer into your mod]
+and finally, we get into the main part of this section. how to actually do things.
+[spoiler=what functions exist, and how to use them]
+here, we will go over all the functions in crew replacer that relate to handling crew.
+before that however, let me link you to the [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/desing/documentation/classes/crewReplacer_Job]documentation[/url] on crewReplacer_Job
+now, lets go over each function that's used in crewReplacer_Job, and when you should use them
+also, it should be noted that most functions in crewReplacer_Job are not worth mentioning in this context. so i will skip them
+[spoiler=all in one functions]
+'all in one' functions, as i refer to them are functions i built that handle most of the complicated interplay between functions. in most cases, they are the best way to handle crew being lost.
+[spoiler=automaticlyGetDisplayAndApplyCrewLost]
+inputs:
+1) CargoAPI cargo
+    -this is the cargo bay that you would like crew replacer to look at.
+2) int crewPowerRequired
+    -this is the 'crew power' required to complete this task
+3) float crew_power_to_lose
+    -this is the 'crew power' you calculate should be lost in this operation.
+4) TextPanelAPI text
+    -this is the text you would like to print the losses to.
+
+what this does:
+this function runs the following functions, one at a time, handling all the strange inputs and outputs from them
+1) getCrewForJob
+2) getCrewLost
+3) displayCrewLost
+4) applyCrewLost
+
+outputs:
+none.
+
+when you should use it:
+you should use this function whenever you want to handle losses with crew replacer, and don't need to store the losses data to be displayed latter.
+[/spoiler]
+[spoiler=automaticlyGetAndApplyCrewLost]
+inputs:
+1) CargoAPI cargo
+    -this is the cargo bay that you would like crew replacer to look at.
+2) int crewPowerRequired
+    -this is the 'crew power' required to complete this task
+3) float crew_power_to_lose
+    -this is the 'crew power' you calculate should be lost in this operation.
+4) TextPanelAPI text
+    -this is the text you would like to print the losses to.
+
+what this does:
+this function runs the following functions, one at a time, handling all the strange inputs and outputs from them
+1) getCrewForJob
+2) getCrewLost
+3) applyCrewLost
+
+outputs:
+ArrayList<Float> crewLost
+    -this arraylist can be inputted into 'displayCrewLost' as its second perimeter.
+
+when you should use it:
+you should use this function whenever you want to handle losses with crew replacer, and dont want to display losses, or otherwise want to store crew lost data to be displayed latter.
+[/spoiler]
+[/spoiler]
+[spoiler=extra data functions]
+'extra data' deserves its own section in the tutorial, so im not going to talk about it to mush here. but i will describe the functions relating to its management anyways.
+[spoiler=applyExtraDataToCrew]
+inputs:
+(optional) Object newdata
+    -this is the 'extra data' you want to transfer over to the jobs 'crew'.
+    -if no newdata is inputted, will give all of this jobs 'crew' the stored 'extra data' instead
+outputs:
+    none
+what this does:
+    gives the inputted extra data to all crew that use this job.
+when you should use it:
+    whenever you want to give 'extra data' over to the 'crew' that use your job.
+[/spoiler]
+[spoiler=applyExtraDataToCrewAndJob]
+inputs:
+Object newData
+    -this is the 'extra data' that you want to give both your crew and your job.
+outputs:
+    none.
+what this does:
+    1) runs applyExtraDataToCrew with the inputted 'extra data'
+    2) sets the jobs stored 'extra data' to the inputed 'newData'
+when you should use it:
+    anytime you want to give both your job, and said jobs crew, exstra data.
+[/spoiler]
+[spoiler=resetExtraDataToCrewsAndJob]
+inputs:
+    none
+outputs:
+    none
+what this does:
+    1) sets the jobs stored 'extra data' variable to null.
+    2) runs 'resetExtraDataToCrews'
+when you should use it:
+    anytime you want to reset the 'extra data' you gave to your crew and your job.
+[/spoiler]
+[spoiler=resetExtraDataToCrews]
+inputs:
+    none
+outputs:
+    none.
+what this does:
+    1) sets every 'crew' in this 'jobs' 'extra data' to null
+when you should use it:
+    you should always run this function in some form after you are 'done' using your job for a single operation, provided you ran 'applyExtraDataToCrew' or 'applyExtraDataToCrewAndJob' at some point for this job drawing this operation.
+[/spoiler]
+[/spoiler]
+[spoiler=base functions]
+all the functions in crewReplacer_Job that you might need, in there most basic form.
+[spoiler=getAvailableCrewPower]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+outputs:
+    the combined output of every 'crews' in this 'jobs' 'getCrewPowerInCargo' function
+what this does:
+    runs 'getCrewPowerInCargo' on every 'crew' in this 'job', adding the outputs together.
+when you should use it:
+    this function is used to get the total 'crew power' this job has available.
+    if you were replacing a default in game job with this (like scavenging's heavy machinery) you would use this function instead of getting the number of 'heavy machinery' in the players cargo.
+[/spoiler]
+[spoiler=getAvailableCrew]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+outputs:
+    an array containing the numbers of all available 'crew' in this job
+what this does:
+    it returns a list of the amount of each 'crew' in this 'job' that are in the cargo bay, as based of the 'crews' 'getCrewInCargo' function
+when you should use it:
+    you should use it when you want to get the number of each crew in the players cargo bay.
+    please note: this function can result in inaccuracy's if there are 'custom crew' involved that overwrite a 'crews' 'getCrewInCargo' function. as a result, its not recommended to depend on this function, but it remains an option.
+[/spoiler]
+[spoiler=displayCrewAvailable]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+TextPanelAPI text
+    -this is the textPanel that you want to output the available crew display to.
+outputs:
+    none.
+what this does:
+    this function displays the amount crew available to preform this job, by running each 'crews' 'displayCrewAvailable' function.
+when you should use it:
+    you should use this function whenever you have any reason at all to display the number of crew available for a given task.
+[/spoiler]
+[spoiler=GetCrewNames]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+outputs:
+    this function outputs a String[] that contains the name that every 'crew' in this 'job'.
+what this does:
+    this gets the 'name' variable from every 'crew' in this 'job' and returns an String[] containing all of them
+when you should use it:
+    I am unsure if you would ever need this, but it will remain an option, just in case.
+    note: if you intend to get this to remember the 'commodity ID' of crew, its important to remember that 'custom crew' can often have .name's that don't match any commodity ID.
+[/spoiler]
+[spoiler=getCrewDisplayNames]
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+outputs:
+    this function outputs a String[] that contains the name that every 'crew' in this 'job' wants to display.
+what this does:
+    this runs every 'crews' 'getDisplayName' and returns the output of all of them.
+when you should use it:
+    I am unsure of whenever this will be useful. or if it will ever be. but I imagine someone will want to be able to get the 'names' of each 'crew' in your job at some point. so here it is.
+[/spoiler]
+[spoiler=getCargoSpaceUsed]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+String cargoType
+    -one of the following static variables found in crewReplacer_Job:
+        -.CARGO_CARGO
+        -.CARGO_CREW
+        -.CARGO_FUEL
+outputs:
+    the total amount of cargo space of the inputted type that 'crew' in this 'job' use in the inputted cargo.
+what this does:
+    this function returns the total amount of cargo space (of the inputted type) that all the 'crew' in this 'job', in the inputted cargo, use.
+when you should use it:
+    whenever you want to find out how mush cargo space things from your 'job' are using.
+[/spoiler]
+[spoiler=getCargoSpaceRange]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+float power
+    -the amount of 'power' you want to check for
+boolean includeDefence
+    -whether or not the projected amount of crew includes defence. should be set to true if you are trying to find out how mush cargo space the player will have after having this mush 'power' of 'crew' removed from there cargos.
+String cargoType
+    -one of the following static variables found in crewReplacer_Job:
+        -.CARGO_CARGO
+        -.CARGO_CREW
+        -.CARGO_FUEL
+outputs:
+    an float[] were [0] is the min amount of 'cargo' this amount of 'crew power' could use, and [1] is the max amount of 'cargo' this amount of 'crew power' could use.
+what this does:
+    this function returns the possible 'range' of cargo space (of the inputted type) that the inputted 'power' of 'crew' in this 'job' could use
+when you should use it:
+    you should use this whenever you want to know how mush 'cargo space' is being used by a certain amount of power of 'crew' in this 'job'.
+    you should also use this if you ever want to know how mush 'cargo space' will be freed up after a certain amount of 'crew' is removed from a 'cargo'.
+    note: the reason this function exists, and the reason it has 2 outputs is relatively interesting. because a given crew can have differing amounts of cargo space, and crew losses are calculated at random, the amount of cargo space (be it fuel, personnel, or normal cargo space) that is freed from a certain amount of 'crew power' can differ a lot. wish is why this function exists.
+[/spoiler]
+[spoiler=getCrewForJob]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+float crewPowerRequired
+    -this is the amount of crew power currently being used in a given job
+outputs:
+    an ArrayList<Float> holding the number of each type of crew that is used in this job. (in the same order as this jobs Crews array.)
+what this does:
+    this gets the crew that crew replacer calculates will be used in a given task.
+    also note: there is some randomness here. so running it twice can result in different outputs.
+when you should use it:
+    as the second input for 'getCrewLost'.
+[/spoiler]
+[spoiler=getCrewLost]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+ArrayList<Float> crewUsed
+    -should be the output from 'getCrewForJob'
+    -this is an ArrayList holding the amount of each 'crew' that was used in this job.
+    -each value corresponds to a given Crew.
+float crew_power_to_lose
+    -this is the amount of crew power we are calculated to loss in this task.
+outputs:
+    an ArrayList<Float> holding the number of each type of crew that is calculated to be lost. (in the same order as this jobs Crews array.)
+what this does:
+    this gets the crew that crew replacer thinks should be lost in a given task.
+    also note: there is some randomness here. so running it twice can result in different outputs.
+when you should use it:
+    as the first input in 'applyCrewLost'.
+[/spoiler]
+[spoiler=applyCrewLost]
+inputs:
+ArrayList<Float> crewLost
+    -should be the output from 'getCrewLost'.
+    -is an ArrayList holding the amount of each 'crew' that is to be lost in a giving job.
+    -each value corresponds to a given Crew.
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+what this does:
+    this removes crews from the inputted cargo that are calculated to be lost
+outputs:
+    none
+when you should use it:
+    before you run 'displayCrewLost'
+    whenever you want to apply losses to a given cargo.
+[/spoiler]
+[spoiler=displayCrewLost]
+inputs:
+CargoAPI cargo
+    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
+TextPanelAPI text
+    -this is the TextPanelAPI that you are going to display what crew is lost on.
+outputs:
+    -none
+what this does:
+    -this displays the crew lost onto a given TextPanelAPI.
+when you should use it:
+    -whenever you want to display what crew were lost in an operation.
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[spoiler=what CSV file tools exist, and how to use them]
+
+[/spoiler]
+[spoiler=a basic description about how to add crew replacer support to a 'in theory' existing job]
+
+[/spoiler]
+[spoiler=examples]
+
+[/spoiler]
+[/spoiler]
+[spoiler=having crew replacer support, without having crew replacer as an requirement]
+[spoiler=a basic rundown of a 'commodity handling class']
+[spoiler=the 'normal' version]
+
+[/spoiler]
+[spoiler=the 'crew replacer' version]
+
+[/spoiler]
+[/spoiler]
+[spoiler=a basic rundown of a 'initialization' for crew replacer without requiring it.]
+[spoiler=having what version of the 'commodity handling class' runs be based off of weather or not crew replacer is active]
+
+[/spoiler]
+[spoiler=putting the startup data into the 'crew replacer' version of the 'commodity handling class']
+
+[/spoiler]
+[spoiler=examples]
+
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[/spoiler]
+[spoiler=advanced]
+
+[/spoiler]
+
+[/spoiler]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 [spoiler=the basics of adding support for crew replacer to your mods]
 
 [spoiler=crewReplacer_Job? and crewReplacer_CrewSet]
