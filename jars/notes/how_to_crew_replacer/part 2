@@ -452,7 +452,57 @@ when you should use it:
 [/spoiler]
 [/spoiler]
 [spoiler=what CSV file tools exist, and how to use them]
+on my quest to slowly convert every crew replacer job i could access into something more usable, I was forced to modify a CSV file tool code thing? regardless, you might just find it usefull
+[spoiler=CrewReplacer_showResCost]
+so whats this?
+let me show you.
+[IMAGE OF CORNAL HYPERSHUNT WITH THE RESORSES REQUIRED CIRCLED IN RED WITH ARROWS PONITING TO IT FOR GOOD MESSURE]
+its this. a relatively simple way to display required resorses in the base game.
+so, lets go over how this works now:
+[spoiler=how it works]
+[IMAGE OF CREW REPLACERS RULES.CSV WITH HYPERSHUNT HERE]
+so this might look somewhat complicated, but that's only because the rules.csv is confusing.
+so, first of all, the $crewReq, $metalsReq, $tpReq are not relevant here, so lets just look at this line:
+CrewReplacer_showResCost "crew" "CoronalHyperShunt_repair_Crew" 1000 "metals" "CoronalHyperShunt_repair_Metals" 20000 true "rare_metals" "CoronalHyperShunt_repair_RareMetals" 5000 true
+so, this is formed out of a few parts.
+the first part, is the class we are attempting to run.
+the second part, is every 'inputted job' we wish to display with this function.
+    -in regards to this, every inputted job is made out of 3-4 variables:
+        1) the commodity we wish to represent.
+        2) the job name that we are calling 'crew' from.
+        3) the amount of required 'crew' power
+        4) (optional) if this commodity is consumed at the end of the operation.
+    it should be noted: with this function you can have as many 'inputted jobs' as you want. be it 1, or 10, or 1000. although i would not recommend 1000, its up to you to chose how to live.
+now, onto looking at the data directly.
+1) 'CrewReplacer_showResCost'. (this is the 'class we are attempting to run')
+    -this is telling the rules.csv to call this classes .execute() function.
+2) '"crew" "CoronalHyperShunt_repair_Crew" 1000'. (AKA the first 'inputted job' we wish to display with this function)
+    -this input is divided into 3 parts:
+    2.1) "crew". this is the commodity ID of the icon we want to display next to our resource.
+    2.2) "CoronalHyperShunt_repair_Crew" this is the crewReplacer_Job that we wish to draw 'crew' from.
+    2.3) '1000'. this is the amount of this 'crew' that is required.
 
+3) '"metals" "CoronalHyperShunt_repair_Metals" 20000 true'. (AKA the second 'inputted job' we wish to display with this function)
+    -this input is divided into 4 parts:
+    3.1) "metals". this is the commodity ID of the icon we want to display next to our resource.
+    3.2) "CoronalHyperShunt_repair_Metals" this is the crewReplacer_Job that we wish to draw 'crew' from.
+    3.3) '20000'. this is the amount of this 'crew' power that is required.
+    3.4) 'true'. this determines if this function says this commodity is consumed on completing this interaction. the default is false
+
+4) '"rare_metals" "CoronalHyperShunt_repair_RareMetals" 5000 true'. (AKA the third 'inputted job' we wish to display with this function)
+    -this input is divided into 4 parts:
+    4.1) "rare_metals". this is the commodity ID of the icon we want to display next to our resource.
+    4.2) "CoronalHyperShunt_repair_RareMetals" this is the crewReplacer_Job that we wish to draw 'crew' from.
+    4.3) '5000'. this is the amount of this 'crew' power that is required.
+    4.4) 'true'. this determines if this function says this commodity is consumed on completing this interaction. the default is false
+
+
+lastly 2 more ponits about this function that i want to clear up: it is only a display. It displays things. that's all it does. so it DOES NOT:
+1) check for you if you have enough of 'crew' to continue. you still need to do that yourself. (it will always return true)
+2) remove any crew that should be used in a given job.
+[/spoiler]
+also please note: the base game crew replacer version of this function is called: ShowResCost. and it works the same as CrewReplacer_showResCost, only without the crew replacer job inputs.
+[/spoiler]
 [/spoiler]
 [spoiler=a basic description about how to add crew replacer support to a 'in theory' existing job]
 
