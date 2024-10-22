@@ -8,6 +8,7 @@ import com.thoughtworks.xstream.XStream;
 public class LobsterCombatant_startup extends BaseModPlugin {
     @Override
     public void onGameLoad(boolean newGame) {
+        //Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity("fuel");
         super.onGameLoad(newGame);
         //Global.getSector().getListenerManager().addListener(new LobsterCombatant_CommodityTooltipModifier(),true);
         Global.getSector().getEconomy().addUpdateListener(new LobsterCombatant_BaseCampaignEventListener());

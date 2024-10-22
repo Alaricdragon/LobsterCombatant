@@ -452,7 +452,101 @@ when you should use it:
 [/spoiler]
 [/spoiler]
 [spoiler=what CSV file tools exist, and how to use them]
-on my quest to slowly convert every crew replacer job i could access into something more usable, I was forced to modify a CSV file tool code thing? regardless, you might just find it usefull
+on my quest to slowly convert every crew replacer job i could access into something more usable, I was forced to modify a CSV file tool code thing? in addition to this i created a few new ones. regardless, you might just find them usefull
+[spoiler=CrewReplacer_CheckCrewRequirements]
+so, what does this do?
+this rules.CSV function can get crew from job(s) and run crewReplacer_Job.automaticlyGetDisplayAndApplyCrewLost() for each inputted 'job'
+[spoiler=how it works]
+[IMAGE OF RULE.CSV OF THIS HERE. FROM THE THING THAT SEES IF WE HAVE ENOUTH CREW FOR THE HYPERTAP TO WORK]
+now, let us focus on the data here:
+'CrewReplacer_CheckCrewRequirements CoronalHyperShunt_repair_Metals $metalsReq CoronalHyperShunt_repair_RareMetals $tpReq CoronalHyperShunt_repair_Crew $crewReq'.
+the first part, is the class we are attempting to run.
+(optional, not enabled in this example)the second part, wish is a inputted cargo space. this is useful if you want crew replacer to view a cargoAPI that is not the players cargo.
+the third part, is every 'inputted job' we wish to run with this function.
+    -in regards to this, every inputted job is made out of 2 variables:
+        1) the job name that we are calling 'crew' from.
+        2) the amount of required 'crew' power in whatever job we are doing
+now, onto looking at the data directly.
+1) 'CrewReplacer_CheckCrewRequirements'. (this is the 'class we are attempting to run')
+    -this is telling the rules.csv to call this classes .execute() function.
+2) '' (this is the cargo bay we are viewing. if blank, we are just viewing the players cargo bay.)
+    -if we wanted to view another cargo, we would place a cargoAPI $variable between 'CrewReplacer_CheckCrewRequirements' and 'CoronalHyperShunt_repair_Metals'
+3) 'CoronalHyperShunt_repair_Metals' '$metalsReq'(AKA the first 'inputted job' we wish to display with this function)
+    -this input is divided into 2 parts:
+    3.1) "CoronalHyperShunt_repair_Metals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    3.2) "$metalsReq" this is the amount of 'crew power' we need to have in our inputted cargoAPI for this to return true. (NOTE: this is a memory key, but you could also use a static variable. for example: 20000)
+4) 'CoronalHyperShunt_repair_RareMetals' '$tpReq'. (AKA the second 'inputted job' we wish to display with this function)
+    -this input is divided into 2 parts:
+    4.1) "CoronalHyperShunt_repair_RareMetals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    4.2) "$tpReq" this is the amount of 'crew power' we need to have in our inputted cargoAPI for this to return true. (NOTE: this is a memory key, but you could also use a static variable. for example: 5000)
+
+lastly i would like you to note: EVERY inputted job needs to have more 'power' in the inputted 'cargoAPI' then the inputted 'required' power for this function to return true.
+if ANY of the inputted jobs don't have enough crew power this function will always return false.
+[/spoiler]
+[/spoiler]
+[spoiler=CrewReplacer_ApplyLossesWithoutDisplay]
+so, what does this do?
+this rules.CSV function can get crew from job(s) and run crewReplacer_Job.automaticlyGetAndApplyCrewLost() for each inputted 'job'
+[spoiler=how it works]
+[IMAGE OF RULE.CSV OF THIS HERE. FROM THE HYPERTAP THING. BUT WITH THE DISPLAY CLASS THING REPLACED BY THE NONE DISPLAY CLASS THING.]
+ok, so first thing first: the '$usable = true', '$beingRepaired = true 5', and 'FireBest CTapRepairInitiatedText' are not important here. i want to focus on this line:
+'CrewReplacer_ApplyLossesWithoutDisplay CoronalHyperShunt_repair_Metals $metalsReq $metalsReq CoronalHyperShunt_repair_RareMetals $tpReq $tpReq'
+the first part, is the class we are attempting to run.
+(optional, not enabled in this example)the second part, wish is a inputted cargo space. this is useful if you want crew replacer to view a cargoAPI that is not the players cargo.
+the third part, is every 'inputted job' we wish to run with this function.
+    -in regards to this, every inputted job is made out of 3 variables:
+        1) the job name that we are calling 'crew' from.
+        2) the amount of required 'crew' power in whatever job we are doing
+        3) the amount of 'crew' power we are going to remove from the inputted cargoAPI (or players cargo bay if no cargoAPI was inputted)
+now, onto looking at the data directly.
+1) 'CrewReplacer_ApplyLossesWithoutDisplay'. (this is the 'class we are attempting to run')
+    -this is telling the rules.csv to call this classes .execute() function.
+2) '' (this is the cargo bay we are viewing. if blank, we are just viewing the players cargo bay.)
+    -if we wanted to view another cargo, we would place a cargoAPI $variable between 'CrewReplacer_ApplyLossesWithoutDisplay' and 'CoronalHyperShunt_repair_Metals'
+3) 'CoronalHyperShunt_repair_Metals' '$metalsReq' '$metalsReq'. (AKA the first 'inputted job' we wish to display with this function)
+    -this input is divided into 3 parts:
+    3.1) "CoronalHyperShunt_repair_Metals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    3.2) "$metalsReq" this is the amount of 'crew power' we wish to have active in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 20000)
+    3.3) "$metalsReq" this is the amount of 'crew power' we wish to have to remove from the inputted cargoAPI in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 20000)
+4) 'CoronalHyperShunt_repair_RareMetals' '$tpReq' '$tpReq'. (AKA the second 'inputted job' we wish to display with this function)
+    -this input is divided into 3 parts:
+    4.1) "CoronalHyperShunt_repair_RareMetals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    4.2) "$tpReq" this is the amount of 'crew power' we wish to have active in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 5000)
+    4.3) "$tpReq" this is the amount of 'crew power' we wish to have to remove from the inputted cargoAPI in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 5000)
+
+lastly, please note: this example is not actually in crew replacer. i have simply never required this function before, so i replaced the only use of 'CrewReplacer_ApplyAndDisplayLosses' for this example only.
+[/spoiler]
+[/spoiler]
+[spoiler=CrewReplacer_ApplyAndDisplayLosses]
+this rules.CSV function can get crew from job(s) and run crewReplacer_Job.getAvailableCrewPower() for each inputted 'job'
+[spoiler=how it works]
+[IMAGE OF RULE.CSV OF THIS HERE. FROM THE HYPERTAP THING]
+ok, so first thing first: the '$usable = true', '$beingRepaired = true 5', and 'FireBest CTapRepairInitiatedText' are not important here. i want to focus on this line:
+'CrewReplacer_ApplyAndDisplayLosses CoronalHyperShunt_repair_Metals $metalsReq $metalsReq CoronalHyperShunt_repair_RareMetals $tpReq $tpReq'
+the first part, is the class we are attempting to run.
+(optional, not enabled in this example)the second part, wish is a inputted cargo space. this is useful if you want crew replacer to view a cargoAPI that is not the players cargo.
+the third part, is every 'inputted job' we wish to display/run with this function.
+    -in regards to this, every inputted job is made out of 3 variables:
+        1) the job name that we are calling 'crew' from.
+        2) the amount of required 'crew' power in whatever job we are doing
+        3) the amount of 'crew' power we are going to remove from the inputted cargoAPI (or players cargo bay if no cargoAPI was inputted)
+now, onto looking at the data directly.
+1) 'CrewReplacer_ApplyAndDisplayLosses'. (this is the 'class we are attempting to run')
+    -this is telling the rules.csv to call this classes .execute() function.
+2) '' (this is the cargo bay we are viewing. if blank, we are just viewing the players cargo bay.)
+    -if we wanted to view another cargo, we would place a cargoAPI $variable between 'CrewReplacer_ApplyAndDisplayLosses' and 'CoronalHyperShunt_repair_Metals'
+3) 'CoronalHyperShunt_repair_Metals' '$metalsReq' '$metalsReq'. (AKA the first 'inputted job' we wish to display with this function)
+    -this input is divided into 3 parts:
+    3.1) "CoronalHyperShunt_repair_Metals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    3.2) "$metalsReq" this is the amount of 'crew power' we wish to have active in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 20000)
+    3.3) "$metalsReq" this is the amount of 'crew power' we wish to have to remove from the inputted cargoAPI in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 20000)
+4) 'CoronalHyperShunt_repair_RareMetals' '$tpReq' '$tpReq'. (AKA the second 'inputted job' we wish to display with this function)
+    -this input is divided into 3 parts:
+    4.1) "CoronalHyperShunt_repair_RareMetals". this is the crewReplacer_Job that we wish to draw 'crew' from
+    4.2) "$tpReq" this is the amount of 'crew power' we wish to have active in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 5000)
+    4.3) "$tpReq" this is the amount of 'crew power' we wish to have to remove from the inputted cargoAPI in this operation. (NOTE: this is a memory key, but you could also use a static variable. for example: 5000)
+[/spoiler]
+[/spoiler]
 [spoiler=CrewReplacer_showResCost]
 so whats this?
 let me show you.
@@ -505,7 +599,17 @@ also please note: the base game crew replacer version of this function is called
 [/spoiler]
 [/spoiler]
 [spoiler=a basic description about how to add crew replacer support to a 'in theory' existing job]
-
+so the first thing we are going to talk about is the 3 'parts' of any job
+[spoiler=part 1: how mush crew do i have?]
+so the first part
+    if(Global.getSector().getPlayerFleet().getCargo().getCommodityQuantity("fuel") > 500){
+        //code to allow you to continue
+    }
+[/spoiler]
+[spoiler=part 2: how mush crew do i need to lose?]
+[/spoiler]
+[spoiler=part 3: displaying crew lost]
+[/spoiler]
 [/spoiler]
 [spoiler=examples]
 
@@ -536,359 +640,5 @@ also please note: the base game crew replacer version of this function is called
 [spoiler=advanced]
 
 [/spoiler]
-
-[/spoiler]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[spoiler=the basics of adding support for crew replacer to your mods]
-
-[spoiler=crewReplacer_Job? and crewReplacer_CrewSet]
-[spoiler=crewReplacer_Job]
-[/spoiler]
-[spoiler=crewReplacer_CrewSet]
-[/spoiler]
-[/spoiler]
-[spoiler=the basic functions used when adding support to crew replacer]
-here, we will go over all the functions in crew replacer that relate to handling crew.
-before that however, let me link you to the [url=https://github.com/Alaricdragon/Crew_Replacer/blob/master/jars/src/desing/documentation/classes/crewReplacer_Job]documentation[/url] on crewReplacer_Job
-now, lets go over each function that's used in crewReplacer_Job, and when you should use them
-also, it should be noted that most functions in crewReplacer_Job are not worth mentioning in this context. so i will skip them
-[spoiler=all in one functions]
-'all in one' functions, as i refer to them are functions i built that handle most of the complicated interplay between functions. in most cases, they are the best way to handle crew being lost.
-[spoiler=automaticlyGetDisplayAndApplyCrewLost]
-inputs:
-1) CargoAPI cargo
-    -this is the cargo bay that you would like crew replacer to look at.
-2) int crewPowerRequired
-    -this is the 'crew power' required to complete this task
-3) float crew_power_to_lose
-    -this is the 'crew power' you calculate should be lost in this operation.
-4) TextPanelAPI text
-    -this is the text you would like to print the losses to.
-
-what this does:
-this function runs the following functions, one at a time, handling all the strange inputs and outputs from them
-1) getCrewForJob
-2) getCrewLost
-3) displayCrewLost
-4) applyCrewLost
-
-outputs:
-none.
-
-when you should use it:
-you should use this function whenever you want to handle losses with crew replacer, and don't need to store the losses data to be displayed latter.
-[/spoiler]
-[spoiler=automaticlyGetAndApplyCrewLost]
-inputs:
-1) CargoAPI cargo
-    -this is the cargo bay that you would like crew replacer to look at.
-2) int crewPowerRequired
-    -this is the 'crew power' required to complete this task
-3) float crew_power_to_lose
-    -this is the 'crew power' you calculate should be lost in this operation.
-4) TextPanelAPI text
-    -this is the text you would like to print the losses to.
-
-what this does:
-this function runs the following functions, one at a time, handling all the strange inputs and outputs from them
-1) getCrewForJob
-2) getCrewLost
-3) applyCrewLost
-
-outputs:
-ArrayList<Float> crewLost
-    -this arraylist can be inputted into 'displayCrewLost' as its second perimeter.
-
-when you should use it:
-you should use this function whenever you want to handle losses with crew replacer, and dont want to display losses, or otherwise want to store crew lost data to be displayed latter.
-[/spoiler]
-[/spoiler]
-
-[spoiler=extra data functions]
-'extra data' deserves its own section in the tutorial, so im not going to talk about it to mush here. but i will describe the functions relating to its management anyways.
-[spoiler=applyExtraDataToCrew]
-inputs:
-(optional) Object newdata
-    -this is the 'extra data' you want to transfer over to the jobs 'crew'.
-    -if no newdata is inputted, will give all of this jobs 'crew' the stored 'extra data' instead
-outputs:
-    none
-what this does:
-    gives the inputted extra data to all crew that use this job.
-when you should use it:
-    whenever you want to give 'extra data' over to the 'crew' that use your job.
-
-[/spoiler]
-[spoiler=applyExtraDataToCrewAndJob]
-inputs:
-Object newData
-    -this is the 'extra data' that you want to give both your crew and your job.
-outputs:
-    none.
-what this does:
-    1) runs applyExtraDataToCrew with the inputted 'extra data'
-    2) sets the jobs stored 'extra data' to the inputed 'newData'
-when you should use it:
-    anytime you want to give both your job, and said jobs crew, exstra data.
-[/spoiler]
-[spoiler=resetExtraDataToCrewsAndJob]
-inputs:
-    none
-outputs:
-    none
-what this does:
-    1) sets the jobs stored 'extra data' variable to null.
-    2) runs 'resetExtraDataToCrews'
-when you should use it:
-    anytime you want to reset the 'extra data' you gave to your crew and your job.
-[/spoiler]
-[spoiler=resetExtraDataToCrews]
-inputs:
-    none
-outputs:
-    none.
-what this does:
-    1) sets every 'crew' in this 'jobs' 'extra data' to null
-when you should use it:
-    you should always run this function in some form after you are 'done' using your job for a single operation, provided you ran 'applyExtraDataToCrew' or 'applyExtraDataToCrewAndJob' at some point for this job drawing this operation.
-[/spoiler]
-[/spoiler]
-[spoiler=base functions]
-all the functions in crewReplacer_Job that you might need, in there most basic form.
-[spoiler=getAvailableCrewPower]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-outputs:
-    the combined output of every 'crews' in this 'jobs' 'getCrewPowerInCargo' function
-what this does:
-    runs 'getCrewPowerInCargo' on every 'crew' in this 'job', adding the outputs together.
-when you should use it:
-    this function is used to get the total 'crew power' this job has available.
-    if you were replacing a default in game job with this (like scavenging's heavy machinery) you would use this function instead of getting the number of 'heavy machinery' in the players cargo.
-[/spoiler]
-[spoiler=getAvailableCrew]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-outputs:
-    an array containing the numbers of all available 'crew' in this job
-what this does:
-    it returns a list of the amount of each 'crew' in this 'job' that are in the cargo bay, as based of the 'crews' 'getCrewInCargo' function
-when you should use it:
-    you should use it when you want to get the number of each crew in the players cargo bay.
-    please note: this function can result in inaccuracy's if there are 'custom crew' involved that overwrite a 'crews' 'getCrewInCargo' function. as a result, its not recreated to depend on this function, but it remains an option.
-[/spoiler]
-[spoiler=displayCrewAvailable]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-TextPanelAPI text
-    -this is the textPanel that you want to output the available crew display to.
-outputs:
-    none.
-what this does:
-    this function displays the amount crew available to preform this job, by running each 'crews' 'displayCrewAvailable' function.
-when you should use it:
-    you should use this function whenever you have any reason at all to display the number of crew available for a given task.
-[/spoiler]
-[spoiler=GetCrewNames]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-outputs:
-    this function outputs a String[] that contains the name that every 'crew' in this 'job'.
-what this does:
-    this gets the 'name' variable from every 'crew' in this 'job' and returns an String[] containing all of them
-when you should use it:
-    I am unsure if you would ever need this, but it will remain an option, just in case.
-    note: if you intend to get this to remember the 'commodity ID' of crew, its important to remember that 'custom crew' can often have .name's that don't match any commodity ID.
-
-[/spoiler]
-[spoiler=getCrewDisplayNames]
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-outputs:
-    this function outputs a String[] that contains the name that every 'crew' in this 'job' wants to display.
-what this does:
-    this runs every 'crews' 'getDisplayName' and returns the output of all of them.
-when you should use it:
-    I am unsure of whenever this will be useful. or if it will ever be. but I imagine someone will want to be able to get the 'names' of each 'crew' in your job at some point. so here it is.
-[/spoiler]
-[spoiler=getCargoSpaceUsed]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-String cargoType
-    -one of the following static variables found in crewReplacer_Job:
-        -.CARGO_CARGO
-        -.CARGO_CREW
-        -.CARGO_FUEL
-outputs:
-    the total amount of cargo space of the inputted type that 'crew' in this 'job' use in the inputted cargo.
-what this does:
-    this function returns the total amount of cargo space (of the inputted type) that all the 'crew' in this 'job', in the inputted cargo, use.
-when you should use it:
-    whenever you want to find out how mush cargo space things from your 'job' are using.
-[/spoiler]
-[spoiler=getCargoSpaceRange]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-float power
-    -the amount of 'power' you want to check for
-boolean includeDefence
-    -whether or not the projected amount of crew includes defence. should be set to true if you are trying to find out how mush cargo space the player will have after having this mush 'power' of 'crew' removed from there cargos.
-String cargoType
-    -one of the following static variables found in crewReplacer_Job:
-        -.CARGO_CARGO
-        -.CARGO_CREW
-        -.CARGO_FUEL
-outputs:
-    an float[] were [0] is the min amount of 'cargo' this amount of 'crew power' could use, and [1] is the max amount of 'cargo' this amount of 'crew power' could use.
-what this does:
-    this function returns the possible 'range' of cargo space (of the inputted type) that the inputted 'power' of 'crew' in this 'job' could use
-when you should use it:
-    you should use this whenever you want to know how mush 'cargo space' is being used by a certain amount of power of 'crew' in this 'job'.
-    you should also use this if you ever want to know how mush 'cargo space' will be freed up after a certain amount of 'crew' is removed from a 'cargo'.
-    note: the reason this function exists, and the reason it has 2 outputs is relatively interesting. because a given crew can have differing amounts of cargo space, and crew losses are calculated at random, the amount of cargo space (be it fuel, personnel, or normal cargo space) that is freed from a certain amount of 'crew power' can differ a lot. wish is why this function exists.
-[/spoiler]
-[spoiler=getCrewForJob]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-float crewPowerRequired
-    -this is the amount of crew power currently being used in a given job
-outputs:
-    an ArrayList<Float> holding the number of each type of crew that is used in this job. (in the same order as this jobs Crews array.)
-what this does:
-    this gets the crew that crew replacer calculates will be used in a given task.
-    also note: there is some randomness here. so running it twice can result in different outputs.
-when you should use it:
-    as the second input for 'getCrewLost'.
-[/spoiler]
-[spoiler=getCrewLost]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-ArrayList<Float> crewUsed
-    -should be the output from 'getCrewForJob'
-    -this is an ArrayList holding the amount of each 'crew' that was used in this job.
-    -each value corresponds to a given Crew.
-float crew_power_to_lose
-    -this is the amount of crew power we are calculated to loss in this task.
-outputs:
-    an ArrayList<Float> holding the number of each type of crew that is calculated to be lost. (in the same order as this jobs Crews array.)
-what this does:
-    this gets the crew that crew replacer thinks should be lost in a given task.
-    also note: there is some randomness here. so running it twice can result in different outputs.
-when you should use it:
-    as the first input in 'applyCrewLost'.
-
-[/spoiler]
-[spoiler=applyCrewLost]
-inputs:
-ArrayList<Float> crewLost
-    -should be the output from 'getCrewLost'.
-    -is an ArrayList holding the amount of each 'crew' that is to be lost in a giving job.
-    -each value corresponds to a given Crew.
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-what this does:
-    this removes crews from the inputted cargo that are calculated to be lost
-outputs:
-    none
-when you should use it:
-    before you run 'displayCrewLost'
-    whenever you want to apply losses to a given cargo.
-[/spoiler]
-[spoiler=displayCrewLost]
-inputs:
-CargoAPI cargo
-    -this is the 'cargo' this job is trying to draw crew from, be it the player fleets cargo, or some other cargo.
-TextPanelAPI text
-    -this is the TextPanelAPI that you are going to display what crew is lost on.
-outputs:
-    -none
-what this does:
-    -this displays the crew lost onto a given TextPanelAPI.
-when you should use it:
-    -whenever you want to display what crew were lost in an operation.
-[/spoiler]
-[/spoiler]
-[/spoiler]
-[spoiler=how to organize your 'job' and 'crewset' names to avoid any confusion or issues]
-
-[/spoiler]
-[spoiler=what on earth is 'extra data']
-
-[/spoiler]
-[spoiler=rule.csv based functions that might help with ease of use]
-here we will talk about how to use some of the random functions that i built to be used with the rules.csv, but can be used without it.
-[/spoiler]
-[spoiler=examples]
-[/spoiler]
-[/spoiler]
-[spoiler=how to make it so your mod has crew replacer support, without requiring crew replacer]
-
-[/spoiler]
-[spoiler=examples]
 
 [/spoiler]
